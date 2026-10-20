@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design A: Score-first</title>
+<link rel="stylesheet" href="../shared/board.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Reusable score snippets. Edit the notes here and every screen updates. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="n" style="overflow:visible">
+      <ellipse cx="0" cy="0" rx="4.4" ry="3.1" transform="rotate(-20)" fill="currentColor"/>
+      <line x1="3.9" y1="-1" x2="3.9" y2="-20" stroke="currentColor" stroke-width="1.1"/>
+    </symbol>
+    <symbol id="staff" viewBox="0 0 300 72">
+      <g stroke="#9aa3b5" stroke-width=".8">
+        <line x1="0" y1="18" x2="300" y2="18"/><line x1="0" y1="26" x2="300" y2="26"/>
+        <line x1="0" y1="34" x2="300" y2="34"/><line x1="0" y1="42" x2="300" y2="42"/>
+        <line x1="0" y1="50" x2="300" y2="50"/>
+      </g>
+      <g stroke="#1c2b4a" stroke-width="1">
+        <line x1=".5" y1="18" x2=".5" y2="50"/><line x1="75" y1="18" x2="75" y2="50"/>
+        <line x1="150" y1="18" x2="150" y2="50"/><line x1="225" y1="18" x2="225" y2="50"/>
+        <line x1="299.5" y1="18" x2="299.5" y2="50"/>
+      </g>
+    </symbol>
+    <symbol id="line37" viewBox="0 0 300 72">
+      <use href="#staff" width="300" height="72"/>
+      <g color="#1c2b4a">
+        <use href="#n" x="14" y="46"/><use href="#n" x="32" y="42"/><use href="#n" x="50" y="38"/><use href="#n" x="64" y="38"/>
+        <use href="#n" x="90" y="34"/><use href="#n" x="110" y="34"/><use href="#n" x="130" y="38"/>
+        <use href="#n" x="166" y="42"/><use href="#n" x="186" y="38"/><use href="#n" x="206" y="34"/>
+        <use href="#n" x="242" y="30"/><use href="#n" x="270" y="34"/>
+      </g>
+      <g font-family="Figtree, sans-serif" font-size="8" fill="#5b6680">
+        <text x="10" y="66">we</text><text x="28" y="66">fol-</text><text x="48" y="66">low</text><text x="62" y="66">the</text>
+        <text x="86" y="66">north-</text><text x="110" y="66">ern</text><text x="128" y="66">sky,</text>
+        <text x="162" y="66">a</text><text x="180" y="66">rib-</text><text x="200" y="66">bon</text>
+        <text x="238" y="66">of</text><text x="264" y="66">green</text>
+      </g>
+      <text x="2" y="10" class="bar-no">37</text><text x="77" y="10" class="bar-no">38</text>
+      <text x="152" y="10" class="bar-no">39</text><text x="227" y="10" class="bar-no">40</text>
+    </symbol>
+    <symbol id="line45" viewBox="0 0 300 72">
+      <use href="#staff" width="300" height="72"/>
+      <g color="#1c2b4a">
+        <use href="#n" x="14" y="46"/><use href="#n" x="32" y="42"/><use href="#n" x="50" y="38"/><use href="#n" x="64" y="38"/>
+        <use href="#n" x="90" y="34"/><use href="#n" x="110" y="34"/><use href="#n" x="130" y="38"/>
+        <use href="#n" x="166" y="42"/><use href="#n" x="186" y="38"/><use href="#n" x="206" y="34"/>
+        <use href="#n" x="242" y="30"/><use href="#n" x="270" y="34"/>
+      </g>
+      <g font-family="Figtree, sans-serif" font-size="8" fill="#5b6680">
+        <text x="10" y="66">and</text><text x="28" y="66">we</text><text x="48" y="66">will</text><text x="62" y="66">not</text>
+        <text x="86" y="66">stray,</text><text x="110" y="66">we</text><text x="128" y="66">sing</text>
+        <text x="162" y="66">a</text><text x="180" y="66">new</text><text x="200" y="66">day</text>
+        <text x="238" y="66">is</text><text x="264" y="66">near</text>
+      </g>
+      <text x="2" y="10" class="bar-no">45</text><text x="77" y="10" class="bar-no">46</text>
+      <text x="152" y="10" class="bar-no">47</text><text x="227" y="10" class="bar-no">48</text>
+    </symbol>
+    <symbol id="line41" viewBox="0 0 300 72">
+      <use href="#staff" width="300" height="72"/>
+      <g color="#1c2b4a">
+        <use href="#n" x="14" y="34"/><use href="#n" x="34" y="30"/><use href="#n" x="56" y="26"/>
+        <use href="#n" x="90" y="38"/><use href="#n" x="112" y="22"/><use href="#n" x="134" y="22"/>
+        <use href="#n" x="166" y="34"/><use href="#n" x="190" y="22"/>
+        <use href="#n" x="244" y="30"/><use href="#n" x="270" y="34"/>
+      </g>
+      <g font-family="Figtree, sans-serif" font-size="8" fill="#5b6680">
+        <text x="10" y="66">that</text><text x="30" y="66">leads</text><text x="54" y="66">us</text>
+        <text x="86" y="66">to</text><text x="106" y="66">the</text><text x="130" y="66">light,</text>
+        <text x="162" y="66">the</text><text x="184" y="66">light</text>
+        <text x="240" y="66">of</text><text x="264" y="66">home</text>
+      </g>
+      <text x="2" y="10" class="bar-no">41</text><text x="77" y="10" class="bar-no">42</text>
+      <text x="152" y="10" class="bar-no">43</text><text x="227" y="10" class="bar-no">44</text>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="board-head">
+  <a class="back" href="../index.html">‹ All three designs</a>
+  <h1>A. Score-first</h1>
+  <p>The sheet music is the workspace. You tap bars on the score to loop them, and the coach marks mistakes on the same score, like a highlighter and a red pencil. Closest to our Iteration 1 prototype.</p>
+  <p class="note">UI only, nothing is clickable. Song, scores and numbers are placeholder data, not real user results.</p>
+</header>
+
+<main class="board">
+
+  <!-- 1 Library -->
+  <figure class="shot">
+    <div class="phone"><div class="screen">
+      <div class="statusbar">9:41</div>
+      <div class="a-top"><h2>Library</h2><span class="icon-btn">☰</span></div>
+      <div class="a-body">
+        <div class="search">⌕ Search your songs</div>
+        <div class="section-label">Practising this week</div>
+        <div class="song">
+          <div class="thumb"></div>
+          <div><b>Northern Lights</b><span>SATB · Tenor · combined practice Wed</span>
+            <div class="progress"><i style="width:68%"></i></div></div>
+          <span class="chip mark">68%</span>
+        </div>
+        <div class="section-label">All songs</div>
+        <div class="song">
+          <div class="thumb"></div>
+          <div><b>Paper Lanterns</b><span>SATB · Tenor</span>
+            <div class="progress"><i style="width:100%"></i></div></div>
+          <span class="chip">Learnt</span>
+        </div>
+        <div class="song">
+          <div class="thumb"></div>
+          <div><b>River Song</b><span>TTBB · Tenor 2</span>
+            <div class="progress"><i style="width:30%"></i></div></div>
+          <span class="chip">30%</span>
+        </div>
+      </div>
+      <div class="fab">＋ Import song</div>
+      <div class="homebar"></div>
+    </div></div>
+    <figcaption><b><span>1</span>Library</b><p>Each song shows how much of your part you've learnt and when the next combined practice is.</p></figcaption>
+  </figure>
+
+  <!-- 2 Import -->
+  <figure class="shot">
+    <div class="phone"><div class="screen">
+      <div class="statusbar">9:41</div>
+      <div class="a-top"><span class="icon-btn">‹</span><h2>Import song</h2></div>
+      <div class="a-body">
+        <div class="steps"><i class="on"></i><i></i><i></i> Step 1 of 3</div>
+        <div class="drop done"><span class="ficon">PDF</span><div><b>northern-lights-satb.pdf</b><span>Score · 6 pages</span></div><span class="tick">✓</span></div>
+        <div class="drop done"><span class="ficon">MIDI</span><div><b>northern-lights-tenor.mid</b><span>Learning track · 3:12</span></div><span class="tick">✓</span></div>
+        <div class="drop"><span class="ficon">＋</span><div><b>Add another track</b><span>Optional, e.g. full choir recording</span></div></div>
+        <div class="field"><label>Song title <em>*</em></label><div>Northern Lights</div></div>
+        <div class="field"><label>Combined practice</label><div>Wed 22 Oct, 7:00 pm</div></div>
+        <div class="btn primary" style="margin-top:auto">Next: choose your part</div>
+      </div>
+      <div class="homebar"></div>
+    </div></div>
+    <figcaption><b><span>2</span>Import score and track</b><p>Drop in the PDF and learning track your director sent on Telegram.</p><span class="fix">HE #13, #15: required field marker, step indicator</span></figcaption>
+  </figure>
+
+  <!-- 3 Part -->
+  <figure class="shot">
+    <div class="phone"><div class="screen">
+      <div class="statusbar">9:41</div>
+      <div class="a-top"><span class="icon-btn">‹</span><h2>Your part</h2></div>
+      <div class="a-body">
+        <div class="steps"><i class="on"></i><i class="on"></i><i></i> Step 2 of 3</div>
+        <p style="margin:0">We found 4 vocal lines in the score. Which one do you sing?</p>
+        <div class="part"><div><b>Soprano</b><span>Staff 1 · C4 to A5</span></div><span class="radio"></span></div>
+        <div class="part"><div><b>Alto</b><span>Staff 2 · G3 to D5</span></div><span class="radio"></span></div>
+        <div class="part on"><div><b>Tenor</b><span>Staff 3 · D3 to G4</span></div><span class="radio"></span></div>
+        <div class="part"><div><b>Bass</b><span>Staff 4 · F2 to C4</span></div><span class="radio"></span></div>
+        <div class="mix"><span>Your part</span><span class="slider"><i style="width:85%"></i></span><span>85%</span></div>
+        <div class="mix"><span>Other parts</span><span class="slider"><i style="width:30%"></i></span><span>30%</span></div>
+        <div class="btn primary" style="margin-top:auto">Next: check sync</div>
+      </div>
+      <div class="homebar"></div>
+    </div></div>
+    <figcaption><b><span>3</span>Pick your part</b><p>Ranges replace the old voice-range dropdown, so you can tell which line is yours. Other parts can be turned down.</p><span class="fix">HE #16: unclear voice range</span></figcaption>
+  </figure>
+
+  <!-- 4 Sync -->
+  <figure class="shot">
+    <div class="phone"><div class="screen">
+      <div class="statusbar">9:41</div>
+      <div class="a-top"><span class="icon-btn">‹</span><h2>Sync check</h2></div>
+      <div class="a-body">
+        <div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i> Step 3 of 3</div>
+        <span class="chip saved" style="align-self:flex-start">✓ Auto-sync matched 96 of 98 bars</span>
+        <div class="sheet">
+          <svg viewBox="0 0 300 72"><rect x="0" y="12" width="150" height="44" class="err-band"/><use href="#line37" width="300" height="72"/><line x1="48" y1="10" x2="48" y2="58" class="playhead"/></svg>
+        </div>
+        <div class="callout"><b>Bars 1 and 2 didn't match</b>The track starts with a two-bar count-in. Listen and nudge until the red line follows the first note.</div>
+        <div class="btn-row"><div class="btn">− 1 beat</div><div class="btn">▶ Play</div><div class="btn">+ 1 beat</div></div>
+        <div class="btn primary" style="margin-top:auto">Looks right, start practising</div>
+      </div>
+      <div class="homebar"></div>
+    </div></div>
+    <figcaption><b><span>4</span>Sync check</b><p>Only the bars that failed auto-sync need a look. Back button now included.</p><span class="fix">HE #3, #10: back button, clearer sync feedback</span></figcaption>
+  </figure>
+
+  <!-- 5 Workspace -->
+  <figure class="shot">
+    <div class="phone"><div class="screen">
+      <div class="statusbar">9:41</div>
+      <div class="a-top"><span class="icon-btn">‹</span><h2>Northern Lights<small>Tenor · page 3 of 6</small></h2><span class="icon-btn">?</span></div>
+      <div class="a-body">
+        <div class="sheet">
+          <svg viewBox="0 0 300 72"><use href="#line37" width="300" height="72"/><line x1="180" y1="10" x2="180" y2="58" class="playhead"/></svg>
+          <svg viewBox="0 0 300 72"><rect x="0" y="12" width="300" height="44" rx="3" class="loop-band"/><use href="#line41" width="300" height="72"/></svg>
+          <svg viewBox="0 0 300 72"><use href="#line45" width="300" height="72"/></svg>
+        </div>
+        <div class="loop-read"><span>Loop <b>bars 41–44</b></span><span>0:52 – 1:04 · drag ends to change</span></div>
+        <div class="transport">
+          <div class="keys"><i></i><i class="b"></i><i class="b"></i><i></i><i class="b"></i><i class="b"></i><i class="b hit"></i><i></i><i class="b"></i><i class="b"></i><i></i></div>
+          <div class="tbar">
+            <span class="tool"><b>80%</b>Tempo</span>
+            <span class="tool on"><b>♩</b>Metronome</span>
+            <span class="play" aria-label="Pause">❚❚</span>
+            <span class="tool on"><b>⟲</b>Loop</span>
+            <span class="tool"><b>●</b>Record</span>
+          </div>
+        </div>
+      </div>
+      <div class="homebar"></div>
+    </div></div>
+    <figcaption><b><span>5</span>Practice workspace</b><p>Tap a bar to start a loop, then drag the yellow highlight to stretch it. Play and pause is one button that keeps your place.</p><span class="fix">HE #2, #4, #18: play/pause toggle, loop by tapping bars, tool on/off states</span></figcaption>
+  </figure>
+
+  <!-- 6 Recording -->
+  <figure class="shot">
+    <div class="phone"><div class="screen">
+      <div class="statusbar">9:41</div>
+      <div class="a-top"><span class="rec-dot"></span><h2>Recording take 3<small>Bars 37–44 · 0:41</small></h2></div>
+      <div class="a-body">
+        <div class="sheet">
+          <svg viewBox="0 0 300 72"><use href="#line37" width="300" height="72"/></svg>
+          <svg viewBox="0 0 300 72"><use href="#line41" width="300" height="72"/><line x1="122" y1="10" x2="122" y2="58" class="playhead"/></svg>
+        </div>
+        <div class="callout">
+          <b>Input level: good</b>
+          <div class="meter"><i style="height:30%"></i><i style="height:55%"></i><i style="height:70%"></i><i style="height:62%"></i><i style="height:80%"></i><i class="hi" style="height:88%"></i><i style="height:66%"></i><i style="height:48%"></i><i class="off" style="height:20%"></i><i class="off" style="height:15%"></i></div>
+        </div>
+        <p style="margin:0;font-size:13px;color:var(--ink-soft)">Learning track playing quietly in your earbuds at 100% tempo.</p>
+        <div class="btn-row" style="margin-top:auto"><div class="btn">❚❚ Pause</div><div class="btn endtake">■ End take</div></div>
+      </div>
+      <div class="homebar"></div>
+    </div></div>
+    <figcaption><b><span>6</span>Recording</b><p>A live level meter shows the mic is hearing you. "End take" replaces the confusing Stop button.</p><span class="fix">HE #2, #9: End take label, live input level</span></figcaption>
+  </figure>
+
+  <!-- 7 Scorecard -->
+  <figure class="shot">
+    <div class="phone"><div class="screen">
+      <div class="statusbar">9:41</div>
+      <div class="a-top"><span class="icon-btn">‹</span><h2>Take 3<small>Bars 37–44</small></h2><span class="chip saved">✓ Autosaved</span></div>
+      <div class="a-body">
+        <div class="score-big"><b>74</b><span>out of 100 · up from 66 on take 2</span></div>
+        <div class="metric"><span>Pitch ⓘ</span><span class="track"><i style="width:62%"></i></span><em class="bad">Needs work</em></div>
+        <div class="metric"><span>Rhythm ⓘ</span><span class="track"><i style="width:81%"></i></span><em class="good">Good</em></div>
+        <div class="metric"><span>Timing ⓘ</span><span class="track"><i style="width:85%"></i></span><em class="good">Good</em></div>
+        <div class="metric"><span>Diction ⓘ</span><span class="track"><i style="width:78%"></i></span><em class="good">Good</em></div>
+        <div class="priority"><small>Fix this first</small><p>Bars 42–43: you land under the high F♯ on "light" both times.</p></div>
+        <div class="btn primary">Show me on the score</div>
+        <div class="btn-row"><div class="btn">↻ Re-record</div><div class="btn">Save to history</div></div>
+        <div class="btn danger">Discard take</div>
+      </div>
+      <div class="homebar"></div>
+    </div></div>
+    <figcaption><b><span>7</span>Scorecard</b><p>One priority, plus clear actions for the take: re-record, save or discard. The ⓘ explains each score.</p><span class="fix">HE #1, #8: take actions and autosave, score explanations</span></figcaption>
+  </figure>
+
+  <!-- 8 Explain -->
+  <figure class="shot">
+    <div class="phone"><div class="screen">
+      <div class="statusbar">9:41</div>
+      <div class="a-top"><span class="icon-btn">‹</span><h2>Bars 42–43</h2></div>
+      <div class="a-body">
+        <div class="sheet">
+          <svg viewBox="0 0 300 72">
+            <use href="#line41" width="300" height="72"/>
+            <circle cx="113" cy="22" r="8" fill="none" stroke="#c8413a" stroke-width="1.6"/>
+            <circle cx="135" cy="22" r="8" fill="none" stroke="#c8413a" stroke-width="1.6"/>
+            <circle cx="191" cy="22" r="8" fill="none" stroke="#c8413a" stroke-width="1.6"/>
+            <text x="100" y="8" font-size="8" fill="#c8413a" font-family="Figtree">−35¢</text>
+            <text x="126" y="8" font-size="8" fill="#c8413a" font-family="Figtree">−28¢</text>
+            <text x="182" y="8" font-size="8" fill="#c8413a" font-family="Figtree">−31¢</text>
+          </svg>
+        </div>
+        <div class="callout"><b>What happened</b>You sing the high F♯ about a third of a semitone flat, on all three notes circled in red.</div>
+        <div class="callout"><b>Why it usually happens</b>After a big jump up, singers often reach the note without enough breath support and settle just under it.</div>
+        <div class="compare"><div class="btn">▶ Your take</div><div class="btn">▶ Target</div><div class="btn">▶ Both</div></div>
+        <div class="btn primary" style="margin-top:auto">Start a 3-minute drill</div>
+      </div>
+      <div class="homebar"></div>
+    </div></div>
+    <figcaption><b><span>8</span>Understand the issue</b><p>The mistake is circled on the score, explained in plain words, and you can hear your take next to the target.</p></figcaption>
+  </figure>
+
+  <!-- 9 Drill -->
+  <figure class="shot">
+    <div class="phone"><div class="screen">
+      <div class="statusbar">9:41</div>
+      <div class="a-top"><span class="icon-btn">✕</span><h2>Drill: high F♯<small>Step 2 of 4</small></h2></div>
+      <div class="a-body">
+        <div class="drill-step done"><span class="n">✓</span><span>Listen to F♯4 three times</span></div>
+        <div class="drill-step now"><span class="n">2</span><span>Hold F♯4 on "ah" over the drone</span></div>
+        <div class="drill-step"><span class="n">3</span><span>Jump D4 to F♯4 at 60% tempo</span></div>
+        <div class="drill-step"><span class="n">4</span><span>Sing bars 42–43 with words</span></div>
+        <div class="sheet" style="padding:18px 14px">
+          <div style="position:relative;height:90px;border-left:1px solid var(--rule);border-right:1px solid var(--rule)">
+            <div style="position:absolute;left:0;right:0;top:30px;border-top:2px solid var(--ink)"></div>
+            <span style="position:absolute;right:4px;top:12px;font-size:11px;font-weight:700">F♯4 target</span>
+            <div style="position:absolute;left:0;right:0;top:22px;height:16px;background:var(--marker);opacity:.45"></div>
+            <span style="position:absolute;left:58%;top:34px;width:16px;height:16px;border-radius:50%;background:var(--pencil)"></span>
+            <svg viewBox="0 0 200 90" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><polyline points="0,62 25,58 50,52 75,48 100,46 116,42" fill="none" stroke="#c8413a" stroke-width="2"/></svg>
+          </div>
+          <p style="margin:10px 0 0;font-size:13px;text-align:center"><b>8 cents flat.</b> Nearly there, lift a little.</p>
+        </div>
+        <div class="btn primary" style="margin-top:auto">● Hold to sing</div>
+        <div class="btn">Skip this step</div>
+      </div>
+      <div class="homebar"></div>
+    </div></div>
+    <figcaption><b><span>9</span>Targeted drill</b><p>Short steps that build up to the full passage. A live pitch line shows how close you are to the target band.</p></figcaption>
+  </figure>
+
+  <!-- 10 Summary -->
+  <figure class="shot">
+    <div class="phone"><div class="screen">
+      <div class="statusbar">9:41</div>
+      <div class="a-top"><h2>Session done<small>Northern Lights · 24 min</small></h2></div>
+      <div class="a-body">
+        <div class="stat-row">
+          <div class="stat"><b>4</b><span>takes</span></div>
+          <div class="stat"><b>66→88</b><span>score</span></div>
+          <div class="stat"><b>4</b><span>bars mastered</span></div>
+        </div>
+        <div class="sheet">
+          <svg viewBox="0 0 300 72"><rect x="0" y="12" width="300" height="44" rx="3" fill="#e3f1ea"/><use href="#line41" width="300" height="72"/></svg>
+        </div>
+        <div class="log">
+          <div><span>Bars 41–44, pitch</span><b style="color:var(--ok)">Mastered</b></div>
+          <div><span>Bars 37–40</span><b>Good</b></div>
+          <div><span>Bars 45–48, timing</span><b style="color:var(--pencil)">Next time</b></div>
+        </div>
+        <div class="btn primary" style="margin-top:auto">Practise bars 45–48</div>
+        <div class="btn">Back to library</div>
+      </div>
+      <div class="homebar"></div>
+    </div></div>
+    <figcaption><b><span>10</span>Session summary</b><p>What improved, what's mastered and what to practise next, so a short MRT session still ends with a plan.</p></figcaption>
+  </figure>
+
+</main>
+</body>
+</html>

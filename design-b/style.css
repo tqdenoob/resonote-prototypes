@@ -1,0 +1,170 @@
+/* Design B: Timeline-first ("Song map")
+   No sheet music. The song is a waveform split into coloured sections,
+   built for singers who can't read a score. */
+
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap");
+
+:root {
+  --stage: #17152e;
+  --panel: #221f40;
+  --panel-2: #2d2954;
+  --line: #3a3566;
+  --text: #edebfa;
+  --muted: #9d98c7;
+  --verse: #3cc6b5;
+  --pre: #f2a541;
+  --chorus: #f2668b;
+  --bridge: #8c7cf0;
+  --miss: #ff6b57;
+  --hit: #7be3a4;
+
+  --board-bg: #0f0d22;
+  --board-ink: var(--text);
+  --board-accent: var(--chorus);
+  --board-font: "Sora", system-ui, sans-serif;
+  --board-fix-bg: rgba(242, 102, 139, .18);
+
+  --app-bg: var(--stage);
+  --app-ink: var(--text);
+  --app-font: "Sora", system-ui, sans-serif;
+}
+
+.screen { font-size: 13px; }
+
+.b-top { flex: none; display: flex; align-items: center; gap: 10px; padding: 6px 18px 12px; }
+.b-top h2 { margin: 0; flex: 1; font-size: 19px; font-weight: 600; letter-spacing: -.01em; }
+.b-top small { display: block; font-size: 11px; color: var(--muted); font-weight: 400; }
+.round { flex: none; width: 34px; height: 34px; border-radius: 50%; background: var(--panel-2); display: grid; place-items: center; font-size: 15px; }
+
+.b-body { flex: 1; overflow: hidden; padding: 0 18px 24px; display: flex; flex-direction: column; gap: 12px; }
+
+.muted { color: var(--muted); }
+.panel { background: var(--panel); border-radius: 16px; padding: 14px; }
+
+.wave { display: block; width: 100%; height: auto; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: 11px; color: var(--muted); }
+.legend span::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; background: var(--c); }
+
+.steps { display: flex; gap: 4px; align-items: center; font-size: 11px; color: var(--muted); }
+.steps i { width: 26px; height: 4px; border-radius: 2px; background: var(--line); }
+.steps i.on { background: var(--text); }
+.steps span { margin-left: 6px; }
+
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  height: 46px; border-radius: 23px;
+  font: 600 14px "Sora", sans-serif;
+  background: var(--panel-2); color: var(--text);
+}
+.btn.primary { background: var(--text); color: var(--stage); }
+.btn.end { background: var(--miss); color: #fff; }
+.btn.ghost { background: transparent; border: 1px solid var(--line); }
+.btn.ghost.danger { color: var(--miss); border-color: rgba(255,107,87,.4); }
+.btn-row { display: flex; gap: 8px; }
+.btn-row .btn { flex: 1; }
+
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; background: var(--panel-2); }
+.pill.saved { background: rgba(123,227,164,.15); color: var(--hit); }
+
+/* Library */
+.song-card { background: var(--panel); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.song-card header { display: flex; justify-content: space-between; align-items: baseline; }
+.song-card b { font-size: 15px; font-weight: 600; }
+.map { display: flex; gap: 3px; height: 10px; }
+.map i { border-radius: 3px; background: var(--c); }
+.map i.todo { opacity: .25; }
+.search { height: 40px; border-radius: 20px; background: var(--panel); padding: 0 16px; display: flex; align-items: center; color: var(--muted); }
+.add { position: absolute; right: 18px; bottom: 32px; width: 56px; height: 56px; border-radius: 50%; background: var(--chorus); color: var(--stage); display: grid; place-items: center; font-size: 26px; font-weight: 600; }
+
+/* Import */
+.file { display: flex; align-items: center; gap: 12px; background: var(--panel); border-radius: 14px; padding: 12px; }
+.file .ic { width: 38px; height: 38px; border-radius: 10px; background: var(--panel-2); display: grid; place-items: center; font-size: 10px; font-weight: 700; }
+.file b { display: block; font-weight: 600; }
+.file span { font-size: 11px; color: var(--muted); }
+.file .ok { margin-left: auto; color: var(--hit); }
+.sec-list { display: flex; flex-direction: column; gap: 6px; }
+.sec { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+.sec i { width: 10px; height: 10px; border-radius: 3px; background: var(--c); }
+.sec span:last-child { margin-left: auto; color: var(--muted); }
+
+/* Part picker */
+.voice { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 14px; background: var(--panel); border: 2px solid transparent; }
+.voice .play { width: 38px; height: 38px; border-radius: 50%; background: var(--panel-2); display: grid; place-items: center; font-size: 12px; }
+.voice b { display: block; font-weight: 600; font-size: 14px; }
+.voice span { font-size: 11px; color: var(--muted); }
+.voice.on { border-color: var(--text); }
+.voice.on .play { background: var(--text); color: var(--stage); }
+.mini-wave { margin-left: auto; width: 70px; height: 22px; }
+
+/* Workspace */
+.minimap { position: relative; }
+.minimap .viewport { position: absolute; top: -3px; bottom: -3px; border: 2px solid var(--text); border-radius: 4px; }
+.zoom { position: relative; background: var(--panel); border-radius: 16px; padding: 30px 0 12px; overflow: hidden; }
+.zoom .handle { position: absolute; top: 18px; bottom: 34px; width: 3px; background: var(--text); }
+.zoom .handle::after { content: ""; position: absolute; top: 50%; left: -7px; width: 17px; height: 28px; margin-top: -14px; border-radius: 8px; background: var(--text); box-shadow: 0 0 0 3px var(--panel); }
+.zoom .shade { position: absolute; top: 18px; bottom: 34px; background: rgba(23,21,46,.65); }
+.zoom .loop-lbl { position: absolute; top: 6px; font-size: 10px; font-weight: 600; color: var(--stage); background: var(--text); padding: 1px 8px; border-radius: 6px; transform: translateX(-50%); }
+.zoom .now { position: absolute; top: 18px; bottom: 34px; width: 2px; background: #fff; }
+.zoom .bars { display: flex; justify-content: space-between; padding: 6px 14px 0; font-size: 10px; color: var(--muted); }
+.lyric { font-size: 20px; font-weight: 600; line-height: 1.35; letter-spacing: -.01em; }
+.lyric .sung { color: var(--chorus); }
+.lyric .next { color: var(--muted); font-weight: 500; font-size: 16px; display: block; margin-top: 4px; }
+.controls { margin-top: auto; display: flex; justify-content: space-between; align-items: center; }
+.ctl { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; color: var(--muted); }
+.ctl b { width: 42px; height: 42px; border-radius: 50%; background: var(--panel-2); color: var(--text); display: grid; place-items: center; font-size: 13px; font-weight: 600; }
+.ctl.on b { background: var(--pre); color: var(--stage); }
+.bigplay { width: 66px; height: 66px; border-radius: 50%; background: var(--text); color: var(--stage); display: grid; place-items: center; font-size: 22px; }
+.readout { display: flex; justify-content: space-between; font-size: 12px; }
+.readout b { color: var(--chorus); font-weight: 600; }
+
+/* Recording */
+.recline { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.recline i { width: 10px; height: 10px; border-radius: 50%; background: var(--miss); box-shadow: 0 0 0 4px rgba(255,107,87,.25); }
+.level { display: flex; gap: 3px; height: 8px; }
+.level i { flex: 1; border-radius: 2px; background: var(--hit); }
+.level i.pk { background: var(--pre); }
+.level i.off { background: var(--line); }
+
+/* Scorecard */
+.score-ring { display: flex; align-items: center; gap: 16px; }
+.score-ring svg { width: 92px; height: 92px; flex: none; }
+.score-ring p { margin: 0; font-size: 12px; color: var(--muted); }
+.score-ring p b { display: block; color: var(--text); font-size: 15px; font-weight: 600; }
+.dials { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; text-align: center; font-size: 10px; color: var(--muted); }
+.dials b { display: block; font-size: 17px; color: var(--text); font-weight: 600; }
+.dials b.low { color: var(--miss); }
+.heat { display: flex; gap: 2px; height: 14px; }
+.heat i { flex: 1; border-radius: 2px; background: var(--hit); opacity: .8; }
+.heat i.m { background: var(--pre); }
+.heat i.x { background: var(--miss); opacity: 1; }
+.fixfirst { border-left: 3px solid var(--miss); padding: 2px 0 2px 12px; }
+.fixfirst small { color: var(--miss); font-weight: 600; font-size: 11px; }
+.fixfirst p { margin: 2px 0 0; font-size: 13px; }
+
+/* Explain */
+.contour { background: var(--panel); border-radius: 16px; padding: 12px; }
+.contour svg { display: block; width: 100%; height: auto; }
+.keypt { display: flex; gap: 10px; font-size: 12px; align-items: flex-start; }
+.keypt i { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--panel-2); display: grid; place-items: center; font-style: normal; font-size: 11px; }
+
+/* Drill */
+.ladder { display: flex; gap: 6px; }
+.ladder i { flex: 1; height: 6px; border-radius: 3px; background: var(--line); }
+.ladder i.done { background: var(--hit); }
+.ladder i.now { background: var(--text); }
+.echo { display: flex; flex-direction: column; gap: 10px; }
+.bubble { padding: 12px 14px; border-radius: 16px; font-size: 13px; max-width: 85%; }
+.bubble.app { background: var(--panel-2); align-self: flex-start; border-bottom-left-radius: 4px; }
+.bubble.you { background: rgba(242,102,139,.2); align-self: flex-end; border-bottom-right-radius: 4px; }
+.target-meter { position: relative; height: 120px; border-radius: 16px; background: var(--panel); overflow: hidden; }
+.target-meter .band { position: absolute; left: 0; right: 0; top: 46px; height: 22px; background: rgba(123,227,164,.18); border-top: 1px solid var(--hit); border-bottom: 1px solid var(--hit); }
+.target-meter .dot { position: absolute; width: 18px; height: 18px; border-radius: 50%; background: var(--chorus); box-shadow: 0 0 0 6px rgba(242,102,139,.25); }
+
+/* Summary */
+.big-num { font-size: 44px; font-weight: 700; letter-spacing: -.03em; line-height: 1; }
+.mastery { display: flex; flex-direction: column; gap: 8px; }
+.mrow { display: grid; grid-template-columns: 82px 1fr 64px; gap: 10px; align-items: center; font-size: 12px; }
+.mrow .t { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.mrow .t i { display: block; height: 100%; background: var(--c); }
+.mrow em { font-style: normal; text-align: right; color: var(--muted); font-size: 11px; }
