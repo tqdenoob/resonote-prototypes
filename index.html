@@ -17,6 +17,9 @@
   Simulated: file picker, audio-to-score sync, pitch detection, microphone input level,
   AI coach scores and drill results (scripted, the same on every run). Reference audio is
   a Web Audio synth of the tenor line.
+  26 Oct UX checklist pass: Confirm sync warns when the track is still off; bar strip uses symbols
+  as well as colour; 44px tap targets; larger type; light mode only; one record label ("Record take");
+  count-in shows "Get ready"; microphone pre-prompt before the first take.
   LLM declaration: AI-drafted (Claude). The team must run the scenario on a phone-sized
   screen and check every label against Iter2.02, Iter2.03 and Iter2.04 before submitting.
 -->
@@ -28,29 +31,15 @@
   --blue:#2F45C6; --blue-soft:#E8EBFA; --blue-ink:#22339A; --on-accent:#FFFFFF;
   --orange:#C2570F; --orange-soft:#FBEADF; --orange-ink:#8A3A0C;
   --red:#B42318; --red-soft:#FBE4E1; --green:#1E7B4A; --green-soft:#E1F2E8;
-  --amber:#9A6A00; --amber-soft:#FBF1D6; --scrim:rgba(23,24,28,.48); --spot:#FFB547;
+  --amber:#865C00; --amber-soft:#FBF1D6; --scrim:rgba(23,24,28,.48); --spot:#FFB547;
   --sec-a:#ECEAE3; --sec-b:#E3E1D9; --wave:#B8B5AB;
+  --edge:#80838B; /* 3:1+ boundary for inputs, switch tracks and radios (WCAG 1.4.11) */
   --f-ui:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light; /* the app is light-only, whatever the OS theme */
 }
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --page:#0D0E11; --bg:#16171C; --card:#202128; --sunk:#1B1C22; --ink:#ECECEF; --muted:#A3A6AF;
-  --line:#2F3139; --line2:#3D4049; --staff:#6E717B;
-  --blue:#8191F2; --blue-soft:#272D55; --blue-ink:#BCC5FB; --on-accent:#10122A;
-  --orange:#F09A5B; --orange-soft:#3A2416; --orange-ink:#F6BC8F;
-  --red:#F2786C; --red-soft:#3B1D1A; --green:#62CC92; --green-soft:#16301F;
-  --amber:#E5B94E; --amber-soft:#342A10; --scrim:rgba(0,0,0,.6); --spot:#FFB547;
-  --sec-a:#25262D; --sec-b:#2C2D35; --wave:#555862; color-scheme:dark }}
-:root[data-theme="dark"]{
-  --page:#0D0E11; --bg:#16171C; --card:#202128; --sunk:#1B1C22; --ink:#ECECEF; --muted:#A3A6AF;
-  --line:#2F3139; --line2:#3D4049; --staff:#6E717B;
-  --blue:#8191F2; --blue-soft:#272D55; --blue-ink:#BCC5FB; --on-accent:#10122A;
-  --orange:#F09A5B; --orange-soft:#3A2416; --orange-ink:#F6BC8F;
-  --red:#F2786C; --red-soft:#3B1D1A; --green:#62CC92; --green-soft:#16301F;
-  --amber:#E5B94E; --amber-soft:#342A10; --scrim:rgba(0,0,0,.6); --spot:#FFB547;
-  --sec-a:#25262D; --sec-b:#2C2D35; --wave:#555862; color-scheme:dark }
 
 *{box-sizing:border-box}
-body{background:var(--page);color:var(--ink);font:14px/1.4 var(--f-ui);padding-block:24px 48px;
+body{background:var(--page);color:var(--ink);font:15px/1.4 var(--f-ui);padding-block:24px 48px;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer}
@@ -97,7 +86,7 @@ button{cursor:pointer}
 .hdr{height:56px;display:grid;grid-template-columns:48px 1fr 48px;align-items:center;padding:0 6px;flex:none}
 .hdr .ttl{text-align:center;min-width:0}
 .hdr .ttl b{display:block;font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hdr .ttl span{display:block;font-size:12px;color:var(--muted)}
+.hdr .ttl span{display:block;font-size:13px;color:var(--muted)}
 .ib{width:44px;height:44px;border:0;background:transparent;border-radius:12px;display:flex;align-items:center;justify-content:center}
 .ib:hover{background:var(--sunk)}
 .body{padding:2px 18px 14px;display:flex;flex-direction:column;gap:10px;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
@@ -107,12 +96,12 @@ button{cursor:pointer}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px}
 .pad{padding:12px 14px}
 .h1{font-size:22px;font-weight:800;margin:4px 0 0;line-height:1.2;text-wrap:balance}
-.lead{margin:0;color:var(--muted);font-size:14px}
-.sub{font-size:13px;color:var(--muted)}
+.lead{margin:0;color:var(--muted);font-size:15px}
+.sub{font-size:14px;color:var(--muted)}
 .lbl{font-size:15px;font-weight:600}
-.hint{font-size:12px;color:var(--muted)}
+.hint{font-size:13px;color:var(--muted)}
 .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.eyebrow{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .tnum{font-variant-numeric:tabular-nums}
 
 /* step indicator (HE #15) */
@@ -127,16 +116,16 @@ button{cursor:pointer}
 .btn.rec{flex:1;background:var(--blue);color:var(--on-accent)}
 .btn.stop{flex:1;background:var(--ink);color:var(--bg)}
 .btn.sec{flex:none;border:1px solid var(--line2);background:var(--card);color:var(--ink);font-size:15px;font-weight:600}
-.btn.ghost{border:1px solid var(--line2);background:var(--card);color:var(--ink);font-size:15px;font-weight:600}
+.btn.ghost{border:1.5px solid var(--blue);background:transparent;color:var(--blue-ink);font-size:15px;font-weight:700}
 .btn.danger{background:var(--red);color:var(--on-accent)}
 .btn.full{width:100%}
 .btn:disabled,.mini:disabled,.sbtn:disabled{opacity:.42;cursor:not-allowed}
 .dot{width:12px;height:12px;border-radius:50%;background:currentColor}
 .sq{width:12px;height:12px;border-radius:2px;background:currentColor}
-.mini{height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--line2);background:var(--card);font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.mini{height:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line2);background:var(--card);font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
 .mini.on{background:var(--blue);color:var(--on-accent);border-color:var(--blue)}
 .mini.danger{color:var(--red)}
-.link{border:0;background:none;color:var(--blue-ink);font-weight:700;padding:4px 0;font-size:13px}
+.link{border:0;background:none;color:var(--blue-ink);font-weight:700;padding:4px 0;font-size:14px;min-height:44px;display:inline-flex;align-items:center}
 
 /* chips & badges */
 .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700}
@@ -152,22 +141,33 @@ button{cursor:pointer}
 /* switches */
 .switch{display:flex;align-items:center;gap:8px;min-height:44px;border:0;background:transparent;padding:0}
 .switch .word{font-size:14px;font-weight:700;width:28px;text-align:right}
-.track{width:46px;height:28px;border-radius:999px;position:relative;display:inline-block;background:var(--line2);transition:background .15s}
+.track{width:46px;height:28px;border-radius:999px;position:relative;display:inline-block;background:var(--edge);transition:background .15s}
 .track.on{background:var(--blue)}
 .knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3);transition:left .15s}
 .track.on .knob{left:21px}
 .set-row{display:flex;align-items:center;justify-content:space-between;min-height:52px;gap:8px}
 .set-row+.set-row{border-top:1px solid var(--line)}
 .stepper{display:flex;align-items:center;gap:4px}
-.sbtn{width:40px;height:36px;border-radius:10px;border:1px solid var(--line2);background:var(--card);font-size:20px;line-height:1}
-.bpm-btn{min-width:104px;height:36px;border:1px dashed var(--line2);border-radius:10px;background:var(--card);padding:0 6px;font-variant-numeric:tabular-nums}
+.sbtn{width:44px;height:44px;border-radius:10px;border:1px solid var(--line2);background:var(--card);font-size:20px;line-height:1}
+.bpm-btn{min-width:96px;height:44px;border:1px dashed var(--edge);border-radius:10px;background:var(--card);padding:0 6px;font-variant-numeric:tabular-nums}
 .bpm-btn b{font-size:16px}
 .bpm-btn span{font-size:12px;color:var(--muted)}
 .bpm-edit{display:flex;gap:6px;align-items:center}
-.bpm-edit input{width:70px;height:36px;border:2px solid var(--blue);border-radius:10px;text-align:center;font-size:16px;background:var(--card)}
-.bpm-edit .done{height:36px;padding:0 12px;border-radius:10px;border:0;background:var(--blue);color:var(--on-accent);font-weight:700}
-.err{font-size:12px;color:var(--red);font-weight:600}
-input[type=range]{width:100%;accent-color:var(--blue);margin:0}
+.bpm-edit input{width:70px;height:44px;border:2px solid var(--blue);border-radius:10px;text-align:center;font-size:16px;background:var(--card)}
+.bpm-edit .done{height:44px;padding:0 12px;border-radius:10px;border:0;background:var(--blue);color:var(--on-accent);font-weight:700}
+.err{font-size:13px;color:var(--red);font-weight:600}
+.req{font-size:12px;font-weight:700;color:var(--red);margin-left:6px}
+.file .ft .req{display:inline;color:var(--red);font-size:12px}
+.field label.has-req{justify-content:flex-start}
+.sheet .btn{flex:none}
+input[type=range]{width:100%;margin:0;height:44px;background:transparent;-webkit-appearance:none;appearance:none;--p:50%}
+input[type=range]:disabled{opacity:.35;cursor:not-allowed}
+.ib.lab{flex-direction:column;gap:1px;width:60px;height:54px;border:1px solid var(--line2);border-radius:16px;font-size:11px;font-weight:700;color:var(--ink)}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(to right,var(--blue) var(--p),var(--line2) var(--p))}
+input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:var(--line2)}
+input[type=range]::-moz-range-progress{height:6px;border-radius:3px;background:var(--blue)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;margin-top:-8px;border-radius:50%;background:#fff;border:2px solid var(--blue);box-shadow:0 1px 3px rgba(0,0,0,.35)}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:2px solid var(--blue)}
 
 /* score */
 .score{position:relative;margin:0 auto;overflow:hidden}
@@ -178,16 +178,16 @@ input[type=range]{width:100%;accent-color:var(--blue);margin:0}
 .stf .nh.o{fill:var(--card)}
 .stf .st{stroke:var(--ink);stroke-width:1.3}
 .stf .bm{fill:var(--ink)}
-.stf .num{fill:var(--muted);font:600 10px var(--f-ui)}
+.stf .num{fill:var(--muted);font:600 11px var(--f-ui)}
 .stf .num.on{fill:var(--blue-ink)}
 .stf .hl-loop{fill:var(--blue-soft)}
 .stf .hl-focus{fill:var(--orange-soft)}
 .stf .hl-sel{fill:none;stroke:var(--orange);stroke-width:1.5;stroke-dasharray:3 3}
 .stf .dim{fill:var(--card);opacity:.78}
 .stf .gd{fill:none;stroke:var(--blue);stroke-width:2;stroke-dasharray:4 4;stroke-linecap:round}
-.stf .gn{fill:var(--blue);font:700 10px var(--f-ui)}
+.stf .gn{fill:var(--blue);font:700 11px var(--f-ui)}
 .stf .rest{fill:none;stroke:var(--ink);stroke-width:2;stroke-linejoin:round}
-.stf .nm{fill:var(--blue-ink);font:700 9px var(--f-ui)}
+.stf .nm{fill:var(--blue-ink);font:700 10px var(--f-ui)}
 .ph{position:absolute;width:2px;background:var(--blue);pointer-events:none;display:none}
 .ph.paused{background:repeating-linear-gradient(var(--blue) 0 6px,transparent 6px 10px)}
 .scap{display:flex;justify-content:space-between;align-items:center;padding:8px 12px 0;font-size:13px;min-height:28px}
@@ -198,41 +198,48 @@ input[type=range]{width:100%;accent-color:var(--blue);margin:0}
 /* loop timeline (Change 3, HE #4) */
 .tl{position:relative;height:74px;margin:4px 6px 0;touch-action:none;user-select:none}
 .tl .secs{position:absolute;left:0;right:0;top:0;height:20px}
-.tl .sec{position:absolute;top:0;height:20px;font-size:10px;font-weight:700;color:var(--muted);padding:3px 0 0 4px;white-space:nowrap;overflow:hidden;border-left:1px solid var(--line2)}
+.tl .sec{position:absolute;top:0;height:20px;font-size:11px;font-weight:700;color:var(--muted);padding:3px 0 0 4px;white-space:nowrap;overflow:hidden;border-left:1px solid var(--line2)}
 .tl .wv{position:absolute;left:0;right:0;top:22px;height:40px;border-radius:6px;background:var(--sunk);overflow:hidden}
 .tl .wv svg{width:100%;height:100%;display:block}
 .tl .wv rect{fill:var(--wave)}
 .tl .sel{position:absolute;top:20px;height:44px;background:rgba(47,69,198,.16);border:2px solid var(--blue);border-radius:6px;pointer-events:none}
-.tl .hd{position:absolute;top:16px;width:30px;height:52px;margin-left:-15px;display:flex;align-items:center;justify-content:center;border:0;background:transparent;padding:0;cursor:ew-resize}
+.tl .hd{position:absolute;top:16px;width:44px;height:52px;margin-left:-22px;display:flex;align-items:center;justify-content:center;border:0;background:transparent;padding:0;cursor:ew-resize}
 .tl .hd i{width:14px;height:44px;border-radius:5px;background:var(--blue);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 .tl .hd i::after{content:"";width:2px;height:16px;border-left:1px solid var(--on-accent);border-right:1px solid var(--on-accent);opacity:.8}
 .tl .tph{position:absolute;top:20px;height:44px;width:2px;background:var(--ink);pointer-events:none}
-.tl .ax{position:absolute;left:0;right:0;bottom:0;height:12px;font-size:10px;color:var(--muted)}
+.tl .ax{position:absolute;left:0;right:0;bottom:0;height:12px;font-size:11px;color:var(--muted)}
 .tl .ax span{position:absolute;transform:translateX(-50%)}
 .readout{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
 .readout b{font-size:15px}
 
 /* keyboard (HE #18) */
-.kb{position:relative;height:96px;display:flex;border-radius:10px;overflow:hidden;border:1px solid var(--line2);background:var(--card)}
-.kb .w{flex:1;border:0;border-right:1px solid var(--line2);background:var(--card);display:flex;align-items:flex-end;justify-content:center;padding-bottom:5px;font-size:10px;font-weight:700;color:var(--muted)}
+.kbwrap{display:flex;flex-direction:column;gap:4px}
+.kbscroll{overflow-x:auto;border-radius:10px;border:1px solid #8F929A;-webkit-overflow-scrolling:touch}
+.kb{position:relative;height:110px;display:flex;width:max-content;background:#FAFAF7}
+.kb .w{flex:none;width:44px;position:relative;border:0;border-right:1px solid #C9C7BF;background:#FAFAF7;display:flex;align-items:flex-end;justify-content:center;padding-bottom:5px;font-size:10px;font-weight:700;color:#5B5E66}
 .kb .w:last-child{border-right:0}
-.kb .w.hit{background:var(--blue-soft);color:var(--blue-ink)}
-.kb .k{position:absolute;top:0;width:5%;height:58%;background:var(--ink);border:0;border-radius:0 0 4px 4px;padding:0}
-.kb .k.hit{background:var(--blue)}
+.kb .w.hit{background:#DDE2FB;color:#22339A}
+.kb .k{position:absolute;top:0;width:28px;height:60%;background:#17181C;border:0;border-radius:0 0 4px 4px;padding:0}
+.kb .k.hit{background:#2F45C6}
+.kb .w.mid::before{content:"";position:absolute;bottom:22px;left:50%;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:#2F45C6}
+.kb .w.mid{color:#22339A}
+.kbkey{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.kbkey i{width:8px;height:8px;border-radius:50%;background:#2F45C6;display:inline-block}
 
 /* meter (HE #9) */
 .meter{display:flex;align-items:center;gap:10px}
 .meter .bars{display:flex;align-items:flex-end;gap:3px;height:26px;flex:none}
 .meter .bars i{display:block;width:5px;border-radius:2px;background:var(--green);height:4px}
 .meter .lvl{font-size:13px;font-weight:700;color:var(--green)}
+.meter .lvl.wait{color:var(--muted)}
 
 /* lists */
 .song{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);background:var(--card);border-radius:16px;text-align:left;width:100%}
 .song .art{width:44px;height:44px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px}
 .song .meta{flex:1;min-width:0}
 .song .meta b{display:block;font-size:15px}
-.song .meta span{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.search{display:flex;align-items:center;gap:8px;height:46px;border:1px solid var(--line2);border-radius:14px;padding:0 12px;background:var(--card)}
+.song .meta span{display:block;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.search{display:flex;align-items:center;gap:8px;height:46px;border:1px solid var(--edge);border-radius:14px;padding:0 12px;background:var(--card)}
 .search input{border:0;background:transparent;flex:1;min-width:0;height:100%;font-size:15px;outline:none}
 .fab{position:absolute;right:20px;bottom:28px;height:56px;border-radius:18px;padding:0 20px;border:0;background:var(--blue);color:var(--on-accent);font-weight:700;font-size:16px;display:flex;align-items:center;gap:8px;box-shadow:0 6px 18px rgba(47,69,198,.35)}
 .file{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;border:1.5px dashed var(--line2);background:var(--card)}
@@ -242,15 +249,15 @@ input[type=range]{width:100%;accent-color:var(--blue);margin:0}
 .file.ok .fi{background:var(--blue-soft);color:var(--blue-ink)}
 .file .ft{flex:1;min-width:0}
 .file .ft b{display:block;font-size:14px}
-.file .ft span{display:block;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file .ft span{display:block;font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .field label{display:flex;justify-content:space-between;font-size:14px;font-weight:700;margin-bottom:6px}
-.field input{width:100%;height:46px;border:1px solid var(--line2);border-radius:12px;padding:0 12px;font-size:15px;background:var(--card)}
+.field input{width:100%;height:46px;border:1px solid var(--edge);border-radius:12px;padding:0 12px;font-size:15px;background:var(--card)}
 .field input.bad{border:2px solid var(--red)}
 .opt{display:flex;align-items:center;gap:12px;min-height:60px;padding:10px 14px;border-radius:14px;border:1px solid var(--line2);background:var(--card);width:100%;text-align:left}
 .opt.on{border:2px solid var(--blue);background:var(--blue-soft)}
 .opt .ot{font-size:15px;font-weight:700;display:block}
-.opt .od{font-size:12px;color:var(--muted);display:block}
-.radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--line2);flex:none;display:flex;align-items:center;justify-content:center}
+.opt .od{font-size:13px;color:var(--muted);display:block}
+.radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--edge);flex:none;display:flex;align-items:center;justify-content:center}
 .opt.on .radio{border-color:var(--blue)}
 .opt.on .radio::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--blue)}
 
@@ -268,10 +275,14 @@ input[type=range]{width:100%;accent-color:var(--blue);margin:0}
 .metric .bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
 .metric .bar i{display:block;height:100%;border-radius:3px}
 .metric .tip{font-size:13px;background:var(--sunk);border-radius:10px;padding:8px 10px}
-.info{width:28px;height:28px;border-radius:50%;border:1px solid var(--line2);background:var(--card);font-size:13px;font-weight:800;color:var(--muted);display:flex;align-items:center;justify-content:center;padding:0}
-.info[aria-expanded="true"]{background:var(--blue);color:var(--on-accent);border-color:var(--blue)}
+/* 44px hit area around a 28px circle; negative margin keeps the metric row compact */
+.info{width:44px;height:44px;margin:-8px -6px;border:0;background:transparent;display:flex;align-items:center;justify-content:center;padding:0}
+.info span{width:28px;height:28px;border-radius:50%;border:1px solid var(--edge);background:var(--card);font-size:13px;font-weight:800;color:var(--muted);display:flex;align-items:center;justify-content:center}
+.info[aria-expanded="true"] span{background:var(--blue);color:var(--on-accent);border-color:var(--blue)}
 .bstrip{display:grid;grid-template-columns:repeat(16,1fr);gap:3px}
-.bstrip span{height:26px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+/* each cell carries a symbol as well as a colour, so status never relies on colour alone */
+.bstrip span{height:38px;border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:11px;font-weight:700;line-height:1}
+.bstrip span i{font-style:normal;font-size:11px}
 .bstrip .g{background:var(--green-soft);color:var(--green)}
 .bstrip .a{background:var(--amber-soft);color:var(--amber)}
 .bstrip .r{background:var(--orange);color:var(--on-accent)}
@@ -287,11 +298,28 @@ input[type=range]{width:100%;accent-color:var(--blue);margin:0}
 .chart .tg{fill:var(--blue-soft);stroke:var(--blue);stroke-width:1}
 .chart .you{fill:none;stroke:var(--orange);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
 .chart .gl{stroke:var(--line);stroke-width:1}
-.chart text{fill:var(--muted);font:600 10px var(--f-ui)}
-.chart .an{fill:var(--orange-ink);font:700 10px var(--f-ui)}
+.chart text{fill:var(--muted);font:600 11px var(--f-ui)}
+.chart .an{fill:var(--orange-ink);font:700 11px var(--f-ui)}
 .chart .cur{stroke:var(--ink);stroke-width:1.5}
+.chart .fz{fill:var(--orange-soft);opacity:.7}
+.chart .brk{fill:none;stroke:var(--orange-ink);stroke-width:1.5}
+.chart .mkr circle{fill:var(--orange)}
+.chart .mn{fill:var(--on-accent);font:800 10px var(--f-ui)}
+.pcard{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;padding:10px 12px;border-radius:14px;border:1px solid var(--line2);background:var(--card);color:var(--ink)}
+.pcard.on{border:2px solid var(--orange);background:var(--orange-soft)}
+.pcard .pn{flex:none;width:22px;height:22px;border-radius:50%;background:var(--orange);color:var(--on-accent);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.pcard .pb2{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
+.pcard .pt{display:flex;align-items:center;gap:8px;font-size:15px}
+.pcard .pi{margin-left:auto;color:var(--orange-ink);display:flex}
+.pcard .pa{font-size:14px;font-weight:700}
+.pcard .pw{font-size:13px;color:var(--muted)}
+.pcard .pd{font-size:12px;color:var(--muted);background:var(--sunk);border-radius:8px;padding:6px 8px;margin-top:2px}
 .legend{display:flex;gap:14px;font-size:12px;color:var(--muted)}
 .legend i{display:inline-block;width:14px;height:8px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.legend i.lg{width:18px;height:18px;border-radius:4px;font-style:normal;font-size:11px;font-weight:800;line-height:18px;text-align:center}
+.lg.g{background:var(--green-soft);color:var(--green)}
+.lg.a{background:var(--amber-soft);color:var(--amber)}
+.lg.r{background:var(--orange);color:var(--on-accent)}
 
 /* drill */
 .coach-head{display:flex;justify-content:space-between;align-items:center;padding-top:12px}
@@ -307,6 +335,7 @@ input[type=range]{width:100%;accent-color:var(--blue);margin:0}
 .ro .v{font-size:15px;font-weight:700}
 .slots{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .slot{height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted);border:1px dashed var(--line2)}
+.slot.next{border-style:solid;border-color:var(--blue);color:var(--blue-ink)}
 .slot.done{background:var(--blue);color:var(--on-accent);border:1px solid var(--blue)}
 .msg{font-size:14px;font-weight:600;display:flex;gap:8px;align-items:flex-start}
 .msg.clean{color:var(--blue-ink)}
@@ -315,27 +344,39 @@ input[type=range]{width:100%;accent-color:var(--blue);margin:0}
 
 /* summary */
 .stat3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.stat3 div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.stat3 div{background:var(--sunk);border-radius:14px;padding:10px 12px}
 .stat3 b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
-.stat3 span{font-size:12px;color:var(--muted)}
+.stat3 span{font-size:13px;color:var(--muted)}
 .hist{display:flex;flex-direction:column}
 .hist div{display:flex;justify-content:space-between;gap:8px;padding:8px 0;font-size:13px}
-.hist div+div{border-top:1px solid var(--line)}
-.big-ic{width:56px;height:56px;border-radius:50%;background:var(--blue);color:var(--on-accent);display:flex;align-items:center;justify-content:center}
+.hist div+div,.hist .trow+div,.hist div+.trow,.hist .trow+.trow{border-top:1px solid var(--line)}
+.trow{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:44px;padding:8px 0;font-size:13px;width:100%;border:0;background:none;color:var(--ink);text-align:left}
+.trow .chev{display:inline-flex;vertical-align:middle;color:var(--muted)}
+.trow .chev.up{transform:rotate(90deg)}
+.hist .trow+.tdet{display:flex;gap:14px;font-size:12px;color:var(--muted);padding:0 0 8px;border-top:0}
+.todo{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:8px 0;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);text-align:left}
+.eyebrow+.todo,.row+.todo{border-top:0}
+.todo .tn{flex:none;width:22px;height:22px;border-radius:50%;background:var(--sunk);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.todo .tb{flex:1;min-width:0;display:flex;flex-direction:column;font-size:14px}
+.todo .tb>span{font-size:13px;color:var(--muted)}
+.todo .chev{color:var(--muted);display:flex}
+.nextc{border:2px solid var(--blue)}
+.nextc .remind{border-top:1px solid var(--line);margin-top:6px}
+.big-ic{width:56px;height:56px;border-radius:50%;background:var(--green);color:var(--on-accent);display:flex;align-items:center;justify-content:center}
 
 /* sync */
 .sync{position:relative;padding:12px 0 8px;overflow:hidden}
 .sync .lane{position:relative;height:46px;margin:0 12px}
 .sync .lane+.lane{margin-top:12px}
-.sync .lt{font-size:11px;font-weight:700;color:var(--muted);margin:0 12px 4px}
-.sync .bx{position:absolute;top:0;height:46px;border:1px solid var(--line2);border-radius:6px;background:var(--sunk);font-size:10px;font-weight:700;color:var(--muted);padding:3px 5px}
+.sync .lt{font-size:12px;font-weight:700;color:var(--muted);margin:0 12px 4px;text-align:right}
+.sync .bx{position:absolute;top:0;height:46px;border:1px solid var(--line2);border-radius:6px;background:var(--sunk);font-size:11px;font-weight:700;color:var(--muted);padding:3px 4px;white-space:nowrap;overflow:hidden}
 .sync .bx i{position:absolute;bottom:8px;width:6px;height:6px;border-radius:50%;background:var(--ink)}
 .sync .aud{position:absolute;top:0;height:46px;left:0;will-change:transform}
 .sync .aud .ci{position:absolute;top:14px;width:3px;height:18px;border-radius:2px;background:var(--orange)}
 .sync .aud .sn{position:absolute;top:8px;height:30px;border-radius:4px;background:var(--wave)}
-.sync .aud .lab{position:absolute;top:34px;font-size:10px;font-weight:700;color:var(--orange-ink);white-space:nowrap}
+.sync .aud .lab{position:absolute;top:34px;font-size:11px;font-weight:700;color:var(--orange-ink);white-space:nowrap}
 .sync .mk{position:absolute;top:8px;bottom:6px;width:2px;background:var(--blue);z-index:2}
-.sync .mk span{position:absolute;top:-2px;left:5px;font-size:10px;font-weight:700;color:var(--blue-ink);white-space:nowrap}
+.sync .mk span{position:absolute;top:-2px;left:5px;font-size:11px;font-weight:700;color:var(--blue-ink);white-space:nowrap}
 .sync .uph{position:absolute;top:28px;bottom:6px;width:2px;background:var(--ink);z-index:3;display:none}
 .sync .umk{position:absolute;top:70px;height:46px;width:2px;background:var(--green);z-index:2}
 
@@ -351,7 +392,7 @@ input[type=range]{width:100%;accent-color:var(--blue);margin:0}
 .tip .tx{font-size:14px;line-height:1.45}
 .tip .tn{display:flex;justify-content:space-between;align-items:center}
 .toast{position:absolute;left:14px;right:14px;bottom:100px;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 14px;font-size:14px;display:flex;gap:12px;align-items:center;justify-content:space-between;z-index:25}
-.toast button{background:transparent;border:1px solid color-mix(in srgb,var(--bg) 45%,transparent);color:var(--bg);border-radius:10px;height:36px;padding:0 12px;font-weight:700;flex:none}
+.toast button{background:transparent;border:1px solid color-mix(in srgb,var(--bg) 45%,transparent);color:var(--bg);border-radius:10px;height:44px;padding:0 12px;font-weight:700;flex:none}
 .empty{padding:22px 14px;text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -370,7 +411,7 @@ var BPM = 138;                         // learning-track tempo of the VOIX arran
 var NBARS = 56;
 var SECTIONS = [
   {name:"Intro",a:1,b:8},{name:"Verse 1",a:9,b:16},{name:"Verse 2",a:17,b:24},
-  {name:"Chorus",a:25,b:32},{name:"Bridge",a:33,b:48},{name:"Final chorus",a:49,b:56}
+  {name:"Chorus",a:25,b:32},{name:"Bridge",a:33,b:48},{name:"Final chorus",short:"Final",a:49,b:56}
 ];
 // Tenor line: [midi, start beat, length in beats]. Bridge bars 33-48 are written out;
 // the rest repeat four simple patterns.
@@ -410,8 +451,8 @@ var TAKE_SCRIPT = [
 // Per-bar result strip for bars 33-48: g = good, a = check, r = fix first
 var BAR_STRIP = ["g","g","a","g","g","a","g","a","g","r","g","g","g","a","g","g"];
 var MISS = {
-  pitch:{short:"pitch",long:"the top G on beat 2 was flat by about 40 cents"},
-  timing:{short:"timing",long:"the eighth-note run rushed into the held note"}
+  pitch:{short:"flat",long:"top note low"},
+  timing:{short:"rushed",long:"too fast"}
 };
 var CHUNKS = [{a:0,b:1,name:"Beat 1"},{a:1,b:2,name:"Beat 2"},{a:2,b:4,name:"Beats 3–4 · held note"}];
 
@@ -435,71 +476,73 @@ var VIEWS = [
    sim:"Sync detection is scripted. The correct offset is −3.48 s (2 bars at 138 BPM)."},
   {id:"workspace",name:"Practice Workspace",lofi:"View 6 Practice Workspace",
    does:"Score with a moving playhead, loop timeline, tempo, metronome, part volumes and keyboard. Start recording from here.",
-   he:[["#2","One Play/Pause toggle that keeps your place (Change 2)"],["#4","Drag handles on a labelled timeline (Change 3)"],["#17","Tap the BPM to type an exact value"],["#18","Keyboard switch shows On / Off"]],
+   he:[["#2","One Play/Pause toggle that keeps your place (Change 2)"],["#4","Drag handles on a labelled timeline (Change 3)"],["#17","Tempo in whole BPM: − / + (hold to repeat), a 1-BPM slider, or tap to type"],["#18","Keyboard switch shows On / Off"]],
    sim:"Reference audio is a synth of the tenor line. Other parts are a soft chord on each beat."},
   {id:"record",name:"Sing Along + Recording",lofi:"View 7 Sing Along + Recording",
    does:"Count-in, then the passage plays and scrolls while the user sings. Ends automatically at the loop end or with End take.",
    he:[["#2","'End take' replaces the ambiguous Stop (Change 2)"],["#9","Live input-level meter with 'Voice picked up'"]],
-   sim:"No microphone is used. The level meter is animated the same way every time."},
+   sim:"No microphone is used. The level meter is animated the same way every time. 'Microphone: blocked' in this guide shows the permission sheet instead of recording."},
   {id:"feedback",name:"Take Feedback",lofi:"Views 8 + 9 Diagnostic Scorecard, Review Feedback",
    does:"Scores the take on pitch, timing and held notes, shows which bars need work, and names one bar to fix first.",
-   he:[["#1","Autosaved chip, Re-record passage, Save to history, Discard take with confirmation (Change 1)"],["#8","(i) explanation and a plain label on each score"],["#14","Change since your previous take"]],
+   he:[["#1","Autosaved chip, Re-record take, Save to history, Discard take with confirmation (Change 1)"],["#8","(i) explanation and a plain label on each score"],["#14","Change since your previous take"]],
    sim:"Scores are scripted per take number. The priority is always bar 42."},
   {id:"issue",name:"Understand the Issue",lofi:"View 10 Understand the Issue",
-   does:"Plays your take and the reference for bar 42, overlays your pitch on the target notes, and explains three problems in plain words.",
-   he:[["#8","Each problem is named in plain language, not just a score"]],
-   sim:"'Your take' is the reference played 40 cents flat, rushed, with the held note cut short."},
+   does:"Plays your take, the reference, or both in turn for bar 42, overlays your pitch on the right notes, and explains three numbered problems in plain words. Tap a problem to hear just that part.",
+   he:[["#8","Each problem is named in plain language and leads with what to do; note names and cents sit behind 'Show music details'"]],
+   sim:"'Your take' is synthesised: the run is 25 to 40 cents flat (the top G most), finishes a quarter beat early, and the held E stops after about 1 beat."},
   {id:"drill",name:"Targeted Drill",lofi:"Views 11–14 Targeted Drill, Guided Retry, Independent Retry, Adjust Drill",
-   does:"Drill bar 42 until 2 clean takes in a row at full speed with guidance off. Version B adapts the support; Version A lets the user set it.",
-   he:[["#1","Every take autosaved, play back or discard the latest"],["#2","Play/Pause keeps place; End take"],["#9","Level meter while recording"],["#8","Missed takes say why"],["#17","Typed BPM (Version A)"]],
+   does:"Drill bar 42 until 2 clean takes in a row at full speed with guidance off. The coach sets tempo and guidance and takes support away as takes come out clean.",
+   he:[["#1","Every take autosaved, play back or discard the latest"],["#2","Play/Pause keeps place; End take"],["#9","Level meter while recording"],["#8","Missed takes say why"]],
    sim:"Results are scripted: the first 2 takes at full speed with guidance off are missed (pitch, then timing); every other take is clean."},
   {id:"complete",name:"Passage Complete",lofi:"View 15 Passage Complete",
-   does:"Confirms bar 42 is mastered and offers three labelled paths: next problem, repeat drill, end session.",
-   he:[["#20","Every button leads somewhere"]],
-   sim:"Before and after scores for bar 42 are scripted."},
+   does:"Confirms bar 42 is mastered, lets you hear it before and after, lists the other bars still to fix (tap one to loop it), and offers three labelled paths: practise bar 38, repeat the drill, end the session.",
+   he:[["#20","Every button leads somewhere"],["#14","Before / after playback compares your first take with your last clean one"]],
+   sim:"Bar 42's before and after scores (58 and 92) and the bars still to fix are scripted. Playback is synthesised."},
   {id:"summary",name:"Session Summary",lofi:"View 16 Session Summary",
-   does:"What was practised tonight, every take, and the suggested passage for next time before Wednesday's combined practice.",
-   he:[["#14","All takes from the session in one list"]],
-   sim:"Time practised is counted from when the prototype opened."}
+   does:"Confirms the session is saved, shows what was practised and mastered, every take with its breakdown, and everything still to fix before Wednesday with where to start.",
+   he:[["#14","Passage and drill takes in one list; tap a take for pitch, timing and held notes"],["#8","Scores shown out of 100 with a Needs work / Good / Excellent label"]],
+   sim:"Time practised is counted from when the prototype opened, never less than the time spent in the drill. The practice date and reminder are not editable."}
 ];
 function viewIndex(id){ for (var i=0;i<VIEWS.length;i++) if (VIEWS[i].id===id) return i; return 0; }
 
 var TOURS = {
-  library:[{t:"search",title:"Search",text:"Type a song title. If nothing matches, you'll see a message and a way to clear the search."},
-           {t:"add",title:"Add song",text:"Import the score and learning track your music director shared."},
-           {t:"help",title:"Help",text:"This button stays in the top-right corner on every screen."}],
-  import:[{t:"score",title:"Score",text:"The PDF your music director shared. Tap to choose it."},
-          {t:"audio",title:"Learning track",text:"The MIDI or audio file that goes with the score."},
-          {t:"title",title:"Song title",text:"Required. It's how you'll find the song in your library."}],
-  parts:[{t:"parts",title:"Your part",text:"Pick the line you sing. Voice range shows the lowest and highest notes. Tap Hear to check it."},
-         {t:"back",title:"Back",text:"Goes to the previous step. Your choices are kept."}],
-  sync:[{t:"lanes",title:"Line them up",text:"The top row is the score. The bottom row is the learning track. Slide the track until its first sung note sits on the bar 1 line."},
-        {t:"offset",title:"Offset",text:"Drag the slider or use − / + for small steps. 'Lined up' appears when it's right."},
-        {t:"tools",title:"Play, Set marker, Undo",text:"Play the track, tap Set marker when you hear the first sung note, and Undo if you get it wrong."}],
-  workspace:[{t:"score",title:"Score",text:"The blue line follows the music. Bars in your loop are shaded."},
-             {t:"loop",title:"Loop",text:"Drag the two blue handles to choose the bars to repeat. Section names help you find your place without reading the score."},
-             {t:"controls",title:"Practice settings",text:"Slow the tempo down (tap the number to type it), turn on a steady click, set part volumes, or show the keyboard to check a note."},
-             {t:"play",title:"Play / Pause",text:"One button. Pausing keeps your place, and Resume carries on from there."},
-             {t:"rec",title:"Sing & record",text:"Records you singing the looped bars, then the coach gives feedback."}],
-  record:[{t:"meter",title:"Level meter",text:"Shows your voice is being picked up. If it stays flat, move closer to the phone."},
-          {t:"end",title:"End take",text:"Stops recording and sends the take to the coach. The take also ends by itself at the end of the loop."}],
-  feedback:[{t:"metrics",title:"Scores",text:"Tap (i) to see what each score means. Labels say Needs work, Good or Excellent."},
-            {t:"prio",title:"Fix this first",text:"The coach picks one bar to work on, so you don't have to fix everything at once."},
-            {t:"takeacts",title:"Your take",text:"Takes are autosaved. Re-record the passage, save the take to your history, or discard it."}],
-  issue:[{t:"cmp",title:"Listen and compare",text:"Play your take, then the reference, for bar 42."},
-         {t:"chart",title:"Pitch overlay",text:"Blue blocks are the right notes. The orange line is you."}],
-  drill:[{t:"play",title:"Play bar 42",text:"Hear the reference. Tap again to pause; Resume carries on from the same beat."},
-         {t:"set",title:"Support",text:"Version B: the coach sets tempo and guidance and takes support away as you get it right. Version A: you set them yourself."},
-         {t:"takes",title:"Goal and takes",text:"Every take is autosaved here. Ticks are clean, crosses are missed with the reason."},
-         {t:"record",title:"Record take",text:"Sing bar 42. Tap End take when you finish, or it ends by itself."}],
-  complete:[{t:"next",title:"What next",text:"Go to the next problem bar, repeat this drill, or end the session."}],
-  summary:[{t:"next",title:"Next time",text:"The passage the coach suggests you practise in your next session."}]
+  library:[{t:"search",title:"Search",text:"Find a song by name."},
+           {t:"add",title:"Add song",text:"Add a score and its track."},
+           {t:"help",title:"Help",text:"Tap ? on any screen."}],
+  import:[{t:"score",title:"Score",text:"Pick the PDF score."},
+          {t:"audio",title:"Learning track",text:"Pick the audio that goes with it."},
+          {t:"title",title:"Song title",text:"Name it so you can find it later."}],
+  parts:[{t:"parts",title:"Your part",text:"Pick the part you sing. Tap Hear to check."}],
+  sync:[{t:"lanes",title:"Line up",text:"Slide the track until the first note sits on bar 1."},
+        {t:"tools",title:"Set marker",text:"Or play the track and tap Set marker on the first note."}],
+  workspace:[{t:"loop",title:"Loop",text:"Drag the handles to pick the bars to repeat."},
+             {t:"controls",title:"Settings",text:"Change speed, click, volume or keyboard."},
+             {t:"play",title:"Play / Pause",text:"Pause keeps your place."},
+             {t:"rec",title:"Record take",text:"Sing the loop. The coach gives feedback."}],
+  record:[{t:"meter",title:"Level",text:"Bars move when your voice is heard."},
+          {t:"end",title:"End take",text:"Tap to stop. It also stops on its own."}],
+  feedback:[{t:"metrics",title:"Scores",text:"Tap (i) to see what a score means."},
+            {t:"prio",title:"Fix this first",text:"Start with this one bar."},
+            {t:"takeacts",title:"Your take",text:"Saved for you. Re-record or discard it."}],
+  issue:[{t:"cmp",title:"Listen",text:"Hear yourself, the right version, or both."},
+         {t:"chart",title:"Chart",text:"Blue is right. Orange is you."},
+         {t:"probs",title:"Problems",text:"Tap one to hear it."}],
+  drill:[{t:"play",title:"Hear reference",text:"Listen before you sing."},
+         {t:"set",title:"Support",text:"The coach removes help as you improve."},
+         {t:"takes",title:"Goal",text:"2 clean takes in a row."},
+         {t:"record",title:"Record take",text:"Sing bar 42."}],
+  complete:[{t:"stats",title:"Before / after",text:"Hear how you improved."},
+            {t:"todo",title:"Still to fix",text:"Tap a bar to practise it."},
+            {t:"next",title:"What next",text:"Pick one. Everything is saved."}],
+  summary:[{t:"takes",title:"Takes",text:"Tap a take for details."},
+           {t:"next",title:"Before Wednesday",text:"Start with bar 38, or set a reminder."}]
 };
 
 /* ================= Icons ================= */
 function svg(p,s,fill){ s=s||22; return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="'+(fill?"currentColor":"none")+'" stroke="'+(fill?"none":"currentColor")+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>'; }
 var I = {
   back:svg('<path d="M15 18l-6-6 6-6"/>'),
+  chev:svg('<path d="M9 6l6 6-6 6"/>',16),
   help:svg('<circle cx="12" cy="12" r="9.5"/><path d="M9.6 9.2a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.6"/><path d="M12 17h.01"/>'),
   close:svg('<path d="M6 6l12 12M18 6L6 18"/>'),
   play:svg('<path d="M7 5l12 7-12 7z"/>',18,true),
@@ -512,6 +555,7 @@ var I = {
   cross:function(s){return svg('<path d="M6 6l12 12M18 6L6 18"/>',s||14);},
   lock:svg('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',12),
   coach:svg('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',18),
+  pen:svg('<path d="M4 20h4L19 9l-4-4L4 16z"/>',11),
   undo:svg('<path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/>',16),
   flag:svg('<path d="M5 21V4h11l-2 4 2 4H5"/>',16),
   restart:svg('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',16)
@@ -521,31 +565,29 @@ var I = {
 var S, T0 = Date.now();
 function fresh(){
   return {
-    view:"library", variant:"B", sheet:null, toast:"", tourStep:0, tourView:null,
+    view:"library", sheet:null, toast:"", tourStep:0, tourView:null,
     query:"", song:null,
     imp:{score:null, audio:null, title:"", titleTouched:false, error:""},
     part:null,
     sync:{offset:0, hist:[], playing:false, t:0, marker:null},
-    ws:{pos:0, playing:false, loopA:1, loopB:56, loop:true, tempo:100, metro:false, kb:false,
+    ws:{pos:0, playing:false, loopA:1, loopB:56, loop:true, bpm:BPM, metro:false, kb:false,
         tenorVol:100, othersVol:40, tenorMute:false, othersMute:false, editingBpm:false, bpmError:"", started:false},
     rec:{phase:"idle", pos:0, countBeat:0},
     takes:[], cur:null, openInfo:null,
-    issue:{playing:null, t:0},
+    issue:{playing:null, t:0, focus:null, details:false, passes:null},
     drill:null,
-    session:{drillTakes:0, mastered:[]}
+    session:{drillTakes:0, mastered:[], keep42:false, remind:false}
   };
 }
 S = fresh();
-// Drill version from the URL (?v=A or ?v=B), for the A/B experiment link.
-try { var qv = new URLSearchParams(location.search).get("v"); if (qv === "A" || qv === "B") S.variant = qv; } catch(e){}
 function freshDrill(){
   return {tempo:80, guidance:true, chunk:null, phase:"idle", playing:false, pos:0, takes:[], streak:0, misses:0,
     targetTries:0, sheet:null, choice:"beats", last:null, undo:null, editingBpm:false, bpmError:"", playingBack:false, countBeat:0,
-    msg:"We'll start slower with guidance on. I'll take support away as you get it right."};
+    msg:"Slower, with guidance. I'll remove help as you improve."};
 }
 
 /* ================= Audio (Web Audio synth) ================= */
-var AU = {ctx:null, out:null};
+var AU = {ctx:null, out:null, live:[]};
 function ac(){
   if (!AU.ctx){
     try { var C = window.AudioContext || window.webkitAudioContext; AU.ctx = new C(); AU.out = AU.ctx.createGain(); AU.out.gain.value = .55; AU.out.connect(AU.ctx.destination); }
@@ -562,7 +604,9 @@ function tone(midi, dur, vol, detune, delay){
   g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .02);
   g.gain.setValueAtTime(vol, t + Math.max(.03, dur - .06)); g.gain.linearRampToValueAtTime(0, t + dur);
   o.connect(g); g.connect(AU.out); o.start(t); o.stop(t + dur + .05);
+  AU.live.push(o); o.onended = function(){ var i = AU.live.indexOf(o); if (i >= 0) AU.live.splice(i, 1); };
 }
+function stopTones(){ AU.live.splice(0).forEach(function(o){ try { o.stop(); } catch(e){} }); }
 function click(accent){
   var c = ac(); if (!c) return;
   var t = c.currentTime, o = c.createOscillator(), g = c.createGain();
@@ -604,7 +648,7 @@ function staffGeom(bars, W){ var L = 4; return {L:L, bw:(W - L * 2) / bars.lengt
 function noteX(g, i, beat){ return g.L + i * g.bw + 10 + beat / 4 * (g.bw - 16); }
 function staff(bars, W, o){
   o = o || {};
-  var g = staffGeom(bars, W), top = g.top, H = top + 4 * GAP + 26, s = "";
+  var g = staffGeom(bars, W), top = g.top, both = o.names && o.guide, H = top + 4 * GAP + 26 + (both ? 16 : 0), s = "";
   s += '<svg class="stf" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Score, tenor part, bars ' + bars[0] + ' to ' + bars[bars.length - 1] + '">';
   bars.forEach(function(b, i){
     var x = g.L + i * g.bw;
@@ -639,7 +683,8 @@ function staff(bars, W, o){
     if (o.guide === b){
       var pl = ns.map(function(n){ return noteX(g, i, n[1]) + ',' + (yOf(n[0]) - 9); }).join(" ");
       s += '<polyline class="gd" points="' + pl + ' ' + (x0 + g.bw - 6) + ',' + (yOf(ns[ns.length - 1][0]) - 9) + '"/>';
-      for (var bt = 0; bt < 4; bt++) s += '<text class="gn" x="' + (noteX(g, i, bt) - 3) + '" y="' + (top + 4 * GAP + 20) + '">' + (bt + 1) + '</text>';
+      var gy = top + 4 * GAP + (o.names ? 38 : 20);
+      for (var bt = 0; bt < 4; bt++) s += '<text class="gn" x="' + (noteX(g, i, bt) - 3) + '" y="' + gy + '">' + (bt + 1) + '</text>';
     }
     if (o.chunk && o.chunkBar === b){
       var cx1 = noteX(g, i, o.chunk.a) - 8, cx2 = o.chunk.b >= 4 ? x0 + g.bw : noteX(g, i, o.chunk.b) - 8;
@@ -665,7 +710,7 @@ function loopLabel(a, b){
   return sa === sb ? sa : sa + " to " + sb;
 }
 function label(score){ return score >= 85 ? ["Excellent","g"] : score >= 75 ? ["Good","b"] : ["Needs work","a"]; }
-function wsBpm(){ return Math.round(BPM * S.ws.tempo / 100); }
+function wsBpm(){ return S.ws.bpm; }
 function drillBpm(){ return Math.round(BPM * S.drill.tempo / 100); }
 function hdr(left, title, sub){
   return '<header class="hdr">' + (left || '<span></span>') +
@@ -681,10 +726,11 @@ function steps3(n, name){
 function sw(act, on, lab){
   return '<button class="switch" aria-pressed="' + on + '" aria-label="' + esc(lab) + '" data-act="' + act + '"><span class="word">' + (on ? "On" : "Off") + '</span><span class="track' + (on ? " on" : "") + '"><span class="knob"></span></span></button>';
 }
-function meterHTML(){
+function meterHTML(live){
   return '<div class="meter" data-tour="meter" aria-label="Microphone input level"><span class="sub">Mic</span><span class="bars" data-meter>' +
-    new Array(13).join("<i></i>") + '</span><span class="lvl">Voice picked up · good level</span></div>';
+    new Array(13).join("<i></i>") + '</span>' + (live ? '<span class="lvl">Voice picked up</span>' : '<span class="lvl wait">Starts after the count-in</span>') + '</div>';
 }
+function fmtOff(off){ var a = Math.abs(off); return (a < .005 ? "" : off < 0 ? "−" : "+") + a.toFixed(2) + " s"; }
 var phone = document.getElementById("phone"), guide = document.getElementById("guide");
 
 /* ================= Screens ================= */
@@ -692,20 +738,20 @@ var SCREENS = {};
 
 SCREENS.library = function(){
   var songs = [];
-  if (S.song) songs.push({id:"viva", t:"Viva La Vida", m: S.session.mastered.length ? "Tenor · bar 42 mastered · next: bar 38" : (S.takes.length ? "Tenor · practised tonight" : "Tenor · new, not practised yet"), c:"b"});
-  songs.push({id:"seasons", t:"Seasons of Love", m:"Tenor · 3 of 4 passages mastered", c:"g"});
-  songs.push({id:"bridge", t:"Bridge Over Troubled Water", m:"Tenor · last practised 12 Oct", c:"a"});
+  var practised = S.takes.length || S.session.mastered.length;
+  if (S.song) songs.push({id:"viva", t:"Viva La Vida", m:"Tenor · " + (practised ? "practised today" : "not practised yet"), p: S.session.mastered.length ? "1 bar mastered · next: bar 38" : "Added today", c:"b"});
+  songs.push({id:"seasons", t:"Seasons of Love", m:"Tenor · last practised 22 Oct", p:"3 of 4 passages mastered", c:"g"});
+  songs.push({id:"bridge", t:"Bridge Over Troubled Water", m:"Tenor · last practised 12 Oct", p:"1 of 3 passages mastered", c:"a"});
   var q = S.query.trim().toLowerCase();
   var shown = songs.filter(function(s){ return !q || s.t.toLowerCase().indexOf(q) >= 0; });
   var h = hdr('<span></span>', "ResoNote", "Your songs");
   h += '<div class="body">';
   h += '<label class="search" data-tour="search">' + I.search + '<input id="q" type="search" placeholder="Search your songs" value="' + esc(S.query) + '" aria-label="Search your songs" autocomplete="off" data-input="query"></label>';
-  if (!S.song) h += '<div class="card pad" style="background:var(--blue-soft);border-color:transparent"><div class="lbl" style="color:var(--blue-ink)">New in SMU VOIX Telegram</div><div class="sub" style="color:var(--blue-ink)">Viva La Vida: SATB score (PDF) and tenor learning track (MIDI). Combined practice on Wednesday.</div></div>';
   if (!shown.length){
-    h += '<div class="card empty" role="status"><b style="font-size:15px">No songs match "' + esc(S.query) + '"</b><span class="sub">Check the spelling, or the song may not be imported yet.</span><button class="link" data-act="clear-q">Clear search</button></div>';
+    h += '<div class="card empty" role="status"><b style="font-size:15px">No songs match "' + esc(S.query) + '"</b><span class="sub">Check the spelling.</span><button class="link" data-act="clear-q">Clear search</button></div>';
   }
   shown.forEach(function(s){
-    h += '<button class="song" data-act="open-song" data-arg="' + s.id + '"><span class="art badge ' + s.c + '" style="border-radius:12px;padding:0">' + s.t[0] + '</span><span class="meta"><b>' + esc(s.t) + '</b><span>' + esc(s.m) + '</span></span>' + svg('<path d="M9 6l6 6-6 6"/>', 18) + '</button>';
+    h += '<button class="song" data-act="open-song" data-arg="' + s.id + '"><span class="art badge ' + s.c + '" style="border-radius:12px;padding:0">' + s.t[0] + '</span><span class="meta"><b>' + esc(s.t) + '</b><span>' + esc(s.m) + '</span><span>' + esc(s.p) + '</span></span>' + svg('<path d="M9 6l6 6-6 6"/>', 18) + '</button>';
   });
   h += '<div style="height:70px"></div></div>';
   h += '<button class="fab" data-act="add" data-tour="add">' + I.plus + 'Add song</button>';
@@ -716,21 +762,20 @@ SCREENS.import = function(){
   var m = S.imp, titleOk = m.title.trim().length > 0;
   var h = hdr(backBtn("cancel-import", "Cancel and go back to library"), "Add a song", "");
   h += '<div class="body">' + steps3(1, "Files and title");
-  h += '<p class="lead">Add the score and learning track your music director shared.</p>';
   function fileCard(kind, f, tour, label, ic, hintTxt){
     var cls = f ? (f.bad ? "bad" : "ok") : "";
-    return '<div class="file ' + cls + '" data-tour="' + tour + '"><span class="fi">' + ic + '</span><span class="ft"><b>' + label + ' <span class="hint" style="display:inline">· Required</span></b><span>' +
+    return '<div class="file ' + cls + '" data-tour="' + tour + '"><span class="fi">' + ic + '</span><span class="ft"><b>' + label + ' <span class="req">* Required</span></b><span>' +
       (f ? esc(f.name) + (f.bad ? "" : " · " + f.size) : hintTxt) + '</span></span><button class="mini" data-act="pick" data-arg="' + kind + '">' + (f && !f.bad ? "Change" : "Choose") + '</button></div>';
   }
   h += fileCard("score", m.score, "score", "Score", I.doc, "PDF");
   if (m.score && m.score.bad) h += '<div class="err" role="alert">' + esc(m.score.name) + ' is a photo, not a score. Choose a PDF.</div>';
   h += fileCard("audio", m.audio, "audio", "Learning track", I.note, "MIDI, MP3 or WAV");
   var showErr = m.titleTouched && !titleOk;
-  h += '<div class="field" data-tour="title"><label for="title">Song title <span class="hint">Required</span></label><input id="title" class="' + (showErr ? "bad" : "") + '" value="' + esc(m.title) + '" placeholder="e.g. Viva La Vida" data-input="title" autocomplete="off">' +
-    (showErr ? '<div class="err" role="alert" style="margin-top:6px">Enter a song title so you can find it in your library.</div>' : '') + '</div>';
+  h += '<div class="field" data-tour="title"><label for="title" class="has-req">Song title <span class="req">* Required</span></label><input id="title" class="' + (showErr ? "bad" : "") + '" value="' + esc(m.title) + '" placeholder="e.g. Viva La Vida" data-input="title" autocomplete="off">' +
+    (showErr ? '<div class="err" role="alert" style="margin-top:6px">Enter a song title.</div>' : '') + '</div>';
   h += '</div>';
   var ready = m.score && !m.score.bad && m.audio && titleOk;
-  h += '<footer class="ftr col">' + (!ready ? '<span class="hint" style="text-align:center">' + (!m.score || m.score.bad ? "Add the score to continue" : !m.audio ? "Add the learning track to continue" : "Add a song title to continue") + '</span>' : '') +
+  h += '<footer class="ftr col">' + (!ready ? '<span class="hint" style="text-align:center">' + (!m.score || m.score.bad ? "Add the score" : !m.audio ? "Add the learning track" : "Add a song title") + '</span>' : '') +
     '<button class="btn pri" data-act="import-next"' + (ready ? "" : " disabled") + '>Next</button></footer>';
   return h;
 };
@@ -744,14 +789,14 @@ var PARTS = [
 SCREENS.parts = function(){
   var h = hdr(backBtn("to-import", "Back to Add a song"), "Choose your part", "Viva La Vida");
   h += '<div class="body">' + steps3(2, "Your part");
-  h += '<p class="lead">4 parts found in the score. Pick the one you sing; ResoNote will play and check only that line.</p>';
+  h += '<p class="lead">Pick the part you sing.</p>';
   h += '<div style="display:flex;flex-direction:column;gap:8px" data-tour="parts">';
   PARTS.forEach(function(p){
     var on = S.part === p.id;
     h += '<div class="row" style="gap:8px"><button class="opt' + (on ? " on" : "") + '" role="radio" aria-checked="' + on + '" data-act="part" data-arg="' + p.id + '"><span class="radio"></span><span><span class="ot">' + p.name + '</span><span class="od">Voice range: ' + p.range + '</span></span></button>' +
       '<button class="mini" data-act="hear-part" data-arg="' + p.id + '" aria-label="Hear the ' + p.name + ' part">' + I.play + 'Hear</button></div>';
   });
-  h += '</div><p class="hint">Voice range is the lowest to highest note in that part. Not sure which is yours? Pick the one your music director assigned you.</p></div>';
+  h += '</div><p class="hint">Voice range: lowest to highest note.</p></div>';
   h += '<footer class="ftr"><button class="btn pri" data-act="parts-next"' + (S.part ? "" : " disabled") + '>Continue</button></footer>';
   return h;
 };
@@ -761,8 +806,8 @@ var SYNC_PX = 22;                 // pixels per second in the sync view
 SCREENS.sync = function(){
   var y = S.sync, off = y.offset, err = Math.abs(off - SYNC_TRUE), ok = err <= .12;
   var h = hdr(backBtn("to-parts", "Back to Choose your part"), "Sync check", "Viva La Vida · Tenor");
-  h += '<div class="body">' + steps3(3, "Line up audio and score");
-  h += '<div class="card pad" style="background:var(--amber-soft);border-color:transparent"><div class="lbl" style="color:var(--amber)">Auto-sync couldn\'t line these up</div><div class="sub">The learning track seems to start with a 2-bar count-in that isn\'t on the score. Slide the track until its first sung note sits on the bar 1 line.</div></div>';
+  h += '<div class="body">' + steps3(3, "Line up");
+  h += '<div class="card pad" style="background:var(--amber-soft);border-color:transparent"><div class="lbl" style="color:var(--amber)">Couldn\'t line up automatically</div><div class="sub">Slide the track so the first sung note sits on bar 1.</div></div>';
   h += '<section class="card sync" data-tour="lanes" aria-label="Score and learning track"><div class="lt">Score</div><div class="lane" data-score-lane>';
   for (var b = 0; b < 4; b++){
     h += '<div class="bx" style="left:' + (40 + b * 4 * 240 / BPM / 4 * SYNC_PX * 4 / 4) + 'px;width:' + (240 / BPM * SYNC_PX) + 'px">Bar ' + (b + 1) + '</div>';
@@ -777,15 +822,15 @@ SCREENS.sync = function(){
   if (y.marker !== null) h += '<i class="sn" style="left:' + (y.marker * SYNC_PX) + 'px;width:2px;background:var(--green);top:0;height:46px"></i>';
   h += '<i class="sn" data-aph style="left:0;width:2px;background:var(--ink);top:0;height:46px;display:none"></i>';
   h += '</div></div><div class="mk" style="left:52px"><span>Bar 1</span></div></section>';
-  h += '<section class="card pad" data-tour="offset" style="display:flex;flex-direction:column;gap:8px"><div class="row"><span class="lbl">Offset</span>' +
+  h += '<section class="card pad" data-tour="offset" style="display:flex;flex-direction:column;gap:8px"><div class="row"><span class="lbl">Move track</span>' +
     '<span class="badge ' + (ok ? "g" : "o") + '" data-sync-status>' + (ok ? I.tick(12) + "Lined up" : "Not lined up yet") + '</span></div>' +
-    '<div class="row"><button class="sbtn" data-act="nudge" data-arg="-0.05" aria-label="Move track earlier by 0.05 seconds">−</button><b class="tnum" style="font-size:18px" data-off>' + (off <= 0 ? "−" : "+") + Math.abs(off).toFixed(2) + ' s</b><button class="sbtn" data-act="nudge" data-arg="0.05" aria-label="Move track later by 0.05 seconds">+</button></div>' +
+    '<div class="row"><button class="sbtn" data-act="nudge" data-arg="-0.05" aria-label="Move track earlier by 0.05 seconds">−</button><b class="tnum" style="font-size:18px" data-off>' + fmtOff(off) + '</b><button class="sbtn" data-act="nudge" data-arg="0.05" aria-label="Move track later by 0.05 seconds">+</button></div>' +
     '<input id="sync-off" type="range" min="-5" max="1" step="0.01" value="' + off + '" aria-label="Audio offset in seconds" data-input="sync-off"></section>';
   h += '<div class="acts" data-tour="tools"><button class="mini' + (y.playing ? " on" : "") + '" data-act="sync-play">' + (y.playing ? I.pause + "Pause" : I.play + "Play") + '</button>' +
     '<button class="mini" data-act="sync-mark"' + (y.playing ? "" : " disabled") + '>' + I.flag + 'Set marker</button>' +
     '<button class="mini" data-act="sync-undo"' + (y.hist.length ? "" : " disabled") + '>' + I.undo + 'Undo</button></div>';
-  h += '<p class="hint" style="margin:0">Tip: tap Play, then Set marker the moment you hear the first sung note.</p></div>';
-  h += '<footer class="ftr col">' + (!ok ? '<span class="hint" style="text-align:center">Bar 1 is ' + err.toFixed(2) + ' s away from the first sung note</span>' : '') +
+  h += '</div>';
+  h += '<footer class="ftr col">' + (!ok ? '<span class="hint" style="text-align:center">' + err.toFixed(2) + ' s off</span>' : '') +
     '<button class="btn pri" data-act="sync-done">Confirm sync</button></footer>';
   return h;
 };
@@ -799,14 +844,14 @@ function wsSystem(){
 var SCORE_W = 352;
 SCREENS.workspace = function(){
   var w = S.ws, bars = wsSystem(), bpm = wsBpm();
-  var h = hdr(backBtn("to-library", "Back to library"), "Viva La Vida", "Tenor · learning track " + BPM + " BPM");
+  var h = hdr(backBtn("to-library", "Back to library"), "Viva La Vida", "Tenor");
   h += '<div class="body">';
   h += '<section class="card" data-tour="score" aria-label="Score"><div class="scap"><span class="sub" data-sys>Bars ' + bars[0] + '–' + bars[bars.length - 1] + ' · ' + sectionOf(bars[0]) + '</span><span class="sub tnum" data-time>' + fmt(barTime(w.pos, BPM)) + ' / ' + fmt(barTime(NBARS, BPM)) + '</span></div>' +
     '<div class="score" style="width:' + SCORE_W + 'px;max-width:100%" data-score>' + staff(bars, SCORE_W, {loop:[w.loopA, w.loopB]}) + '<div class="ph" data-ph style="top:8px;height:58px"></div></div></section>';
   // loop timeline
   h += '<section class="card pad" data-tour="loop" style="display:flex;flex-direction:column;gap:6px;padding-bottom:8px"><div class="readout"><span><span class="eyebrow">Loop</span> <b class="tnum" data-loop-bars>Bars ' + w.loopA + '–' + w.loopB + '</b></span><span class="sub tnum" data-loop-info>' + loopLabel(w.loopA, w.loopB) + ' · ' + fmt(barTime(w.loopA - 1, bpm)) + '–' + fmt(barTime(w.loopB, bpm)) + '</span></div>';
   h += '<div class="tl" data-tl><div class="secs">';
-  SECTIONS.forEach(function(s){ h += '<span class="sec" style="left:' + ((s.a - 1) / NBARS * 100) + '%;width:' + ((s.b - s.a + 1) / NBARS * 100) + '%;background:' + (SECTIONS.indexOf(s) % 2 ? "var(--sec-b)" : "var(--sec-a)") + '">' + s.name + '</span>'; });
+  SECTIONS.forEach(function(s){ h += '<span class="sec" style="left:' + ((s.a - 1) / NBARS * 100) + '%;width:' + ((s.b - s.a + 1) / NBARS * 100) + '%;background:' + (SECTIONS.indexOf(s) % 2 ? "var(--sec-b)" : "var(--sec-a)") + '">' + (s.short || s.name) + '</span>'; });
   h += '</div><div class="wv"><svg viewBox="0 0 224 40" preserveAspectRatio="none" aria-hidden="true">';
   for (var i = 0; i < 224; i++){ var amp = 6 + 13 * Math.abs(Math.sin(i * .37) * Math.sin(i * .071 + 1)) + (i >= 128 && i < 192 ? 6 : 0); h += '<rect x="' + i + '" y="' + (20 - amp / 2) + '" width=".6" height="' + amp + '"/>'; }
   h += '</svg></div><div class="sel" data-sel style="left:' + ((w.loopA - 1) / NBARS * 100) + '%;width:' + ((w.loopB - w.loopA + 1) / NBARS * 100) + '%"></div>';
@@ -815,47 +860,48 @@ SCREENS.workspace = function(){
   h += '<button class="hd" data-hd="b" role="slider" aria-label="Loop end bar" aria-valuemin="1" aria-valuemax="' + NBARS + '" aria-valuenow="' + w.loopB + '" style="left:' + (w.loopB / NBARS * 100) + '%"><i></i></button>';
   h += '<div class="ax">';
   [1, 9, 17, 25, 33, 41, 49, 56].forEach(function(b){ h += '<span style="left:' + ((b - .5) / NBARS * 100) + '%">' + b + '</span>'; });
-  h += '</div></div><div class="row"><span class="hint">Drag the handles to choose bars</span>' + sw("loop-toggle", w.loop, "Repeat loop") + '</div></section>';
+  h += '</div></div><div class="row"><span class="hint">Drag to choose bars</span>' + sw("loop-toggle", w.loop, "Repeat loop") + '</div></section>';
   // settings
   h += '<section class="card" data-tour="controls" style="padding:2px 14px">';
-  h += '<div class="set-row"><span class="lbl">Tempo</span><div class="stepper">';
+  h += '<div class="set-row"><div><div class="lbl">Tempo</div><div class="hint">' + (w.editPaused ? "Paused while you edit" : "Original " + BPM + " BPM") + '</div></div><div class="stepper">';
   if (w.editingBpm) h += '<div class="bpm-edit"><input id="ws-bpm" type="number" inputmode="numeric" min="69" max="138" value="' + bpm + '" aria-label="Exact tempo in BPM" data-bpm-input="ws"><span class="hint">BPM</span><button class="done" data-act="bpm-done" data-arg="ws">Done</button></div>';
-  else h += '<button class="sbtn" data-act="ws-slower" aria-label="Slower">−</button><button class="bpm-btn" data-act="bpm-edit" data-arg="ws" aria-label="Tempo ' + bpm + ' BPM, tap to type an exact value"><b>' + bpm + ' BPM</b><span> · ' + Math.round(w.tempo) + '%</span></button><button class="sbtn" data-act="ws-faster" aria-label="Faster">+</button>';
+  else h += '<button class="sbtn" data-act="ws-slower" data-hold aria-label="1 BPM slower">−</button><button class="bpm-btn" data-act="bpm-edit" data-arg="ws" aria-label="Tempo ' + bpm + ' BPM, tap to type an exact value"><b>' + bpm + '</b><span> BPM ' + I.pen + '</span></button><button class="sbtn" data-act="ws-faster" data-hold aria-label="1 BPM faster">+</button>';
   h += '</div></div>';
   if (w.bpmError) h += '<div class="err" role="alert" style="padding-bottom:8px">' + esc(w.bpmError) + '</div>';
-  h += '<div class="set-row"><div><div class="lbl">Metronome</div><div class="hint">Click on every beat</div></div>' + sw("ws-metro", w.metro, "Metronome") + '</div>';
+  if (!w.editingBpm) h += '<div style="padding-bottom:10px"><input id="ws-tempo" type="range" min="69" max="' + BPM + '" step="1" value="' + bpm + '" aria-label="Tempo in BPM" data-input="ws-tempo"></div>';
+  h += '<div class="set-row"><div class="lbl">Metronome</div>' + sw("ws-metro", w.metro, "Metronome") + '</div>';
   h += '<div class="set-row"><div><div class="lbl">Part volumes</div><div class="hint">Tenor ' + (w.tenorMute ? "muted" : w.tenorVol + "%") + ' · Others ' + (w.othersMute ? "muted" : w.othersVol + "%") + '</div></div><button class="mini" data-act="parts-sheet">Adjust</button></div>';
-  h += '<div class="set-row"><div><div class="lbl">Keyboard</div><div class="hint">Tap a key to hear a note</div></div>' + sw("ws-kb", w.kb, "Keyboard") + '</div>';
+  h += '<div class="set-row"><div class="lbl">Keyboard</div>' + sw("ws-kb", w.kb, "Keyboard") + '</div>';
   h += '</section>';
   if (w.kb) h += keyboardHTML();
   h += '</div>';
   var playText = w.playing ? "Pause" : (w.started ? "Resume" : "Play");
   h += '<footer class="ftr"><button class="btn sec" data-act="ws-play" data-tour="play" aria-label="' + (w.playing ? "Pause" : playText + " the loop") + '">' + (w.playing ? I.pause : I.play) + playText + '</button>' +
-    (w.started && !w.playing ? '<button class="ib" data-act="ws-restart" aria-label="Back to loop start" style="border:1px solid var(--line2);height:54px;width:48px;border-radius:16px">' + I.restart + '</button>' : '') +
-    '<button class="btn rec" data-act="ws-record" data-tour="rec"><span class="dot"></span>Sing &amp; record</button></footer>';
+    (w.started && !w.playing ? '<button class="ib lab" data-act="ws-restart" title="Back to loop start">' + I.restart + 'Restart</button>' : '') +
+    '<button class="btn rec" data-act="ws-record" data-tour="rec"><span class="dot"></span>Record take</button></footer>';
   return h;
 };
 function keyboardHTML(){
   // C3 to B4, 14 white keys
-  var whites = [], blacks = [], h = '<section class="kb" aria-label="Keyboard, C3 to B4" data-kb>';
+  var whites = [], blacks = [], h = '<section class="kbwrap"><div class="kbscroll" data-kbscroll><div class="kb" aria-label="Keyboard, C3 to B4" data-kb>';
   for (var m = 48; m < 72; m++){ if (STEP_IDX[m % 12] !== undefined) whites.push(m); else blacks.push(m); }
-  whites.forEach(function(m){ h += '<button class="w" data-key="' + m + '" aria-label="' + noteName(m) + '">' + (m % 12 === 0 ? noteName(m) : NAMES[m % 12]) + '</button>'; });
-  blacks.forEach(function(m){ var wi = whites.indexOf(m - 1); h += '<button class="k" data-key="' + m + '" aria-label="' + noteName(m) + '" style="left:' + ((wi + 1) / whites.length * 100 - 2.5) + '%"></button>'; });
-  return h + '</section>';
+  whites.forEach(function(m){ h += '<button class="w' + (m === 60 ? " mid" : "") + '" data-key="' + m + '" aria-label="' + noteName(m) + (m === 60 ? ", middle C" : "") + '">' + (m % 12 === 0 ? noteName(m) : NAMES[m % 12]) + '</button>'; });
+  blacks.forEach(function(m){ var wi = whites.indexOf(m - 1); h += '<button class="k" data-key="' + m + '" aria-label="' + noteName(m) + '" style="left:' + ((wi + 1) * 44 - 14) + 'px"></button>'; });
+  return h + '</div></div><span class="kbkey"><i></i>Middle C</span></section>';
 }
 
 SCREENS.record = function(){
   var w = S.ws, r = S.rec, cur = Math.min(w.loopB, Math.floor(r.pos) + 1);
   var first = Math.floor((Math.max(r.pos, w.loopA - 1)) / 4) * 4 + 1, bars = [];
   for (var i = first; i < first + 4 && i <= NBARS; i++) bars.push(i);
-  var h = hdr('<span></span>', "Recording", "Bars " + w.loopA + "–" + w.loopB + " · Tenor");
+  var h = hdr(backBtn("rec-cancel", "Cancel recording"), "Recording", "Bars " + w.loopA + "–" + w.loopB + " · " + wsBpm() + " BPM");
   h += '<div class="body">';
-  h += '<section class="card" aria-label="Score"><div class="scap"><span class="recl"><span class="recdot"></span>Recording</span><span class="sub tnum" data-rtime>Bar ' + cur + ' · ' + fmt(barTime(r.pos - (w.loopA - 1), wsBpm())) + '</span></div>' +
+  h += '<section class="card" aria-label="Score"><div class="scap">' + (r.phase === "countin" ? '<span class="recl" style="color:var(--muted)">Get ready</span>' : '<span class="recl"><span class="recdot"></span>Recording</span>') + '<span class="sub tnum" data-rtime>Bar ' + cur + ' · ' + fmt(barTime(r.pos - (w.loopA - 1), wsBpm())) + '</span></div>' +
     '<div class="score" style="width:' + SCORE_W + 'px;max-width:100%" data-score>' + staff(bars, SCORE_W, {loop:[w.loopA, w.loopB]}) + '<div class="ph" data-ph style="top:8px;height:58px"></div>' +
     (r.phase === "countin" ? '<div class="countin" data-count>' + (r.countBeat + 1) + '</div>' : '') + '</div></section>';
-  h += '<section class="card pad" style="display:flex;flex-direction:column;gap:10px">' + meterHTML() + '<div class="hint">Learning track plays quietly in your earbuds so you can sing along. Tempo ' + wsBpm() + ' BPM.</div></section>';
+  h += '<section class="card pad" style="display:flex;flex-direction:column;gap:10px">' + meterHTML(r.phase === "recording") + '<span class="hint">Use earbuds so the track isn\'t recorded.</span></section>';
   h += '<section class="card pad"><div class="eyebrow" style="margin-bottom:4px">Progress</div><div style="height:6px;border-radius:3px;background:var(--line);overflow:hidden"><i data-rprog style="display:block;height:100%;width:0;background:var(--red)"></i></div><div class="row" style="margin-top:6px"><span class="hint">Bar ' + w.loopA + '</span><span class="hint">Bar ' + w.loopB + '</span></div></section>';
-  h += '</div><footer class="ftr"><button class="btn sec" data-act="rec-cancel">Cancel</button><button class="btn stop" data-act="rec-end" data-tour="end"><span class="sq"></span>End take</button></footer>';
+  h += '</div><footer class="ftr"><button class="btn stop" data-act="rec-end" data-tour="end"><span class="sq"></span>End take</button></footer>';
   return h;
 };
 
@@ -863,146 +909,222 @@ SCREENS.feedback = function(){
   var t = S.cur, prev = S.takes.length > 1 ? S.takes[S.takes.length - 2] : null;
   var h = hdr(backBtn("to-workspace", "Back to practice workspace"), "Take " + t.n + " feedback", "Bars 33–48 · Bridge");
   h += '<div class="body">';
-  h += '<div class="row"><span class="saved">' + I.tick(12) + (t.saved ? "Saved to history" : "Autosaved") + '</span><span class="hint">Just now · ' + fmt(t.len) + ' long</span></div>';
+  h += '<div class="row"><span class="saved">' + I.tick(12) + (t.saved ? "Saved to history" : "Autosaved") + '</span><span class="hint">' + fmt(t.len) + '</span></div>';
   var C = 2 * Math.PI * 30, frac = t.overall / 100;
   h += '<section class="card pad overall"><svg class="ring" viewBox="0 0 72 72" aria-hidden="true"><circle class="bg" cx="36" cy="36" r="30"/><circle class="fg" cx="36" cy="36" r="30" stroke-dasharray="' + (C * frac) + ' ' + C + '" transform="rotate(-90 36 36)"/><text x="36" y="43" text-anchor="middle">' + t.overall + '</text></svg>' +
-    '<div><div class="lbl">Overall ' + t.overall + ' / 100 · ' + label(t.overall)[0] + '</div><div class="sub">' + (prev ? (t.overall - prev.overall >= 0 ? "+" : "") + (t.overall - prev.overall) + " since take " + prev.n : "First take of the bridge. Your notes are mostly there; one bar needs work.") + '</div></div></section>';
+    '<div><div class="lbl">Overall ' + t.overall + ' / 100 · ' + label(t.overall)[0] + '</div><div class="sub">' + (prev ? (t.overall - prev.overall >= 0 ? "+" : "") + (t.overall - prev.overall) + " since take " + prev.n + ". " : "") + "Fix bar 42 first, then check " + BAR_STRIP.filter(function(c){ return c === "a"; }).length + " more." + '</div></div></section>';
   var M = [
-    {k:"pitch", n:"Pitch", tip:"Singing the right notes. We compare the pitch you sang with each note on the score. Within 25 cents (a quarter of a semitone) counts as on pitch."},
-    {k:"timing", n:"Timing", tip:"Starting each note at the right moment. We compare when each note starts with the beat. Within an eighth of a beat counts as on time."},
-    {k:"held", n:"Held notes", tip:"Holding long notes for their full length. A half note at this tempo should last about 0.9 seconds."}
+    {k:"pitch", n:"Pitch", tip:"Did you sing the right notes?"},
+    {k:"timing", n:"Timing", tip:"Did each note start on the beat?"},
+    {k:"held", n:"Held notes", tip:"Did you hold long notes long enough?"}
   ];
   h += '<section class="card pad" data-tour="metrics" style="padding-block:4px">';
   M.forEach(function(m){
     var v = t[m.k], L = label(v), open = S.openInfo === m.k, col = L[1] === "g" ? "var(--green)" : L[1] === "b" ? "var(--blue)" : "var(--amber)";
-    h += '<div class="metric"><div class="top"><span class="nm">' + m.n + '</span><button class="info" aria-expanded="' + open + '" aria-label="What ' + m.n + ' means" data-act="info" data-arg="' + m.k + '">i</button><span class="badge ' + L[1] + '">' + L[0] + '</span><span class="sc">' + v + '</span></div>' +
+    h += '<div class="metric"><div class="top"><span class="nm">' + m.n + '</span><button class="info" aria-expanded="' + open + '" aria-label="What ' + m.n + ' means" data-act="info" data-arg="' + m.k + '"><span>i</span></button><span class="badge ' + L[1] + '">' + L[0] + '</span><span class="sc">' + v + '</span></div>' +
       '<div class="bar"><i style="width:' + v + '%;background:' + col + '"></i></div>' + (open ? '<div class="tip">' + m.tip + '</div>' : '') + '</div>';
   });
   h += '</section>';
-  h += '<section class="card pad" style="display:flex;flex-direction:column;gap:8px"><div class="row"><span class="eyebrow">Bar by bar</span><span class="hint">bars 33–48</span></div><div class="bstrip">';
-  BAR_STRIP.forEach(function(c, i){ h += '<span class="' + c + '" title="Bar ' + (33 + i) + '">' + (33 + i) + '</span>'; });
-  h += '</div><div class="legend"><span><i style="background:var(--green-soft)"></i>Good</span><span><i style="background:var(--amber-soft)"></i>Check</span><span><i style="background:var(--orange)"></i>Fix first</span></div></section>';
-  h += '<section class="card pad prio" data-tour="prio" style="display:flex;flex-direction:column;gap:10px"><div class="row"><span class="badge o">' + I.flag + 'Fix this first</span><span class="hint">1 of 5 flagged bars</span></div>' +
-    '<div class="lbl" style="font-size:17px">Bar 42: the high run into the held note</div>' +
-    '<div class="issue"><span class="tag">Pitch</span><span>You go flat on the high notes, most on the top G.</span></div>' +
-    '<div class="issue"><span class="tag">Timing</span><span>The eighth-note run rushes, so you arrive early.</span></div>' +
-    '<div class="issue"><span class="tag">Held note</span><span>The last E is cut short: about 1 beat instead of 2.</span></div>' +
-    '<p class="hint" style="margin:0">Why this bar: it has the lowest score in the bridge, and the same jump comes back in bar 46.</p>' +
-    '<button class="link" style="align-self:flex-start" data-act="to-issue">Hear what went wrong →</button></section>';
+  h += '<section class="card pad" style="display:flex;flex-direction:column;gap:8px"><div class="eyebrow">Bar by bar</div><div class="bstrip">';
+  var SYM = {g:["✓","good"], a:["?","check"], r:["!","fix first"]};
+  BAR_STRIP.forEach(function(c, i){ h += '<span class="' + c + '" role="img" aria-label="Bar ' + (33 + i) + ', ' + SYM[c][1] + '"><b>' + (33 + i) + '</b><i aria-hidden="true">' + SYM[c][0] + '</i></span>'; });
+  h += '</div><div class="legend"><span><i class="lg g">✓</i>Good</span><span><i class="lg a">?</i>Check</span><span><i class="lg r">!</i>Fix first</span></div></section>';
+  h += '<section class="card pad prio" data-tour="prio" style="display:flex;flex-direction:column;gap:10px"><div class="row"><span class="badge o">' + I.flag + 'Fix this first</span></div>' +
+    '<div class="lbl" style="font-size:17px">Bar 42</div>' +
+    '<div class="issue"><span class="tag">1 Flat</span><span>Top notes a bit low.</span></div>' +
+    '<div class="issue"><span class="tag">2 Rushed</span><span>Quick notes too fast.</span></div>' +
+    '<div class="issue"><span class="tag">3 Cut short</span><span>Long note too short.</span></div>' +
+    '<button class="btn sec full" style="height:48px" data-act="to-issue">' + I.play + 'Hear what went wrong</button></section>';
   h += '<section class="card pad" data-tour="takeacts" style="display:flex;flex-direction:column;gap:8px"><div class="eyebrow">This take</div><div class="acts">' +
-    '<button class="mini" data-act="rerecord">' + I.restart + 'Re-record passage</button>' +
-    '<button class="mini' + (t.saved ? " on" : "") + '" data-act="save-take" aria-pressed="' + !!t.saved + '">' + (t.saved ? I.tick(14) + "Saved" : "Save to history") + '</button>' +
-    '<button class="mini danger" data-act="ask-discard-take">Discard take</button></div></section>';
+    '<button class="mini" data-act="rerecord">' + I.restart + 'Re-record take</button>' +
+    '<button class="mini' + (t.saved ? " on" : "") + '" data-act="save-take" aria-pressed="' + !!t.saved + '">' + (t.saved ? I.tick(14) + "Saved" : "Save to history") + '</button></div>' +
+    '<p class="hint" style="margin:0">' + (t.saved ? "Kept in your history for good." : "Autosaved takes are kept for 7 days. Save to history to keep this one.") + '</p>' +
+    '<div class="row" style="border-top:1px solid var(--line);padding-top:8px;margin-top:4px"><span class="hint">Don\'t want this take?</span><button class="mini danger" data-act="ask-discard-take">Discard take</button></div></section>';
   h += '</div><footer class="ftr"><button class="btn pri" data-act="start-drill">Start drill on bar 42</button></footer>';
   return h;
 };
 
+// Bar 42 problems. One name per problem, used on Take Feedback, here, in the drill badge and the tour.
+// a/b = beats of bar 42 the problem covers; the number links each card to its marker on the chart.
+var P42 = [
+  {n:1, name:"Flat", cat:"Pitch", a:.5, b:2,
+   act:"Aim higher on the way up.",
+   why:"The top notes are a bit low.",
+   det:"Sung vs written: E4 −25, F4 −35, G4 −40, F4 −30 cents. Within 25 cents counts as on pitch, so the F, G and F are off. The G was close to F♯."},
+  {n:2, name:"Rushed", cat:"Timing", a:0, b:2,
+   act:"Count “1 and 2 and” through the quick notes.",
+   why:"The quick notes end early.",
+   det:"Four eighth notes over beats 1–2. Yours finished at beat 1¾, a quarter of a beat early."},
+  {n:3, name:"Cut short", cat:"Held note", a:1.75, b:4,
+   act:"Breathe before the quick notes.",
+   why:"The long note stops after 1 beat, not 2.",
+   det:"Half note E4 on beats 3–4, about 0.9 s at 138 BPM. Yours lasted about 1 beat."}
+];
 SCREENS.issue = function(){
-  var p = S.issue.playing;
+  var I8 = S.issue, p = I8.playing, det = I8.details, f = I8.focus;
   var h = hdr(backBtn("to-feedback", "Back to take feedback"), "Bar 42", "What went wrong");
   h += '<div class="body"><div class="row"><div class="h1">Flat, rushed, cut short</div></div>';
   h += '<div style="display:flex;flex-direction:column;gap:8px" data-tour="cmp">';
-  h += '<div class="card cmp"><button class="pb you" data-act="issue-play" data-arg="you" aria-label="' + (p === "you" ? "Stop" : "Play") + ' your take of bar 42">' + (p === "you" ? I.pause : I.play) + '</button><div style="flex:1"><div class="lbl">Your take</div><div class="hint">Take ' + (S.cur ? S.cur.n : 1) + ', bar 42</div></div></div>';
-  h += '<div class="card cmp"><button class="pb ref" data-act="issue-play" data-arg="ref" aria-label="' + (p === "ref" ? "Stop" : "Play") + ' the reference for bar 42">' + (p === "ref" ? I.pause : I.play) + '</button><div style="flex:1"><div class="lbl">Reference</div><div class="hint">Learning track, tenor only</div></div></div></div>';
+  h += '<div class="card cmp"><button class="pb you" data-act="issue-play" data-arg="you" aria-label="' + (p === "you" ? "Pause" : "Play") + ' your take of bar 42">' + (p === "you" ? I.pause : I.play) + '</button><div style="flex:1"><div class="lbl">Your take</div></div></div>';
+  h += '<div class="card cmp"><button class="pb ref" data-act="issue-play" data-arg="ref" aria-label="' + (p === "ref" ? "Pause" : "Play") + ' the reference for bar 42">' + (p === "ref" ? I.pause : I.play) + '</button><div style="flex:1"><div class="lbl">Reference</div></div></div>';
+  h += '<button class="mini' + (p === "cmp" ? " on" : "") + '" style="align-self:flex-start" data-act="issue-play" data-arg="cmp">' + (p === "cmp" ? I.pause + "Pause" : I.play + "Hear both") + '</button></div>';
   // chart
-  var W = 340, H = 168, x0 = 34, x1 = W - 8, y0 = 14, y1 = H - 24, lo = 62, hi = 68;
+  var W = 340, H = 176, x0 = 34, x1 = W - 8, y0 = 26, y1 = H - 24, lo = 62, hi = 68;
   var X = function(beat){ return x0 + beat / 4 * (x1 - x0); }, Y = function(m){ return y1 - (m - lo) / (hi - lo) * (y1 - y0); };
-  var c = '<svg class="chart" width="100%" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Pitch overlay for bar 42: your pitch is under the target on beats 1 and 2, early on beat 2, and stops a beat early on the held note">';
-  [62, 64, 65, 67].forEach(function(m){ c += '<line class="gl" x1="' + x0 + '" x2="' + x1 + '" y1="' + Y(m) + '" y2="' + Y(m) + '"/><text x="4" y="' + (Y(m) + 3) + '">' + noteName(m) + '</text>'; });
+  var c = '<svg class="chart" width="100%" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Pitch overlay for bar 42: 1, your quick notes are below the target, most on the top note; 2, the quick notes finish a quarter beat early; 3, the long note stops a beat early">';
+  if (f){ var P = P42[f - 1]; c += '<rect class="fz" x="' + X(P.a) + '" y="' + (y0 - 4) + '" width="' + (X(P.b) - X(P.a)) + '" height="' + (y1 - y0 + 8) + '" rx="6"/>'; }
+  [62, 64, 65, 67].forEach(function(m){ c += '<line class="gl" x1="' + x0 + '" x2="' + x1 + '" y1="' + Y(m) + '" y2="' + Y(m) + '"/>' + (det ? '<text x="4" y="' + (Y(m) + 3) + '">' + noteName(m) + '</text>' : ''); });
+  if (!det) c += '<text x="4" y="' + (y0 + 4) + '">higher</text><text x="4" y="' + (y1) + '">lower</text>';
   for (var bt = 0; bt <= 4; bt++) c += '<text x="' + (X(bt) - 3) + '" y="' + (H - 6) + '">' + (bt < 4 ? bt + 1 : "") + '</text>';
   NOTES[42].forEach(function(n){ c += '<rect class="tg" x="' + X(n[1]) + '" y="' + (Y(n[0]) - 5) + '" width="' + (X(n[1] + n[2]) - X(n[1]) - 2) + '" height="10" rx="3"/>'; });
   var you = youTake42(), d = "";
   you.forEach(function(n, i){ var m = n.m + n.det / 100; d += (i ? " L" : "M") + X(n.s) + " " + Y(m) + " L" + (X(n.s + n.d) - 2) + " " + Y(m); });
   c += '<path class="you" d="' + d + '"/>';
-  c += '<text class="an" x="' + (X(1) - 6) + '" y="' + (Y(67) + 22) + '">flat</text>';
-  c += '<text class="an" x="' + (X(1.85)) + '" y="' + (Y(65) + 22) + '">early</text>';
-  c += '<text class="an" x="' + (X(3.05)) + '" y="' + (Y(64) + 20) + '">cut short</text>';
+  // 2 Rushed: bracket over the run as sung (0 to 1.75) against where it should end (2)
+  c += '<path class="brk" d="M' + X(0) + ' 12 V8 H' + X(1.75) + ' V12"/><line class="gl" x1="' + X(2) + '" x2="' + X(2) + '" y1="6" y2="' + y1 + '" stroke-dasharray="3 3"/>';
+  c += marker(X(.95), 10, 2, "Rushed");
+  c += marker(X(.42), Y(66.6), 1, "Flat");
+  c += marker(X(2.95), Y(64) + 22, 3, "Cut short");
   c += '<line class="cur" data-cur x1="0" x2="0" y1="' + y0 + '" y2="' + y1 + '" style="display:none"/>';
   c += '</svg>';
-  h += '<section class="card pad" data-tour="chart" style="display:flex;flex-direction:column;gap:6px"><div class="row"><span class="eyebrow">Pitch overlay</span><span class="hint">beats of bar 42</span></div>' + c +
-    '<div class="legend"><span><i style="background:var(--blue-soft);border:1px solid var(--blue)"></i>Target notes</span><span><i style="background:var(--orange)"></i>You</span></div></section>';
-  h += '<section class="card pad" style="display:flex;flex-direction:column;gap:10px"><div class="eyebrow">What the coach heard</div>' +
-    '<div class="issue"><span class="tag">Pitch</span><span>The run climbs to a G, the highest note in your part. You sang it about 40 cents low, close to F♯. Aim higher than feels natural.</span></div>' +
-    '<div class="issue"><span class="tag">Timing</span><span>Four eighth notes should take 2 beats. You fitted them into about 1¾, so you reached the held E early.</span></div>' +
-    '<div class="issue"><span class="tag">Held note</span><span>The E on beat 3 should last 2 beats. You let go after 1, probably to breathe. Take the breath before the run instead.</span></div></section>';
+  h += '<section class="card pad" data-tour="chart" style="display:flex;flex-direction:column;gap:6px"><div class="eyebrow">Your pitch</div>' + c +
+    '<div class="legend"><span><i style="background:var(--blue-soft);border:1px solid var(--blue)"></i>Right notes</span><span><i style="background:var(--orange)"></i>You</span></div></section>';
+  h += '<section class="card pad" data-tour="probs" style="display:flex;flex-direction:column;gap:8px"><div class="row"><span class="eyebrow">What the coach heard</span><span class="hint">Tap to hear</span></div>';
+  P42.forEach(function(P){
+    var on = f === P.n, pl = on && p === "seg";
+    h += '<button class="pcard' + (on ? " on" : "") + '" data-act="issue-focus" data-arg="' + P.n + '" aria-pressed="' + on + '" aria-label="' + P.name + ': ' + (pl ? "pause" : "hear this part, yours then the reference") + '">' +
+      '<span class="pn">' + P.n + '</span><span class="pb2"><span class="pt"><b>' + P.name + '</b><span class="hint">' + P.cat + '</span><span class="pi">' + (pl ? I.pause : I.play) + '</span></span>' +
+      '<span class="pa">' + P.act + '</span><span class="pw">' + P.why + '</span>' + (det ? '<span class="pd">' + P.det + '</span>' : '') + '</span></button>';
+  });
+  h += '<button class="link" style="align-self:flex-start" data-act="issue-details" aria-pressed="' + det + '">' + (det ? "Hide music details" : "Show music details") + '</button>';
+  h += '</section>';
   h += '</div><footer class="ftr"><button class="btn sec" data-act="to-feedback">Back</button><button class="btn pri" data-act="start-drill">Start drill on bar 42</button></footer>';
   return h;
 };
+function marker(x, y, n, txt){
+  return '<g class="mkr"><circle cx="' + x + '" cy="' + (y - 4) + '" r="7"/><text class="mn" x="' + x + '" y="' + (y - 0.5) + '" text-anchor="middle">' + n + '</text><text class="an" x="' + (x + 10) + '" y="' + y + '">' + txt + '</text></g>';
+}
+// Schedule bar 42 notes between beats a and b, for "you" or "ref", starting `off` beats from now.
+function play42(who, a, b, off){
+  var beat = 60 / BPM, list = who === "you" ? youTake42() : NOTES[42].map(function(n){ return {m:n[0], s:n[1], d:n[2], det:0}; });
+  list.forEach(function(n){
+    var s0 = Math.max(n.s, a), e0 = Math.min(n.s + n.d, b);
+    if (e0 > s0) tone(n.m, (e0 - s0) * beat * .95, .26, n.det, (off + s0 - a) * beat);
+  });
+}
+function startIssue(mode, a, b){
+  stopTones();
+  var I8 = S.issue, len = b - a, gap = .75;
+  I8.playing = mode; I8.start = performance.now();
+  I8.passes = mode === "you" || mode === "ref" ? [{off:0, a:a, b:b}] : [{off:0, a:a, b:b}, {off:len + gap, a:a, b:b}];
+  if (mode === "ref") play42("ref", a, b, 0);
+  else { play42("you", a, b, 0); if (mode !== "you") play42("ref", a, b, len + gap); }
+}
 function youTake42(){
-  // Simulated "your take": flat on the high notes, rushed run, held note cut short.
+  // Simulated "your take": the run is 15-40 cents flat (G worst), finishes at beat 1.75, and the held E lasts about 1 beat.
   return [{m:64,s:0,d:.42,det:-25},{m:65,s:.42,d:.42,det:-35},{m:67,s:.84,d:.42,det:-40},{m:65,s:1.26,d:.45,det:-30},{m:64,s:1.75,d:1.15,det:-15}];
 }
 
-/* ---------- Drill (Version A / B) ---------- */
+/* ---------- Drill ---------- */
 SCREENS.drill = function(){
-  var d = S.drill, isB = S.variant === "B", rec = d.phase === "recording" || d.phase === "countin", busy = rec || d.phase === "judging", bpm = drillBpm();
-  var h = hdr(backBtn("to-feedback", "Back to take feedback"), "Drill · bar 42", "Version " + S.variant + (isB ? " · coach adapts" : " · you set support"));
+  var d = S.drill, rec = d.phase === "recording" || d.phase === "countin", busy = rec || d.phase === "judging";
+  var h = hdr(backBtn("to-feedback", "Back to take feedback"), "Drill · bar 42", "Viva La Vida · Tenor");
   h += '<div class="body">';
-  h += '<div class="row"><span class="sub">Viva La Vida · Tenor</span><span class="badge o">' + I.flag + 'Bar 42 · flat, rushed</span></div>';
   var chunk = d.chunk !== null ? CHUNKS[d.chunk] : null;
-  h += '<section class="card" aria-label="Passage"><div class="scap"><span class="sub">' + (chunk ? "Looping bar 42 · " + chunk.name : "Looping bar 42") + '</span>' + (rec ? '<span class="recl"><span class="recdot"></span>Recording</span>' : '') + '</div>' +
+  h += '<section class="card" aria-label="Passage"><div class="scap"><span class="sub">' + (chunk ? "Looping bar 42 · " + chunk.name : "Looping bar 42") + '</span>' + (rec ? '<span class="recl"><span class="recdot"></span>' + (d.phase === "countin" ? "Count-in" : 'Recording <span class="tnum" data-rtime>0.0</span> of ' + barSecs().toFixed(1) + ' s') + '</span>' : '') + '</div>' +
     '<div class="score" style="width:' + SCORE_W + 'px;max-width:100%">' + staff([41, 42, 43], SCORE_W, {focus:42, guide:d.guidance ? 42 : null, names:d.guidance, chunk:chunk, chunkBar:42}) + '<div class="ph" data-ph style="top:8px;height:58px"></div>' +
     (d.phase === "countin" ? '<div class="countin" data-count>' + (d.countBeat + 1) + '</div>' : '') + '</div>';
-  h += '<div style="padding:0 12px 10px">' + (rec ? meterHTML() : '<span class="hint">' + (d.guidance ? "Guidance on: count-in, pitch line and note names shown" : "Guidance off") + '</span>') + '</div></section>';
-  if (!isB){
-    h += '<section class="card" data-tour="set" style="padding:2px 14px" aria-label="Practice settings"><div class="set-row"><span class="lbl">Tempo</span><div class="stepper">';
-    if (d.editingBpm) h += '<div class="bpm-edit"><input id="dr-bpm" type="number" inputmode="numeric" min="69" max="138" value="' + bpm + '" aria-label="Exact tempo in BPM" data-bpm-input="dr"><span class="hint">BPM</span><button class="done" data-act="bpm-done" data-arg="dr">Done</button></div>';
-    else h += '<button class="sbtn" data-act="dr-slower" aria-label="Slower"' + (busy ? " disabled" : "") + '>−</button><button class="bpm-btn" data-act="bpm-edit" data-arg="dr" aria-label="Tempo ' + bpm + ' BPM, tap to type an exact value"' + (busy ? " disabled" : "") + '><b>' + bpm + ' BPM</b><span> · ' + Math.round(d.tempo) + '%</span></button><button class="sbtn" data-act="dr-faster" aria-label="Faster"' + (busy ? " disabled" : "") + '>+</button>';
-    h += '</div></div>' + (d.bpmError ? '<div class="err" role="alert" style="padding-bottom:8px">' + esc(d.bpmError) + '</div>' : '');
-    h += '<div class="set-row"><div><div class="lbl">Guidance</div><div class="hint">Count-in, pitch line, note names</div></div>' + sw("dr-guidance", d.guidance, "Guidance") + '</div></section>';
-  } else {
-    var stage = d.guidance ? (d.tempo < 100 ? 0 : 1) : 2, names = ["Guided, slower", "Guided, full speed", "On your own"];
-    h += '<section class="card" data-tour="set" style="padding:0 14px" aria-label="Coach-controlled settings"><div class="coach-head"><span class="lbl" style="font-size:14px">' + (chunk ? "One beat at a time · " + (d.chunk + 1) + " of 3" : "Step " + (stage + 1) + " of 3 · " + names[stage]) + '</span><span class="coach-tag">' + I.lock + 'Set by coach</span></div><div class="dsteps">';
-    for (var i = 0; i < 3; i++) h += '<div><div class="bar' + (i <= stage ? " on" : "") + '"></div><div class="t' + (i === stage ? " on" : "") + '">' + names[i] + '</div></div>';
-    h += '</div><div class="ro"><div><div class="k">Tempo</div><div class="v">' + bpm + ' BPM <span class="hint">· ' + d.tempo + '%</span></div></div><div><div class="k">Guidance</div><div class="v">' + (d.guidance ? "On" : "Off") + '</div></div></div></section>';
-  }
-  h += '<section class="card pad" data-tour="takes" style="display:flex;flex-direction:column;gap:8px"><div style="font-size:14px"><b>Goal:</b> 2 clean takes in a row at 100% tempo, guidance off</div><div class="slots">';
-  for (var j = 0; j < 2; j++){ var done = j < d.streak; h += '<div class="slot' + (done ? " done" : "") + '">' + (done ? I.tick(14) + "Clean " + (j + 1) : "Take " + (j + 1)) + '</div>'; }
+  h += '<div style="padding:0 12px 10px">' + (rec ? meterHTML(d.phase === "recording") : '<span class="hint">' + (d.guidance ? "Guidance on" : "Guidance off") + '</span>') + '</div></section>';
+  var stage = d.guidance ? (d.tempo < 100 ? 0 : 1) : 2, names = ["Guided, slower", "Guided, full speed", "On your own"];
+  h += '<section class="card" data-tour="set" style="padding:0 14px" aria-label="Coach-controlled settings"><div class="coach-head"><span class="lbl" style="font-size:14px">' + (chunk ? "One beat at a time · " + (d.chunk + 1) + " of 3" : "Step " + (stage + 1) + " of 3 · " + names[stage]) + '</span><span class="coach-tag">' + I.lock + 'Set by coach</span></div><div class="dsteps">';
+  for (var i = 0; i < 3; i++) h += '<div><div class="bar' + (i <= stage ? " on" : "") + '"></div><div class="t' + (i === stage ? " on" : "") + '">' + names[i] + '</div></div>';
+  h += '</div></section>';
+  h += '<section class="card pad" data-tour="takes" style="display:flex;flex-direction:column;gap:8px"><div class="row"><span style="font-size:14px"><b>Goal:</b> 2 clean takes in a row</span><button class="link" style="padding:0" data-act="dr-clean-info" aria-expanded="' + !!d.cleanInfo + '">What counts as clean?</button></div>';
+  if (d.cleanInfo) h += '<div style="font-size:13px;background:var(--sunk);border-radius:10px;padding:8px 10px">Right notes, on the beat, long note held 2 beats.</div>';
+  h += '<div class="lbl" style="font-size:14px">Clean in a row: ' + d.streak + ' of 2</div><div class="slots">';
+  for (var j = 0; j < 2; j++){ var done = j < d.streak; h += '<div class="slot' + (done ? " done" : j === d.streak ? " next" : "") + '">' + (done ? I.tick(14) + "Clean" : String(j + 1)) + '</div>'; }
   h += '</div><div class="row"><span class="hint">Takes</span>' + (d.takes.length ? '<span class="saved">' + I.tick(12) + 'Autosaved · ' + d.takes.length + (d.takes.length === 1 ? " take" : " takes") + '</span>' : '') + '</div><div class="chips">';
   h += d.takes.length ? d.takes.slice(-6).map(function(t){
     var lab = "#" + t.n + " · " + t.tempo + "%" + (t.guidance ? " · guided" : "") + (t.chunk !== null ? " · " + CHUNKS[t.chunk].name.split(" ·")[0].toLowerCase() : "") + (t.clean ? "" : " · " + MISS[t.reason].short);
     return '<span class="chip ' + (t.clean ? "clean" : "miss") + '">' + (t.clean ? I.tick(12) : I.cross(12)) + esc(lab) + '</span>';
   }).join("") : '<span class="sub">No takes yet</span>';
   h += '</div></section>';
-  var res = null;
-  if (isB) res = {cls: d.last ? (d.last.clean ? "clean" : "miss") : "", text: d.msg};
-  else if (d.last) res = !d.last.clean ? {cls:"miss", text:"Missed: " + MISS[d.last.reason].long + ". Try again."} : d.last.atTarget ? {cls:"clean", text:"Clean. " + d.streak + " of 2 at the goal settings."} : {cls:"clean", text:"Clean, but the goal needs 100% tempo with guidance off."};
+  var res = {cls: d.last ? (d.last.clean ? "clean" : "miss") : "", text: d.msg};
   if (res){
-    h += '<section class="card pad" aria-live="polite" style="display:flex;flex-direction:column;gap:8px"><div class="msg ' + res.cls + '">' + (isB ? '<span style="color:var(--blue);flex:none">' + I.coach + '</span>' : '') + '<span>' + esc(res.text) + '</span></div>';
+    h += '<section class="card pad" aria-live="polite" style="display:flex;flex-direction:column;gap:8px"><div class="msg ' + res.cls + '"><span style="color:var(--blue);flex:none">' + I.coach + '</span><span>' + esc(res.text) + '</span></div>';
     if (d.last && d.phase === "idle") h += '<div class="acts"><button class="mini" data-act="dr-playback" aria-pressed="' + d.playingBack + '">' + (d.playingBack ? I.pause + "Pause take #" : I.play + "Play back take #") + d.last.n + '</button>' + (d.undo ? '<button class="mini danger" data-act="dr-ask-discard">Discard take</button>' : '') + '</div>';
     h += '</section>';
   }
   h += '</div>';
-  var playText = d.playing ? "Pause" : (d.pos > 0 ? "Resume" : "Play bar 42");
+  var playText = d.playing ? "Pause" : (d.refStarted && d.pos > 0 ? "Resume" : "Hear reference");
   h += '<footer class="ftr"><button class="btn sec" data-act="dr-play" data-tour="play"' + (busy ? " disabled" : "") + '>' + (d.playing ? I.pause : I.play) + playText + '</button>';
   h += rec ? '<button class="btn stop" data-act="dr-end" data-tour="record"><span class="sq"></span>End take</button>' : '<button class="btn rec" data-act="dr-record" data-tour="record"' + (d.phase === "judging" ? " disabled" : "") + '><span class="dot"></span>Record take</button>';
   return h + '</footer>';
 };
 
+// Bridge bars still to fix after bar 42, most frequent first. Same wording on Passage Complete and Session Summary.
+var TODO = [
+  {bar:38, name:"Came in early", loop:[37,40]},
+  {bar:40, name:"Uneven quick notes", loop:[39,41]},
+  {bar:35, name:"Long note a bit low", loop:[34,36]},
+  {bar:46, name:"Same jump as bar 42", loop:[45,47]}
+];
+var BAR42 = {name:"the high run into the held note", before:58, after:92};
+// One source for session numbers so both screens always agree. If the viewer jumps straight
+// here from the guide rail, the drill falls back to the scripted 9 takes (4 clean).
+function sessionStats(){
+  var d = S.drill || freshDrill(), real = d.takes.length > 0;
+  var n = real ? d.takes.length : 9, clean = real ? d.takes.filter(function(t){ return t.clean; }).length : 4;
+  var barMin = Math.max(4, Math.round(n * .9)), passages = S.takes.length;
+  var mins = Math.max(Math.round((Date.now() - T0) / 60000), barMin + passages * 2 + 4);
+  return {drill:n, clean:clean, barMin:barMin, passages:passages, mins:mins};
+}
+function todoRows(withKeep){
+  var rows = TODO.slice();
+  if (withKeep && S.session.keep42) rows.push({bar:42, name:"Check again", loop:[41,43]});
+  return rows.map(function(t, i){
+    return '<button class="todo" data-act="go-bar" data-arg="' + t.bar + '"><span class="tn">' + (i + 1) + '</span><span class="tb"><b>Bar ' + t.bar + (i === 0 && withKeep !== undefined ? ' <span class="badge b" style="margin-left:4px">Start here</span>' : '') + '</b><span>' + t.name + '</span></span>' +
+      '<span class="chev">' + I.chev + '</span></button>';
+  }).join("");
+}
+function baBtn(){
+  var on = S.baPlaying;
+  return '<button class="mini' + (on ? " on" : "") + '" style="align-self:flex-start" data-act="hear-ba">' + (on ? I.pause + "Pause" : I.play + "Hear before / after") + '</button>';
+}
+
 SCREENS.complete = function(){
-  var d = S.drill || freshDrill(), n = d.takes.length || 9;
-  var h = hdr(backBtn("to-drill", "Back to drill"), "Passage complete", "Viva La Vida · Tenor");
-  h += '<div class="body" style="gap:14px"><div style="display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding-top:8px"><span class="big-ic">' + I.tick(30) + '</span><div class="h1">Bar 42 mastered</div><p class="lead">2 clean takes in a row at full speed, guidance off. Progress saved to this song.</p></div>';
-  h += '<div class="stat3"><div><b>' + n + '</b><span>drill takes</span></div><div><b>64→88</b><span>bar 42 pitch</span></div><div><b>' + Math.max(4, Math.round(n * .9)) + ' min</b><span>on this bar</span></div></div>';
-  h += '<section class="card pad" style="display:flex;flex-direction:column;gap:6px"><div class="eyebrow">Still to check in the bridge</div><div class="hist">' +
-    '<div><span><b>Bar 38</b> · timing</span><span class="sub">came in early after the rest</span></div><div><span><b>Bar 40</b> · timing</span><span class="sub">eighth-note run uneven</span></div><div><span><b>Bar 35</b> · pitch</span><span class="sub">slightly flat on C</span></div></div></section></div>';
-  h += '<footer class="ftr col" data-tour="next"><button class="btn ghost full" data-act="next-problem">Next problem: bar 38 → Practice workspace</button><button class="btn ghost full" data-act="repeat-drill">Repeat drill on bar 42</button><button class="btn pri full" data-act="end-session">End session → Summary</button></footer>';
+  var st = sessionStats();
+  var h = hdr(backBtn("to-workspace", "Back to practice workspace"), "Passage complete", "Viva La Vida · Tenor");
+  h += '<div class="body" style="gap:14px"><div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding-top:8px"><span class="big-ic">' + I.tick(30) + '</span><div class="h1">Bar 42 mastered</div>' +
+    '<button class="link" data-act="keep42" aria-pressed="' + !!S.session.keep42 + '">' + (S.session.keep42 ? I.tick(14) + " On your list" : "Keep on my list") + '</button></div>';
+  h += '<div data-tour="stats" style="display:flex;flex-direction:column;gap:8px"><div class="stat3"><div><b>' + st.drill + '</b><span>drill takes</span></div><div><b>' + BAR42.before + ' → ' + BAR42.after + '</b><span>bar 42 score</span></div><div><b>' + st.barMin + ' min</b><span>on this bar</span></div></div>' +
+    baBtn() + '</div>';
+  h += '<section class="card pad" data-tour="todo" style="display:flex;flex-direction:column;gap:4px"><div class="eyebrow">Still to fix</div>' + todoRows() +
+    '</section></div>';
+  h += '<footer class="ftr col" data-tour="next"><button class="btn ghost full" data-act="next-problem">Practise bar 38 next</button><button class="btn ghost full" data-act="repeat-drill">Repeat bar 42 drill</button><button class="btn pri full" data-act="end-session">End session</button></footer>';
   return h;
 };
 
 SCREENS.summary = function(){
-  var mins = Math.max(1, Math.round((Date.now() - T0) / 60000)), dt = S.drill ? S.drill.takes.length : 0;
-  var h = hdr(backBtn("to-complete", "Back to passage complete"), "Session summary", "Sunday evening");
-  h += '<div class="body" style="gap:12px"><div class="h1">Good work on the bridge</div><p class="lead">Combined practice is on Wednesday. You have 2 more evenings to practise.</p>';
-  h += '<div class="stat3"><div><b>' + mins + ' min</b><span>practised</span></div><div><b>' + S.takes.length + '</b><span>passage takes</span></div><div><b>' + dt + '</b><span>drill takes</span></div></div>';
-  h += '<section class="card pad" style="display:flex;flex-direction:column;gap:6px"><div class="eyebrow">Mastered tonight</div><div class="row"><span class="lbl">Bar 42 · high run and held note</span><span class="badge g">' + I.tick(12) + 'Mastered</span></div><div class="sub">Pitch on bar 42 went from 64 to 88.</div></section>';
-  h += '<section class="card pad" style="display:flex;flex-direction:column;gap:2px"><div class="eyebrow">All takes</div><div class="hist">';
-  S.takes.forEach(function(t){ h += '<div><span>Take ' + t.n + ' · bars 33–48</span><span class="tnum">' + t.overall + ' overall' + (t.saved ? ' · saved' : '') + '</span></div>'; });
-  if (dt) h += '<div><span>Drill · bar 42</span><span class="tnum">' + dt + ' takes · ' + S.drill.takes.filter(function(t){ return t.clean; }).length + ' clean</span></div>';
-  if (!S.takes.length && !dt) h += '<div><span class="sub">No takes recorded</span></div>';
+  var st = sessionStats();
+  var h = hdr(null, "Session summary", "Viva La Vida · Tenor · Sun 25 Oct");
+  h += '<div class="body" style="gap:12px"><div class="row"><span class="saved">' + I.tick(12) + 'Session saved</span></div>';
+  h += '<div class="h1">Good work on the bridge</div><p class="lead">Combined practice: Wed 28 Oct. <button class="link" style="padding:0" data-act="edit-date">Change date</button></p>' + (S.dateNote ? '<p class="hint" style="margin:0">Not in this prototype.</p>' : '');
+  h += '<div class="stat3"><div><b>' + st.mins + ' min</b><span>practised</span></div><div><b>' + st.passages + '</b><span>passage take' + (st.passages === 1 ? '' : 's') + '</span></div><div><b>' + st.drill + '</b><span>drill takes</span></div></div>';
+  h += '<section class="card pad" style="display:flex;flex-direction:column;gap:6px"><div class="eyebrow">Tonight\'s win</div><div class="lbl" style="display:flex;gap:6px;align-items:center"><span style="color:var(--green);display:flex">' + I.tick(16) + '</span>Bar 42 mastered</div>' +
+    '<div class="sub">' + BAR42.before + ' → ' + BAR42.after + (S.session.keep42 ? ' · On your list' : '') + '</div>' + baBtn() + '</section>';
+  h += '<section class="card pad" data-tour="takes" style="display:flex;flex-direction:column;gap:2px"><div class="eyebrow">Takes tonight</div><div class="hist">';
+  S.takes.forEach(function(t){
+    var open = S.openTake === t.n;
+    h += '<button class="trow" data-act="take-open" data-arg="' + t.n + '" aria-expanded="' + open + '"><span>Take ' + t.n + (t.saved ? ' · saved' : '') + '</span><span class="tnum">' + t.overall + ' / 100 · ' + label(t.overall)[0] + ' <span class="chev' + (open ? ' up' : '') + '">' + I.chev + '</span></span></button>';
+    if (open) h += '<div class="tdet"><span>Pitch ' + t.pitch + '</span><span>Timing ' + t.timing + '</span><span>Held notes ' + t.held + '</span></div>';
+  });
+  h += '<div><span>Drill · bar 42</span><span class="tnum">' + st.drill + ' takes · ' + st.clean + ' clean</span></div>';
   h += '</div></section>';
-  h += '<section class="card pad prio" data-tour="next" style="display:flex;flex-direction:column;gap:6px"><span class="badge o" style="align-self:flex-start">Suggested next</span><div class="lbl" style="font-size:16px">Bar 38 · entry after the rest</div><div class="sub">You came in early on beat 2 in every take. About 10 minutes, good for the MRT tomorrow.</div></section>';
-  h += '</div><footer class="ftr"><button class="btn pri" data-act="done">Done</button></footer>';
+  h += '<section class="card pad nextc" data-tour="next" style="display:flex;flex-direction:column;gap:4px"><div class="eyebrow">Still to fix before Wednesday</div>' + todoRows(true) +
+    '<button class="btn ghost full" style="height:46px" data-act="next-problem">' + I.play + 'Practise bar 38 now</button>' +
+    '<div class="set-row remind"><span class="lbl">Remind me tomorrow, 7 pm</span>' + sw("remind", !!S.session.remind, "Remind me tomorrow at 7 pm") + '</div></section>';
+  h += '</div><footer class="ftr"><button class="btn pri" data-act="done">Back to library</button></footer>';
   return h;
 };
 
@@ -1011,50 +1133,59 @@ function overlays(){
   var h = "", sh = S.sheet, d = S.drill;
   if (sh === "pick"){
     var kind = S.pickKind, files = kind === "score" ?
-      [{name:"VivaLaVida_VOIX_SATB.pdf", size:"2.1 MB", meta:"PDF · shared by music director, Sun 6:12 pm"},{name:"IMG_4021.HEIC", size:"3.4 MB", meta:"Photo of the score, Sun 6:15 pm", bad:true}] :
-      [{name:"VivaLaVida_tenor_learning.mid", size:"38 KB", meta:"MIDI · shared by music director, Sun 6:12 pm"},{name:"VivaLaVida_full_mix.mp3", size:"4.8 MB", meta:"MP3 · all parts, Sun 6:13 pm"}];
-    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Choose a file"><div class="row"><h3>Choose ' + (kind === "score" ? "the score" : "the learning track") + '</h3><button class="ib" data-act="close" aria-label="Close">' + I.close + '</button></div><p>Recent downloads · Telegram, SMU VOIX</p>';
+      [{name:"VivaLaVida_VOIX_SATB.pdf", size:"2.1 MB", meta:"PDF · saved from Telegram, Sun 6:12 pm"},{name:"IMG_4021.HEIC", size:"3.4 MB", meta:"Photo of the score, Sun 6:15 pm", bad:true}] :
+      [{name:"VivaLaVida_tenor_learning.mid", size:"38 KB", meta:"MIDI · saved from Telegram, Sun 6:12 pm"},{name:"VivaLaVida_full_mix.mp3", size:"4.8 MB", meta:"MP3 · all parts, Sun 6:13 pm"}];
+    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Choose a file"><div class="row"><h3>Choose ' + (kind === "score" ? "the score" : "the learning track") + '</h3><button class="ib" data-act="close" aria-label="Close">' + I.close + '</button></div><p>Recent files</p>';
     files.forEach(function(f, i){ h += '<button class="opt" data-act="pick-file" data-arg="' + i + '"><span class="fi" style="width:36px;height:36px;border-radius:10px;background:var(--sunk);display:flex;align-items:center;justify-content:center;flex:none">' + (kind === "score" ? I.doc : I.note) + '</span><span><span class="ot">' + esc(f.name) + '</span><span class="od">' + esc(f.meta) + '</span></span></button>'; });
     h += '</div></div>';
     S._pickFiles = files;
   }
   if (sh === "parts-vol"){
     var w = S.ws;
-    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Part volumes"><div class="row"><h3>Part volumes</h3><button class="ib" data-act="close" aria-label="Close">' + I.close + '</button></div><p>Turn your own line up to learn it, or down to test yourself against the other parts.</p>';
+    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Part volumes"><div class="row"><h3>Part volumes</h3><button class="ib" data-act="close" aria-label="Close">' + I.close + '</button></div>';
     [["tenor","Tenor (your part)",w.tenorVol,w.tenorMute],["others","Soprano, alto, bass",w.othersVol,w.othersMute]].forEach(function(p){
-      h += '<div style="display:flex;flex-direction:column;gap:6px"><div class="row"><span class="lbl">' + p[1] + '</span><span class="row" style="gap:6px"><span class="tnum sub" data-vol-out="' + p[0] + '">' + p[2] + '%</span><button class="mini' + (p[3] ? " on" : "") + '" aria-pressed="' + p[3] + '" data-act="mute" data-arg="' + p[0] + '">' + (p[3] ? "Muted" : "Mute") + '</button></span></div><input id="vol-' + p[0] + '" type="range" min="0" max="100" step="5" value="' + p[2] + '" aria-label="' + p[1] + ' volume" data-input="vol-' + p[0] + '"></div>';
+      h += '<div style="display:flex;flex-direction:column;gap:6px"><div class="row"><span class="lbl">' + p[1] + '</span><span class="row" style="gap:6px"><span class="tnum sub" data-vol-out="' + p[0] + '">' + (p[3] ? "Muted" : p[2] + "%") + '</span><button class="mini' + (p[3] ? " on" : "") + '" aria-pressed="' + p[3] + '" data-act="mute" data-arg="' + p[0] + '">' + (p[3] ? "Muted" : "Mute") + '</button></span></div><input id="vol-' + p[0] + '" type="range" min="0" max="100" step="5" value="' + p[2] + '" aria-label="' + p[1] + ' volume" data-input="vol-' + p[0] + '"' + (p[3] ? " disabled" : "") + '></div>';
     });
     h += '<button class="btn pri full" data-act="close">Done</button></div></div>';
   }
   if (sh === "off-loop"){
-    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Loop outside the scenario"><h3>Record the bridge for this prototype</h3><p>The coach\'s feedback in this prototype is scripted for the bridge, bars 33–48. Your loop is bars ' + S.ws.loopA + '–' + S.ws.loopB + '.</p><button class="btn pri full" data-act="set-bridge-record">Set loop to bars 33–48 and record</button><button class="btn ghost full" data-act="close">Keep my loop</button></div></div>';
+    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Loop outside the scenario"><h3>Use bars 33–48?</h3><p>This prototype only checks bars 33–48.</p><button class="btn pri full" data-act="set-bridge-record">Use bars 33–48</button><button class="btn ghost full" data-act="close">Keep my loop</button></div></div>';
+  }
+  if (sh === "mic"){
+    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Microphone is off"><h3>Microphone is off</h3><p>Allow ResoNote to use the microphone in Settings.</p><button class="btn pri full" data-act="mic-retry">Try again</button><button class="btn ghost full" data-act="close">Not now</button></div></div>';
+  }
+  if (sh === "mic-ask"){
+    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Allow the microphone"><h3>Let ResoNote hear you sing?</h3><p>The coach needs the microphone to hear your take. It only listens while you record.</p><button class="btn pri full" data-act="mic-allow">Allow microphone</button><button class="btn ghost full" data-act="close">Not now</button></div></div>';
+  }
+  if (sh === "sync-warn"){
+    var off2 = Math.abs(S.sync.offset - SYNC_TRUE).toFixed(2);
+    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Track not lined up"><h3>Track is still ' + off2 + ' s off</h3><p>The playhead and feedback won\'t match the score until the first sung note sits on bar 1.</p><button class="btn pri full" data-act="close">Keep lining up</button><button class="btn ghost full" data-act="sync-force">Confirm anyway</button></div></div>';
   }
   if (sh === "rec-cancel"){
-    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Cancel recording"><h3>Stop and delete this recording?</h3><p>Nothing from this take will be saved. You\'ll go back to the practice workspace.</p><button class="btn danger full" data-act="rec-cancel-yes">Delete recording</button><button class="btn ghost full" data-act="rec-cancel-no">Keep recording</button></div></div>';
+    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Cancel recording"><h3>Stop and delete this recording?</h3><p>Nothing will be saved.</p><button class="btn danger full" data-act="rec-cancel-yes">Delete recording</button><button class="btn ghost full" data-act="rec-cancel-no">Keep recording</button></div></div>';
   }
   if (sh === "judging" || (d && d.phase === "judging" && S.view === "drill")){
-    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Checking your take"><h3>Checking your take…</h3><p>Comparing your pitch and timing with ' + (S.view === "drill" ? "bar 42" : "bars " + S.ws.loopA + "–" + S.ws.loopB) + ' of the tenor part.</p><div style="height:6px;border-radius:3px;background:var(--line);overflow:hidden"><i data-judge style="display:block;height:100%;width:0;background:var(--blue)"></i></div></div></div>';
+    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Checking your take"><h3>Checking your take…</h3><div style="height:6px;border-radius:3px;background:var(--line);overflow:hidden"><i data-judge style="display:block;height:100%;width:0;background:var(--blue)"></i></div></div></div>';
   }
   if (sh === "discard-take"){
-    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Discard take"><h3>Discard take ' + S.cur.n + '?</h3><p>The recording and its feedback will be deleted. You\'ll go back to the practice workspace.</p><button class="btn danger full" data-act="discard-take">Discard take</button><button class="btn ghost full" data-act="close">Keep take</button></div></div>';
+    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Discard take"><h3>Discard take ' + S.cur.n + '?</h3><p>This can\'t be undone.</p><button class="btn danger full" data-act="discard-take">Discard take</button><button class="btn ghost full" data-act="close">Keep take</button></div></div>';
   }
   if (S.view === "drill" && d){
     if (d.sheet === "adjust"){
       var opts = [
-        {id:"beats", title:"Practise one beat at a time", detail:"Beat 1, beat 2, then the held note. Then the whole bar again."},
-        {id:"slow", title:"Slow down", detail:"Tempo down to 80%"},
-        {id:"restore", title:"Bring back guidance", detail:"Count-in, pitch line and note names"}
+        {id:"beats", title:"Practise one beat at a time", detail:"Then the whole bar."},
+        {id:"slow", title:"Slow down", detail:"80% speed"},
+        {id:"restore", title:"Bring back guidance", detail:"Count-in and note names"}
       ];
-      var recent = d.takes.slice(-2).map(function(t){ return MISS[t.reason].short; }).join(", then ");
-      h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Adjust the drill"><h3>Not yet. Let\'s make it easier for a moment.</h3><p>2 misses in a row on your own at full speed (' + recent + '). Pick one change, then try again.</p><div style="display:flex;flex-direction:column;gap:8px" role="radiogroup" aria-label="Adjustment">';
+      h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Adjust the drill"><h3>Make it easier?</h3><p>2 misses in a row. Pick one.</p><div style="display:flex;flex-direction:column;gap:8px" role="radiogroup" aria-label="Adjustment">';
       opts.forEach(function(o){ var on = d.choice === o.id; h += '<button class="opt' + (on ? " on" : "") + '" role="radio" aria-checked="' + on + '" data-act="dr-choice" data-arg="' + o.id + '"><span class="radio"></span><span><span class="ot">' + o.title + '</span><span class="od">' + o.detail + '</span></span></button>'; });
       h += '</div><button class="btn pri full" data-act="dr-apply">Try again</button></div></div>';
     }
     if (d.sheet === "discard"){
-      h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Discard take"><h3>Discard take #' + d.takes.length + '?</h3><p>It will be removed from your takes and won\'t count toward the goal.' + (S.variant === "B" ? " The coach's settings go back to what they were before this take." : "") + '</p><button class="btn danger full" data-act="dr-discard">Discard take</button><button class="btn ghost full" data-act="dr-close">Keep take</button></div></div>';
+      h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Discard take"><h3>Discard take #' + d.takes.length + '?</h3><p>It won\'t count toward the goal.</p><button class="btn danger full" data-act="dr-discard">Discard take</button><button class="btn ghost full" data-act="dr-close">Keep take</button></div></div>';
     }
     if (d.sheet === "done"){
-      h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Bar mastered"><span class="big-ic" style="width:48px;height:48px">' + I.tick(26) + '</span><h3 style="font-size:22px">Bar 42 mastered</h3><p>2 clean takes in a row at 100% tempo, guidance off. ' + d.takes.length + ' takes in total, all autosaved.</p><button class="btn pri full" data-act="to-complete">Continue</button><button class="btn ghost full" data-act="dr-reset">Practise this bar again</button></div></div>';
+      h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Bar mastered"><span class="big-ic" style="width:48px;height:48px">' + I.tick(26) + '</span><h3 style="font-size:22px">Bar 42 mastered</h3><p>2 clean takes in a row. All takes saved.</p><button class="btn pri full" data-act="to-complete">Continue</button><button class="btn ghost full" data-act="dr-reset">Practise this bar again</button></div></div>';
     }
   }
   if (S.toast) h += '<div class="toast" role="status"><span>' + esc(S.toast) + '</span><button data-act="toast-ok">OK</button></div>';
@@ -1074,7 +1205,10 @@ function render(){
   var nb = phone.querySelector(".body"); if (nb) nb.scrollTop = keep;
   S._lastView = S.view;
   if (S.sheet === "tour") placeTour();
+  phone.querySelectorAll("input[type=range]").forEach(rangeFill);
   var bi = phone.querySelector("[data-bpm-input]"); if (bi){ bi.focus(); bi.select(); }
+  var ks = phone.querySelector("[data-kbscroll]");
+  if (ks){ ks.scrollLeft = S._kbScroll !== undefined ? S._kbScroll : 2 * 44; ks.addEventListener("scroll", function(){ S._kbScroll = ks.scrollLeft; }); }
   drawDynamic();
   renderGuide();
 }
@@ -1095,10 +1229,9 @@ function renderGuide(){
   h += '<div><h1>ResoNote Prototype 2.0</h1><p class="lede">G1T2 · IS211 Iteration 2 · Easy scenario: Clarence learns the tenor part of "Viva La Vida" before Wednesday\'s combined practice.</p></div>';
   h += '<section class="gcard gnow" aria-live="polite"><h2>View ' + (viewIndex(S.view) + 1) + ' of ' + VIEWS.length + '</h2><div class="vn">' + v.name + '</div><p>' + v.does + '</p><dl><dt>Low-fi</dt><dd>Iter1.4 ' + v.lofi + '</dd><dt>HE fixes</dt><dd><ul>' +
     v.he.map(function(x){ return '<li><span class="he">' + x[0] + '</span>' + x[1] + '</li>'; }).join("") + '</ul></dd><dt>Simulated</dt><dd>' + v.sim + '</dd></dl></section>';
-  h += '<section class="gcard"><h2>Drill version (A/B candidate)</h2><div class="seg"><button aria-pressed="' + (S.variant === "A") + '" data-gact="variant" data-arg="A">A · you set tempo and guidance</button><button aria-pressed="' + (S.variant === "B") + '" data-gact="variant" data-arg="B">B · coach adapts support</button></div><p class="gsmall">B follows the easy scenario (adjusts to one beat at a time after 2 misses). Switching resets the drill.</p></section>';
   h += '<section class="gcard"><h2>Jump to a view</h2><ol class="vlist">';
   VIEWS.forEach(function(x, i){ h += '<li><button data-gact="jump" data-arg="' + x.id + '" aria-current="' + (x.id === S.view) + '"><span class="n">' + (i + 1) + '</span>' + x.name + '</button></li>'; });
-  h += '</ol><div class="grow"><button class="gbtn" data-gact="reset">Restart scenario</button></div><p class="gsmall">Jumping fills in earlier steps with scenario data. Sound plays through Web Audio after your first tap; turn your volume up.</p></section>';
+  h += '</ol><div class="grow"><button class="gbtn" data-gact="reset">Restart scenario</button><button class="gbtn" data-gact="mic" aria-pressed="' + !!S.micBlocked + '">Microphone: ' + (S.micBlocked ? "blocked" : "allowed") + '</button></div><p class="gsmall">Jumping fills in earlier steps with scenario data. Sound plays through Web Audio after your first tap; turn your volume up.</p></section>';
   guide.innerHTML = h;
 }
 
@@ -1112,7 +1245,7 @@ function go(view){
   try { history.replaceState(null, "", "#" + view); } catch(e){}
 }
 function stopAll(){
-  S.ws.playing = false; S.sync.playing = false; S.issue.playing = null;
+  S.ws.playing = false; S.sync.playing = false; S.issue.playing = null; S.baPlaying = false; stopTones();
   if (S.drill){ S.drill.playing = false; S.drill.playingBack = false; }
 }
 function ensureSong(){
@@ -1151,6 +1284,7 @@ function finishRecording(){
 
 /* ================= Drill logic ================= */
 function drillSnapshot(){ var d = S.drill; return JSON.stringify({tempo:d.tempo, guidance:d.guidance, chunk:d.chunk, takes:d.takes, streak:d.streak, misses:d.misses, targetTries:d.targetTries, msg:d.msg, last:d.last}); }
+function barSecs(){ var r = drillRange(); return (r.b - r.a) * 240 / drillBpm(); }
 function drillRange(){ var d = S.drill, c = d.chunk !== null ? CHUNKS[d.chunk] : {a:0, b:4}; return {a:41 + c.a / 4, b:41 + c.b / 4}; }
 function judgeDrill(){
   // Scripted: the first 2 takes at the goal settings (whole bar, 100%, guidance off) are missed.
@@ -1159,38 +1293,33 @@ function judgeDrill(){
   return {clean:true, atTarget:atTarget};
 }
 function markDrill(){
-  var d = S.drill, r = judgeDrill(), isB = S.variant === "B";
+  var d = S.drill, r = judgeDrill();
   d.undo = drillSnapshot();
   if (r.atTarget) d.targetTries++;
   var take = {n:d.takes.length + 1, tempo:d.tempo, guidance:d.guidance, chunk:d.chunk, clean:r.clean, reason:r.reason || null};
   d.takes = d.takes.concat([take]); d.phase = "idle"; S.session.drillTakes++;
-  if (!isB){
-    d.streak = r.clean && r.atTarget ? d.streak + 1 : 0;
-    d.last = {clean:r.clean, atTarget:r.atTarget, reason:r.reason, n:take.n};
-    if (d.streak >= 2) d.sheet = "done";
-  } else {
-    d.last = {clean:r.clean, reason:r.reason, n:take.n};
-    if (r.clean){
-      d.misses = 0;
-      if (d.chunk !== null){
-        if (d.chunk < 2){ d.chunk++; d.msg = "Clean. Now " + CHUNKS[d.chunk].name.toLowerCase() + "."; }
-        else { d.chunk = null; d.streak = 0; d.msg = "All three pieces clean. Put them together: the whole bar, full speed, on your own."; }
-      }
-      else if (d.tempo < 100){ d.tempo = 100; d.streak = 0; d.msg = "Clean! Tempo up to 100%. Guidance stays on for now."; }
-      else if (d.guidance){ d.guidance = false; d.streak = 0; d.msg = "Clean at full speed. Guidance off: this one's all you."; }
-      else { d.streak++; if (d.streak >= 2){ d.sheet = "done"; d.msg = "Mastered."; } else d.msg = "1 of 2 clean on your own. One more like that."; }
-    } else {
-      d.streak = 0; d.misses++;
-      var why = MISS[r.reason].long;
-      if (d.misses >= 2){ d.sheet = "adjust"; d.choice = "beats"; d.msg = "Not yet: " + why + ". Let's make it easier for a moment."; }
-      else d.msg = "Not quite: " + why + ". Same settings, once more.";
+  d.last = {clean:r.clean, reason:r.reason, n:take.n};
+  if (r.clean){
+    d.misses = 0;
+    if (d.chunk !== null){
+      if (d.chunk < 2){ d.chunk++; d.msg = "Clean. Now " + CHUNKS[d.chunk].name.toLowerCase() + "."; }
+      else { d.chunk = null; d.streak = 0; d.msg = "Now the whole bar, on your own."; }
     }
+    else if (d.tempo < 100){ d.tempo = 100; d.streak = 0; d.msg = "Clean! Now full speed."; }
+    else if (d.guidance){ d.guidance = false; d.streak = 0; d.msg = "Clean! Now without guidance."; }
+    else { d.streak++; if (d.streak >= 2){ d.sheet = "done"; d.msg = "Mastered."; } else d.msg = "1 of 2. One more."; }
+  } else {
+    d.streak = 0; d.misses++;
+    var why = MISS[r.reason].long;
+    if (d.misses >= 2){ d.sheet = "adjust"; d.choice = "beats"; d.msg = "Not yet: " + why + "."; }
+    else d.msg = "Not quite: " + why + ". Try again.";
   }
   if (d.sheet === "done" && S.session.mastered.indexOf(42) < 0) S.session.mastered.push(42);
   d.pos = 0;
   render();
 }
 function startDrillRecording(){
+  if (S.drill) S.drill.refStarted = false;
   var d = S.drill; d.playing = false; d.playingBack = false; S.toast = "";
   var rg = drillRange(); d.pos = rg.a;
   d.phase = d.guidance ? "countin" : "recording"; d.countBeat = 0; d.countT = 0;
@@ -1227,7 +1356,7 @@ function tick(ts){
       r.t += dt;
       var cb = Math.floor(r.t / beatSec);
       if (cb !== r.countBeat){ r.countBeat = cb; if (cb < 4){ click(false); var ce = phone.querySelector("[data-count]"); if (ce) ce.textContent = cb + 1; } }
-      if (r.t >= beatSec * 4){ r.phase = "recording"; var cel = phone.querySelector("[data-count]"); if (cel) cel.remove(); }
+      if (r.t >= beatSec * 4){ r.phase = "recording"; render(); }
     } else {
       var rtr = {pos:r.pos, a:w.loopA - 1, b:w.loopB, loop:false, bpm:wsBpm()};
       var done = advance(rtr, dt, function(n, bar, barSec){ tone(n[0], n[2] / 4 * barSec * .95, .08); }, function(k, bar){ if (k === 0) chord(bar, .06); });
@@ -1261,6 +1390,7 @@ function tick(ts){
         if (d.playing || d.guidance) tone(n[0], n[2] / 4 * barSec * .95, d.playing ? .24 : .08);
       }, null);
       d.pos = dtr.pos;
+      var rt = phone.querySelector("[data-rtime]"); if (rt) rt.textContent = Math.max(0, (d.pos - rg.a) * 240 / dbpm).toFixed(1);
       if (fin && d.phase === "recording") endDrillTake();
     }
   }
@@ -1335,9 +1465,11 @@ function drawDynamic(){
   }
   if (S.view === "issue" && S.issue.playing){
     S.issue.t = (now - S.issue.start) / 1000;
-    var cur = phone.querySelector("[data-cur]"), beats = S.issue.t / (60 / BPM);
-    if (cur){ var xx = 34 + beats / 4 * (340 - 8 - 34); cur.setAttribute("x1", xx); cur.setAttribute("x2", xx); cur.style.display = beats <= 4 ? "" : "none"; }
-    if (beats > 4.2){ S.issue.playing = null; render(); }
+    var cur = phone.querySelector("[data-cur]"), beats = S.issue.t / (60 / BPM), ps = S.issue.passes || [{off:0, a:0, b:4}], at = null;
+    ps.forEach(function(q){ if (beats >= q.off && beats <= q.off + (q.b - q.a)) at = q.a + beats - q.off; });
+    if (cur){ var xx = 34 + (at || 0) / 4 * (340 - 8 - 34); cur.setAttribute("x1", xx); cur.setAttribute("x2", xx); cur.style.display = at === null ? "none" : ""; }
+    var last = ps[ps.length - 1];
+    if (beats > last.off + (last.b - last.a) + .2){ S.issue.playing = null; render(); }
   }
 }
 function _sysInit(){ if (S._sysKey === undefined) S._sysKey = wsSystem()[0]; }
@@ -1365,7 +1497,7 @@ function act(a, arg, el){
     case "add": go("import"); break;
     case "open-song":
       if (arg === "viva") go("workspace");
-      else { S.toast = "Only Viva La Vida is set up in this prototype. Tap + Add song, or open Viva La Vida."; render(); }
+      else { S.toast = "Only Viva La Vida works in this prototype."; render(); }
       break;
     // import
     case "cancel-import": go("library"); break;
@@ -1384,7 +1516,7 @@ function act(a, arg, el){
       [1, 2].forEach(function(bar){ NOTES[bar].forEach(function(n){ tone(n[0] + sh, n[2] * 60 / BPM * .95, .22, 0, (bar - 1) * 240 / BPM + n[1] * 60 / BPM); }); });
       break;
     case "parts-next":
-      if (S.part !== "T"){ S.toast = "This prototype follows the tenor part. Choose Tenor to continue."; render(); }
+      if (S.part !== "T"){ S.toast = "Choose Tenor for this prototype."; render(); }
       else go("sync");
       break;
     // sync
@@ -1399,10 +1531,10 @@ function act(a, arg, el){
       S.sync.offset = -Math.round(S.sync.t * 100) / 100; render(); break;
     case "sync-undo": if (S.sync.hist.length){ S.sync.offset = S.sync.hist.pop(); S.sync.marker = null; } render(); break;
     case "sync-done":
-      if (Math.abs(S.sync.offset - SYNC_TRUE) > .12){ S.sync.hist.push(S.sync.offset); }
-      go("workspace");
-      if (Math.abs(S.sync.offset - SYNC_TRUE) > .12){ S.toast = "Synced with a " + Math.abs(S.sync.offset - SYNC_TRUE).toFixed(2) + " s gap. For this prototype, playback uses the correct alignment."; render(); }
-      break;
+      if (Math.abs(S.sync.offset - SYNC_TRUE) > .12){ S.sync.playing = false; S.sheet = "sync-warn"; render(); break; }
+      go("workspace"); break;
+    case "sync-force":
+      go("workspace"); S.toast = "Synced, but the track may not match the score."; render(); break;
     // workspace
     case "to-library": go("library"); break;
     case "ws-play":
@@ -1410,15 +1542,16 @@ function act(a, arg, el){
       w.playing = !w.playing; render(); break;
     case "ws-restart": w.pos = w.loopA - 1; render(); break;
     case "loop-toggle": w.loop = !w.loop; render(); break;
-    case "ws-slower": w.tempo = Math.max(50, Math.ceil(w.tempo / 5) * 5 - 5); w.bpmError = ""; render(); break;
-    case "ws-faster": w.tempo = Math.min(100, Math.floor(w.tempo / 5) * 5 + 5); w.bpmError = ""; render(); break;
-    case "bpm-edit": if (arg === "ws"){ w.editingBpm = true; w.playing = false; } else { d.editingBpm = true; d.playing = false; } render(); break;
+    case "ws-slower": w.bpm = Math.max(69, w.bpm - 1); w.bpmError = ""; render(); break;
+    case "ws-faster": w.bpm = Math.min(BPM, w.bpm + 1); w.bpmError = ""; render(); break;
+    case "bpm-edit": if (arg === "ws"){ w.editingBpm = true; w.editPaused = w.playing; w.playing = false; } else { d.editingBpm = true; d.playing = false; } render(); break;
     case "bpm-done": commitBpm(arg, phone.querySelector("[data-bpm-input]").value); break;
     case "ws-metro": w.metro = !w.metro; render(); break;
     case "ws-kb": w.kb = !w.kb; render(); break;
     case "parts-sheet": S.sheet = "parts-vol"; render(); break;
     case "mute": w[arg + "Mute"] = !w[arg + "Mute"]; render(); break;
     case "ws-record":
+      if (needMic(a)) break;
       if (w.loopA !== 33 || w.loopB !== 48){ w.playing = false; S.sheet = "off-loop"; render(); }
       else startRecording();
       break;
@@ -1427,11 +1560,11 @@ function act(a, arg, el){
     case "rec-end": finishRecording(); break;
     case "rec-cancel": S.recPaused = S.rec.phase; S.rec.phase = "idle"; S.sheet = "rec-cancel"; render(); break;
     case "rec-cancel-no": S.rec.phase = S.recPaused || "recording"; S.sheet = null; render(); break;
-    case "rec-cancel-yes": go("workspace"); S.toast = "Recording deleted. Nothing was saved."; render(); break;
+    case "rec-cancel-yes": go("workspace"); S.toast = "Recording deleted."; render(); break;
     // feedback
     case "to-workspace": go("workspace"); break;
     case "info": S.openInfo = S.openInfo === arg ? null : arg; render(); break;
-    case "rerecord": w.loopA = 33; w.loopB = 48; startRecording(); break;
+    case "rerecord": if (needMic(a)) break; w.loopA = 33; w.loopB = 48; startRecording(); break;
     case "save-take": S.cur.saved = !S.cur.saved; render(); break;
     case "ask-discard-take": S.sheet = "discard-take"; render(); break;
     case "discard-take":
@@ -1444,26 +1577,27 @@ function act(a, arg, el){
     case "to-feedback": ensureTake(); go("feedback"); break;
     // issue
     case "issue-play":
-      if (S.issue.playing === arg){ S.issue.playing = null; render(); break; }
-      S.issue.playing = arg; S.issue.start = performance.now();
-      var beat = 60 / BPM;
-      if (arg === "ref") NOTES[42].forEach(function(n){ tone(n[0], n[2] * beat * .95, .26, 0, n[1] * beat); });
-      else youTake42().forEach(function(n){ tone(n.m, n.d * beat * .95, .26, n.det, n.s * beat); });
-      render(); break;
+      if (S.issue.playing === arg){ S.issue.playing = null; stopTones(); render(); break; }
+      startIssue(arg, 0, 4); render(); break;
+    case "issue-focus":
+      var pn = +arg, PP = P42[pn - 1];
+      if (S.issue.focus === pn && S.issue.playing === "seg"){ S.issue.playing = null; stopTones(); render(); break; }
+      S.issue.focus = pn; startIssue("seg", PP.a, PP.b); render(); break;
+    case "issue-details": S.issue.details = !S.issue.details; render(); break;
     // drill
     case "to-drill": go("drill"); break;
-    case "dr-play": d.playing = !d.playing; d.playingBack = false; render(); break;
-    case "dr-record": startDrillRecording(); break;
+    case "dr-play": d.playing = !d.playing; if (d.playing) d.refStarted = true; d.playingBack = false; render(); break;
+    case "dr-record": if (needMic(a)) break; startDrillRecording(); break;
+    case "mic-allow": S.micAsked = true; S.sheet = null; act(S._afterMic); break;
+    case "mic-retry": S.sheet = null; act(S._afterMic); break;
     case "dr-end": endDrillTake(); break;
-    case "dr-slower": d.tempo = Math.max(50, Math.ceil(d.tempo / 5) * 5 - 5); d.bpmError = ""; render(); break;
-    case "dr-faster": d.tempo = Math.min(100, Math.floor(d.tempo / 5) * 5 + 5); d.bpmError = ""; render(); break;
-    case "dr-guidance": d.guidance = !d.guidance; render(); break;
+    case "dr-clean-info": d.cleanInfo = !d.cleanInfo; render(); break;
     case "dr-choice": d.choice = arg; render(); break;
     case "dr-apply":
       d.sheet = null; d.misses = 0; d.streak = 0; d.pos = 0;
-      if (d.choice === "beats"){ d.chunk = 0; d.msg = "Beat 1 on its own: the jump up to the high E and F. Sing just that beat."; }
-      else if (d.choice === "slow"){ d.tempo = 80; d.msg = "Slowed to 80%. Get one clean and I'll speed it back up."; }
-      else { d.guidance = true; d.msg = "Guidance is back on. Follow the count-in and the pitch line."; }
+      if (d.choice === "beats"){ d.chunk = 0; d.msg = "Sing beat 1 only."; }
+      else if (d.choice === "slow"){ d.tempo = 80; d.msg = "Slowed to 80%."; }
+      else { d.guidance = true; d.msg = "Guidance back on."; }
       render(); break;
     case "dr-playback":
       d.playingBack = !d.playingBack; d.playing = false;
@@ -1480,20 +1614,40 @@ function act(a, arg, el){
       var u = JSON.parse(d.undo), n = d.takes.length;
       for (var k in u) d[k] = u[k];
       d.undo = null; d.sheet = null; S.session.drillTakes = Math.max(0, S.session.drillTakes - 1);
-      S.toast = "Take #" + n + " discarded. It no longer counts toward the goal."; render(); break;
+      S.toast = "Take #" + n + " discarded."; render(); break;
     case "dr-reset": S.drill = freshDrill(); render(); break;
     // complete / summary
     case "to-complete": if (S.session.mastered.indexOf(42) < 0) S.session.mastered.push(42); go("complete"); break;
-    case "next-problem": w.loopA = 37; w.loopB = 40; w.pos = 36; w.started = false; w.tempo = 50; go("workspace"); S.toast = "Loop set to bars 37–40 at half speed, around bar 38."; render(); break;
+    case "next-problem": arg = "38"; /* falls through */
+    case "go-bar":
+      var tb = TODO.filter(function(t){ return t.bar === +arg; })[0] || {bar:42, loop:[41,43]};
+      w.loopA = tb.loop[0]; w.loopB = tb.loop[1]; w.pos = tb.loop[0] - 1; w.started = false; w.bpm = Math.round(BPM / 2);
+      go("workspace"); S.toast = "Looping bars " + tb.loop[0] + "–" + tb.loop[1] + " at half speed."; render(); break;
+    case "keep42": S.session.keep42 = !S.session.keep42; render(); break;
+    case "hear-ba":
+      if (S.baPlaying){ S.baPlaying = false; stopTones(); render(); break; }
+      stopTones(); S.baPlaying = true; play42("you", 0, 4, 0); play42("ref", 0, 4, 4.75);
+      clearTimeout(S.baTimer); S.baTimer = setTimeout(function(){ S.baPlaying = false; render(); }, 8.9 * 60000 / BPM);
+      render(); break;
+    case "take-open": S.openTake = S.openTake === +arg ? null : +arg; render(); break;
+    case "remind": S.session.remind = !S.session.remind; render(); break;
+    case "edit-date": S.dateNote = !S.dateNote; render(); break;
     case "repeat-drill": S.drill = freshDrill(); go("drill"); break;
     case "end-session": go("summary"); break;
     case "done": go("library"); break;
   }
 }
+// Before the first take, explain why the mic is needed; if it's blocked, say how to allow it.
+function needMic(next){
+  if (!S.micBlocked && S.micAsked) return false;
+  stopAll(); S._afterMic = next; S.sheet = S.micBlocked ? "mic" : "mic-ask"; render();
+  return true;
+}
 function commitBpm(which, raw){
   var n = Number(raw), o = which === "ws" ? S.ws : S.drill;
-  if (!raw || isNaN(n) || n < 69 || n > 138){ o.bpmError = "Enter a tempo from 69 to 138 BPM (half to full speed)."; render(); return; }
-  o.tempo = Math.round(n / BPM * 100); o.editingBpm = false; o.bpmError = ""; render();
+  if (!raw || isNaN(n) || n < 69 || n > 138){ o.bpmError = "Enter 69 to 138."; render(); return; }
+  if (which === "ws") o.bpm = Math.round(n); else o.tempo = Math.round(n / BPM * 100);
+  o.editingBpm = false; o.editPaused = false; o.bpmError = ""; render();
 }
 
 phone.addEventListener("click", function(e){
@@ -1501,10 +1655,13 @@ phone.addEventListener("click", function(e){
   if (k){ ac(); var m = Number(k.dataset.key); tone(m, .6, .3); flashKey(m, .5); return; }
   var el = e.target.closest("[data-act]");
   if (!el || el.disabled) return;
+  if (S._held && el.hasAttribute("data-hold")){ S._held = false; return; }
   act(el.getAttribute("data-act"), el.getAttribute("data-arg"), el);
 });
+function rangeFill(el){ var lo = +el.min, hi = +el.max; el.style.setProperty("--p", ((el.value - lo) / (hi - lo) * 100) + "%"); }
 phone.addEventListener("input", function(e){
   var t = e.target, k = t.getAttribute("data-input");
+  if (t.type === "range") rangeFill(t);
   if (k === "query"){ S.query = t.value; var pos = t.selectionStart; render(); var q = document.getElementById("q"); if (q){ q.focus(); q.setSelectionRange(pos, pos); } }
   else if (k === "title"){ S.imp.title = t.value; S.imp.titleTouched = true;
     var p = t.selectionStart; render(); var ti = document.getElementById("title"); if (ti){ ti.focus(); ti.setSelectionRange(p, p); }
@@ -1512,9 +1669,13 @@ phone.addEventListener("input", function(e){
   else if (k === "sync-off"){
     S.sync.offset = Number(t.value);
     var aud = phone.querySelector("[data-aud]"); if (aud) aud.style.transform = "translateX(" + (40 + S.sync.offset * SYNC_PX) + "px)";
-    var o = phone.querySelector("[data-off]"); if (o) o.textContent = (S.sync.offset <= 0 ? "−" : "+") + Math.abs(S.sync.offset).toFixed(2) + " s";
+    var o = phone.querySelector("[data-off]"); if (o) o.textContent = fmtOff(S.sync.offset);
     var st = phone.querySelector("[data-sync-status]"), ok2 = Math.abs(S.sync.offset - SYNC_TRUE) <= .12;
     if (st){ st.className = "badge " + (ok2 ? "g" : "o"); st.innerHTML = ok2 ? I.tick(12) + "Lined up" : "Not lined up yet"; }
+  }
+  else if (k === "ws-tempo"){
+    S.ws.bpm = Number(t.value);
+    var bb = phone.querySelector(".bpm-btn b"); if (bb) bb.textContent = t.value;
   }
   else if (k === "vol-tenor" || k === "vol-others"){
     var which = k.slice(4); S.ws[which + "Vol"] = Number(t.value);
@@ -1524,7 +1685,15 @@ phone.addEventListener("input", function(e){
 phone.addEventListener("change", function(e){
   var k = e.target.getAttribute("data-input");
   if (k === "sync-off"){ S.sync.hist.push(S.sync._before !== undefined ? S.sync._before : S.sync.offset); S.sync._before = undefined; render(); }
-  if (k === "vol-tenor" || k === "vol-others") render();
+  if (k === "vol-tenor" || k === "vol-others" || k === "ws-tempo") render();
+});
+// Press and hold - / + to keep changing the tempo.
+phone.addEventListener("pointerdown", function(e){
+  var hb = e.target.closest && e.target.closest("[data-hold]"); if (!hb) return;
+  var a = hb.getAttribute("data-act"), n = 0;
+  var tmr = setTimeout(function rep(){ act(a); n++; S._held = true; tmr = setTimeout(rep, n < 8 ? 120 : 50); }, 400);
+  function stop(){ clearTimeout(tmr); setTimeout(function(){ S._held = false; }, 0); window.removeEventListener("pointerup", stop); window.removeEventListener("pointercancel", stop); }
+  window.addEventListener("pointerup", stop); window.addEventListener("pointercancel", stop);
 });
 phone.addEventListener("pointerdown", function(e){
   if (e.target.matches && e.target.matches('[data-input="sync-off"]')) S.sync._before = S.sync.offset;
@@ -1547,7 +1716,7 @@ phone.addEventListener("keydown", function(e){
   var t = e.target;
   if (t.matches("[data-bpm-input]")){
     if (e.key === "Enter") commitBpm(t.getAttribute("data-bpm-input"), t.value);
-    if (e.key === "Escape"){ var o = t.getAttribute("data-bpm-input") === "ws" ? S.ws : S.drill; o.editingBpm = false; o.bpmError = ""; render(); }
+    if (e.key === "Escape"){ var o = t.getAttribute("data-bpm-input") === "ws" ? S.ws : S.drill; o.editingBpm = false; o.editPaused = false; o.bpmError = ""; render(); }
   }
   if (t.matches("[data-hd]") && (e.key === "ArrowLeft" || e.key === "ArrowRight")){
     var w = S.ws, dlt = e.key === "ArrowLeft" ? -1 : 1;
@@ -1566,9 +1735,9 @@ function updateLoopUI(){
 guide.addEventListener("click", function(e){
   var el = e.target.closest("[data-gact]"); if (!el) return;
   var a = el.dataset.gact, arg = el.dataset.arg;
+  if (a === "mic"){ S.micBlocked = !S.micBlocked; renderGuide(); }
   if (a === "jump") seedTo(arg);
-  if (a === "variant"){ S.variant = arg; S.drill = freshDrill(); if (S.view === "drill") render(); else renderGuide(); }
-  if (a === "reset"){ stopAll(); var v = S.variant; S = fresh(); S.variant = v; T0 = Date.now(); go("library"); }
+  if (a === "reset"){ stopAll(); S = fresh(); T0 = Date.now(); go("library"); }
 });
 // Shrink the phone to fit the window height (laptop screens); never enlarge past 390x844.
 function fitPhone(){
@@ -1585,5 +1754,3 @@ if (h0 && SCREENS[h0] && h0 !== "library") seedTo(h0); else render();
 requestAnimationFrame(tick);
 })();
 </script>
-
-</html>
