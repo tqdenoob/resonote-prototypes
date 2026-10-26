@@ -393,6 +393,14 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .tip .tn{display:flex;justify-content:space-between;align-items:center}
 .toast{position:absolute;left:14px;right:14px;bottom:100px;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 14px;font-size:14px;display:flex;gap:12px;align-items:center;justify-content:space-between;z-index:25}
 .toast button{background:transparent;border:1px solid color-mix(in srgb,var(--bg) 45%,transparent);color:var(--bg);border-radius:10px;height:44px;padding:0 12px;font-weight:700;flex:none}
+/* setup popup (views 2-4): opens over the library like onboarding, Close keeps progress */
+.setup-scrim{z-index:15}
+.setup{background:var(--bg);border-radius:24px 24px 0 0;height:calc(100% - 44px);display:flex;flex-direction:column;min-height:0;box-shadow:0 -8px 30px rgba(0,0,0,.18)}
+.setup.enter{animation:rise .28s ease-out}
+@keyframes rise{from{transform:translateY(48px)}}
+.setup .grab{width:40px;height:5px;border-radius:3px;background:var(--line2);margin:8px auto 0;flex:none}
+.setup .hdr{grid-template-columns:96px 1fr 96px;height:52px}
+.setup .hdr .rt{display:flex;justify-content:flex-end}
 .empty{padding:22px 14px;text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -459,20 +467,20 @@ var CHUNKS = [{a:0,b:1,name:"Beat 1"},{a:1,b:2,name:"Beat 2"},{a:2,b:4,name:"Bea
 /* ================= Views (numbered to match Iter2.04) ================= */
 var VIEWS = [
   {id:"library",name:"Music Library",lofi:"View 1 Music Library",
-   does:"Lists the user's songs. Search shows a 'No results' state. + Add song starts setup.",
+   does:"Lists the user's songs. Search shows a 'No results' state. + Add song opens setup as a popup over the library; a setup closed halfway shows as a 'Setup not finished' row.",
    he:[["#11","'No results' message with a link to clear the search"],["#5","Help button fixed top-right on every view"]],
    sim:"Two older songs are pre-loaded. Only Viva La Vida opens; the others show the off-path message."},
   {id:"import",name:"Import Score + Audio",lofi:"View 3 Import Score, Audio",
-   does:"Pick the PDF score and the MIDI learning track the music director shared on Telegram, and name the song.",
-   he:[["#15","'Step 1 of 3' with a progress bar"],["#13","Song title marked Required, Next blocked until filled, inline message"]],
+   does:"Popup over the library, step 1 of 3. Pick the PDF score and the MIDI learning track the music director shared on Telegram, and name the song.",
+   he:[["#15","'Step 1 of 3' with a progress bar"],["#3","Close (X) on every setup step; closing keeps your progress"],["#13","Song title marked Required, Next blocked until filled, inline message"]],
    sim:"File picker is a scripted list of Telegram downloads. The .HEIC photo shows the invalid-file error."},
   {id:"parts",name:"Choose Your Part",lofi:"View 4 Vocal Part Configuration",
-   does:"Pick the part you sing. Each part shows its voice range and can be previewed.",
-   he:[["#15","'Step 2 of 3'"],["#16","Voice range labelled and explained, not an unlabelled dropdown"],["#3","Back button in the same place as every setup step"]],
+   does:"Popup step 2 of 3. Pick the part you sing. Each part shows its voice range and can be previewed.",
+   he:[["#15","'Step 2 of 3'"],["#16","Voice range labelled and explained, not an unlabelled dropdown"],["#3","Back and Close (X) in the same place on every setup step"]],
    sim:"Parts are 'detected' from the score. Only Tenor continues the scenario."},
   {id:"sync",name:"Sync Check",lofi:"View 5 Manual Synchronization",
-   does:"Auto-sync finds a 2-bar count-in on the learning track. The user slides the track until the first sung note lands on bar 1.",
-   he:[["#3","Back button to Choose Your Part"],["#10","The track moves against a fixed bar 1 marker as you drag"],["#20","Play, Set marker and Undo all work"],["#15","'Step 3 of 3'"]],
+   does:"Popup step 3 of 3. Auto-sync finds a 2-bar count-in on the learning track. The user slides the track until the first sung note lands on bar 1.",
+   he:[["#3","Back to Choose Your Part, Close (X) to leave setup"],["#10","The track moves against a fixed bar 1 marker as you drag"],["#20","Play, Set marker and Undo all work"],["#15","'Step 3 of 3'"]],
    sim:"Sync detection is scripted. The correct offset is −3.48 s (2 bars at 138 BPM)."},
   {id:"workspace",name:"Practice Workspace",lofi:"View 6 Practice Workspace",
    does:"Score with a moving playhead, loop timeline, tempo, metronome, part volumes and keyboard. Start recording from here.",
@@ -511,7 +519,8 @@ var TOURS = {
            {t:"help",title:"Help",text:"Tap ? on any screen."}],
   import:[{t:"score",title:"Score",text:"Pick the PDF score."},
           {t:"audio",title:"Learning track",text:"Pick the audio that goes with it."},
-          {t:"title",title:"Song title",text:"Name it so you can find it later."}],
+          {t:"title",title:"Song title",text:"Name it so you can find it later."},
+          {t:"close",title:"Close",text:"Leave any time. Your progress is kept."}],
   parts:[{t:"parts",title:"Your part",text:"Pick the part you sing. Tap Hear to check."}],
   sync:[{t:"lanes",title:"Line up",text:"Slide the track until the first note sits on bar 1."},
         {t:"tools",title:"Set marker",text:"Or play the track and tap Set marker on the first note."}],
@@ -566,7 +575,7 @@ var S, T0 = Date.now();
 function fresh(){
   return {
     view:"library", sheet:null, toast:"", tourStep:0, tourView:null,
-    query:"", song:null,
+    query:"", song:null, setupAt:null,
     imp:{score:null, audio:null, title:"", titleTouched:false, error:""},
     part:null,
     sync:{offset:0, hist:[], playing:false, t:0, marker:null},
@@ -717,6 +726,12 @@ function hdr(left, title, sub){
     '<div class="ttl"><b>' + esc(title) + '</b>' + (sub ? '<span>' + esc(sub) + '</span>' : '') + '</div>' +
     '<button class="ib" aria-label="Help for this screen" data-act="help" data-tour="help">' + I.help + '</button></header>';
 }
+function setupHdr(left, title, sub){
+  return '<div class="grab" aria-hidden="true"></div><header class="hdr">' + (left || '<span></span>') +
+    '<div class="ttl"><b>' + esc(title) + '</b>' + (sub ? '<span>' + esc(sub) + '</span>' : '') + '</div>' +
+    '<span class="rt"><button class="ib" aria-label="Help for this screen" data-act="help" data-tour="help">' + I.help + '</button>' +
+    '<button class="ib" aria-label="Close setup, your progress is kept" data-act="close-setup" data-tour="close">' + I.close + '</button></span></header>';
+}
 function backBtn(act, lab){ return '<button class="ib" aria-label="' + esc(lab) + '" data-act="' + act + '" data-tour="back">' + I.back + '</button>'; }
 function steps3(n, name){
   var h = '<div class="steps3"><div class="row"><span class="eyebrow">Step ' + n + ' of 3</span><span class="hint">' + name + '</span></div><div class="bars">';
@@ -735,6 +750,7 @@ var phone = document.getElementById("phone"), guide = document.getElementById("g
 
 /* ================= Screens ================= */
 var SCREENS = {};
+var SETUP = {import:1, parts:1, sync:1};   // views 2-4 show as a popup over the library
 
 SCREENS.library = function(){
   var songs = [];
@@ -743,6 +759,9 @@ SCREENS.library = function(){
   songs.push({id:"seasons", t:"Seasons of Love", m:"Tenor · last practised 22 Oct", p:"3 of 4 passages mastered", c:"g"});
   songs.push({id:"bridge", t:"Bridge Over Troubled Water", m:"Tenor · last practised 12 Oct", p:"1 of 3 passages mastered", c:"a"});
   var q = S.query.trim().toLowerCase();
+  if (!S.song && S.setupAt && (S.setupAt !== "import" || S.imp.score)){
+    songs.unshift({id:"draft", t:S.imp.title.trim() || "New song", m:"Setup not finished · Step " + (viewIndex(S.setupAt)) + " of 3", p:"Tap to finish setting up", c:"a"});
+  }
   var shown = songs.filter(function(s){ return !q || s.t.toLowerCase().indexOf(q) >= 0; });
   var h = hdr('<span></span>', "ResoNote", "Your songs");
   h += '<div class="body">';
@@ -751,7 +770,7 @@ SCREENS.library = function(){
     h += '<div class="card empty" role="status"><b style="font-size:15px">No songs match "' + esc(S.query) + '"</b><span class="sub">Check the spelling.</span><button class="link" data-act="clear-q">Clear search</button></div>';
   }
   shown.forEach(function(s){
-    h += '<button class="song" data-act="open-song" data-arg="' + s.id + '"><span class="art badge ' + s.c + '" style="border-radius:12px;padding:0">' + s.t[0] + '</span><span class="meta"><b>' + esc(s.t) + '</b><span>' + esc(s.m) + '</span><span>' + esc(s.p) + '</span></span>' + svg('<path d="M9 6l6 6-6 6"/>', 18) + '</button>';
+    h += '<button class="song" data-act="' + (s.id === "draft" ? "add" : "open-song") + '" data-arg="' + s.id + '"><span class="art badge ' + s.c + '" style="border-radius:12px;padding:0">' + s.t[0] + '</span><span class="meta"><b>' + esc(s.t) + '</b><span>' + esc(s.m) + '</span><span>' + esc(s.p) + '</span></span>' + svg('<path d="M9 6l6 6-6 6"/>', 18) + '</button>';
   });
   h += '<div style="height:70px"></div></div>';
   h += '<button class="fab" data-act="add" data-tour="add">' + I.plus + 'Add song</button>';
@@ -760,7 +779,7 @@ SCREENS.library = function(){
 
 SCREENS.import = function(){
   var m = S.imp, titleOk = m.title.trim().length > 0;
-  var h = hdr(backBtn("cancel-import", "Cancel and go back to library"), "Add a song", "");
+  var h = setupHdr("", "Add a song", "");
   h += '<div class="body">' + steps3(1, "Files and title");
   function fileCard(kind, f, tour, label, ic, hintTxt){
     var cls = f ? (f.bad ? "bad" : "ok") : "";
@@ -787,7 +806,7 @@ var PARTS = [
   {id:"B", name:"Bass", range:"E2–C4", sh:-12}
 ];
 SCREENS.parts = function(){
-  var h = hdr(backBtn("to-import", "Back to Add a song"), "Choose your part", "Viva La Vida");
+  var h = setupHdr(backBtn("to-import", "Back to Add a song"), "Choose your part", "Viva La Vida");
   h += '<div class="body">' + steps3(2, "Your part");
   h += '<p class="lead">Pick the part you sing.</p>';
   h += '<div style="display:flex;flex-direction:column;gap:8px" data-tour="parts">';
@@ -805,7 +824,7 @@ var SYNC_TRUE = -2 * 240 / BPM;   // -3.478 s
 var SYNC_PX = 22;                 // pixels per second in the sync view
 SCREENS.sync = function(){
   var y = S.sync, off = y.offset, err = Math.abs(off - SYNC_TRUE), ok = err <= .12;
-  var h = hdr(backBtn("to-parts", "Back to Choose your part"), "Sync check", "Viva La Vida · Tenor");
+  var h = setupHdr(backBtn("to-parts", "Back to Choose your part"), "Sync check", "Viva La Vida · Tenor");
   h += '<div class="body">' + steps3(3, "Line up");
   h += '<div class="card pad" style="background:var(--amber-soft);border-color:transparent"><div class="lbl" style="color:var(--amber)">Couldn\'t line up automatically</div><div class="sub">Slide the track so the first sung note sits on bar 1.</div></div>';
   h += '<section class="card sync" data-tour="lanes" aria-label="Score and learning track"><div class="lt">Score</div><div class="lane" data-score-lane>';
@@ -1199,10 +1218,15 @@ function overlays(){
 }
 
 /* ================= Render ================= */
+function bodyEl(){ return phone.querySelector(".setup .body") || phone.querySelector(".body"); }
 function render(){
-  var sc = phone.querySelector(".body"), keep = sc && S._lastView === S.view ? sc.scrollTop : 0;
-  phone.innerHTML = '<div class="scr" data-view="' + S.view + '">' + SCREENS[S.view]() + '</div>' + overlays();
-  var nb = phone.querySelector(".body"); if (nb) nb.scrollTop = keep;
+  var sc = bodyEl(), keep = sc && S._lastView === S.view ? sc.scrollTop : 0;
+  phone.innerHTML = SETUP[S.view] ?
+    '<div class="scr" data-view="library" inert aria-hidden="true">' + SCREENS.library() + '</div>' +
+    '<div class="scrim setup-scrim"><div class="setup' + (S._setupEnter ? " enter" : "") + '" role="dialog" aria-modal="true" aria-label="Add a song" data-view="' + S.view + '">' + SCREENS[S.view]() + '</div></div>' + overlays() :
+    '<div class="scr" data-view="' + S.view + '">' + SCREENS[S.view]() + '</div>' + overlays();
+  S._setupEnter = false;
+  var nb = bodyEl(); if (nb) nb.scrollTop = keep;
   S._lastView = S.view;
   if (S.sheet === "tour") placeTour();
   phone.querySelectorAll("input[type=range]").forEach(rangeFill);
@@ -1238,23 +1262,29 @@ function renderGuide(){
 /* ================= Navigation ================= */
 function go(view){
   stopAll();
+  if (SETUP[view] && !SETUP[S.view]) S._setupEnter = true;
   S.view = view; S.sheet = null; S.toast = "";
   if (view === "drill" && !S.drill) S.drill = freshDrill();
   render();
-  var sc = phone.querySelector(".body"); if (sc) sc.scrollTop = 0;
+  var sc = bodyEl(); if (sc) sc.scrollTop = 0;
   try { history.replaceState(null, "", "#" + view); } catch(e){}
 }
 function stopAll(){
   S.ws.playing = false; S.sync.playing = false; S.issue.playing = null; S.baPlaying = false; stopTones();
   if (S.drill){ S.drill.playing = false; S.drill.playingBack = false; }
 }
+function ensureFiles(){
+  var m = S.imp;
+  if (!(m.score && !m.score.bad && m.audio && m.title.trim())) S.imp = {score:{name:"VivaLaVida_VOIX_SATB.pdf",size:"2.1 MB"}, audio:{name:"VivaLaVida_tenor_learning.mid",size:"38 KB"}, title:"Viva La Vida", titleTouched:false, error:""};
+}
 function ensureSong(){
-  if (!S.song){ S.song = true; S.imp = {score:{name:"VivaLaVida_VOIX_SATB.pdf",size:"2.1 MB"}, audio:{name:"VivaLaVida_tenor_learning.mid",size:"38 KB"}, title:"Viva La Vida", titleTouched:false, error:""}; S.part = "T"; }
+  if (!S.song){ ensureFiles(); S.part = "T"; S.song = true; S.setupAt = null; }
 }
 function ensureTake(){ ensureSong(); S.ws.loopA = 33; S.ws.loopB = 48; if (!S.takes.length) addTake(Math.round(16 * 240 / BPM)); }
 function seedTo(view){
   var i = viewIndex(view);
-  if (i >= viewIndex("import") && view !== "import"){ if (i >= viewIndex("parts")) { ensureSong(); if (view === "parts") S.part = S.part || null; } }
+  if (i > viewIndex("sync")) ensureSong();
+  else if (view === "parts" || view === "sync"){ ensureFiles(); if (view === "sync") S.part = "T"; }
   if (view === "import" && !S.imp.score){ /* start fresh import */ }
   if (i >= viewIndex("feedback")) ensureTake();
   if (view === "record"){ ensureSong(); S.ws.loopA = 33; S.ws.loopB = 48; startRecording(); return; }
@@ -1371,7 +1401,7 @@ function tick(ts){
     var jb = phone.querySelector("[data-judge]"); if (jb) jb.style.width = Math.min(100, S.judgeT / 1.4 * 100) + "%";
     if (S.judgeT >= 1.4){
       S.judgeT = 0;
-      if (S.sheet === "judging"){ S.sheet = null; S.rec.phase = "idle"; addTake(Math.round(S._len)); S.openInfo = null; S.view = "feedback"; render(); var b = phone.querySelector(".body"); if (b) b.scrollTop = 0; try { history.replaceState(null, "", "#feedback"); } catch(e){} }
+      if (S.sheet === "judging"){ S.sheet = null; S.rec.phase = "idle"; addTake(Math.round(S._len)); S.openInfo = null; S.view = "feedback"; render(); var b = bodyEl(); if (b) b.scrollTop = 0; try { history.replaceState(null, "", "#feedback"); } catch(e){} }
       else markDrill();
     }
   }
@@ -1494,20 +1524,23 @@ function act(a, arg, el){
     case "close": S.sheet = null; render(); break;
     // library
     case "clear-q": S.query = ""; render(); break;
-    case "add": go("import"); break;
+    case "add": go(S.setupAt || "import"); break;
     case "open-song":
       if (arg === "viva") go("workspace");
       else { S.toast = "Only Viva La Vida works in this prototype."; render(); }
       break;
     // import
-    case "cancel-import": go("library"); break;
+    case "close-setup":
+      S.setupAt = S.view; go("library");
+      if (S.setupAt !== "import" || S.imp.score){ S.toast = "Setup saved. Tap the song to finish."; render(); }
+      break;
     case "pick": S.pickKind = arg; S.sheet = "pick"; render(); break;
     case "pick-file":
       var f = S._pickFiles[Number(arg)];
       S.imp[S.pickKind] = {name:f.name, size:f.size, bad:!!f.bad};
       if (S.pickKind === "score" && !f.bad && !S.imp.title) S.imp.title = "Viva La Vida";
       S.sheet = null; render(); break;
-    case "import-next": S.song = true; go("parts"); break;
+    case "import-next": go("parts"); break;
     // parts
     case "to-import": go("import"); break;
     case "part": S.part = arg; render(); break;
@@ -1532,9 +1565,9 @@ function act(a, arg, el){
     case "sync-undo": if (S.sync.hist.length){ S.sync.offset = S.sync.hist.pop(); S.sync.marker = null; } render(); break;
     case "sync-done":
       if (Math.abs(S.sync.offset - SYNC_TRUE) > .12){ S.sync.playing = false; S.sheet = "sync-warn"; render(); break; }
-      go("workspace"); break;
+      S.song = true; S.setupAt = null; go("workspace"); break;
     case "sync-force":
-      go("workspace"); S.toast = "Synced, but the track may not match the score."; render(); break;
+      S.song = true; S.setupAt = null; go("workspace"); S.toast = "Synced, but the track may not match the score."; render(); break;
     // workspace
     case "to-library": go("library"); break;
     case "ws-play":
@@ -1714,6 +1747,7 @@ phone.addEventListener("pointerdown", function(e){
 });
 phone.addEventListener("keydown", function(e){
   var t = e.target;
+  if (e.key === "Escape" && SETUP[S.view] && !S.sheet && !t.matches("input")){ act("close-setup"); return; }
   if (t.matches("[data-bpm-input]")){
     if (e.key === "Enter") commitBpm(t.getAttribute("data-bpm-input"), t.value);
     if (e.key === "Escape"){ var o = t.getAttribute("data-bpm-input") === "ws" ? S.ws : S.drill; o.editingBpm = false; o.editPaused = false; o.bpmError = ""; render(); }
