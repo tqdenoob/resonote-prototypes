@@ -151,6 +151,7 @@ Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been 
 - **Still to do before launch:** pick DVs, log them or use a testing tool (Maze, Loop11), add a participant mode that hides the guide panel, decide whether A and B follow the same scripted outcome sequence, then tag `experiment-v1` and freeze (collab.md §6).
 
 ## Decision log
+| 2026-10-26 | Headings and the library greeting in Young Serif (replaces Fraunces from the greeting PR), everything else stays Figtree | One serif across the app instead of two. A serif on page titles gives ResoNote a printed-music feel and separates headings from controls; Young Serif is less common than the usual Playfair/Fraunces choices. Only page titles (`.h1`) and the guide titles use it, so buttons, labels and numbers keep Figtree | Bodoni Moda (too thin at phone sizes), Newsreader, a single sans family | Iter2.04 Prototype (all view screenshots retaken after merge) |
 
 | Date | Decision | Why | Alternatives tried | Affects deliverable |
 |---|---|---|---|---|
@@ -172,6 +173,7 @@ Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been 
 | 2026-10-26 | One main design: removed the parallel designs, design-a/b/c, shared CSS and alternatives/ | Several copies drift apart and confuse which one is current; all future work goes into `index.html` | Keeping old designs in the repo | Iter2.07 Journal uses the screenshots in `docs/screenshots/alternatives/` |
 
 ## AI assistance log
+| 2026-10-26 | Tan Qi | Claude | Shortlist of font pairings and the CSS change applying Young Serif to headings | Tan Qi chose Young Serif with the existing Figtree |
 
 | Date | Who | Tool | What was AI-drafted | What we changed or added |
 |---|---|---|---|---|
