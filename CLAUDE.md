@@ -29,14 +29,14 @@ Borrowed from the hard scenario: the manual sync correction and the adjust-drill
 
 ## Current prototype state (last updated: 2026-10-26 by Tan Qi)
 
-`index.html` is the whole prototype: one self-contained HTML file, plain JavaScript, no build step. **11 views** (the brief allows 6-14). A "Prototype guide" panel beside the phone lists the views, their HE fixes and what is simulated, and lets you jump to any view. The app is **light mode only**, whatever the phone's theme. Every tap target is at least 44 px.
+`index.html` is the whole prototype: one self-contained HTML file, plain JavaScript, no build step. **11 views** (the brief allows 6-14). Views 2-4 (setup) open as one popup over the Music Library rather than full screens, so adding a song feels like onboarding the user can leave at any point. A "Prototype guide" panel beside the phone lists the views, their HE fixes and what is simulated, and lets you jump to any view. The app is **light mode only**, whatever the phone's theme. Every tap target is at least 44 px.
 
 | # | View | Hash link | What it does | Simulated? | Low-fi source (Iter1.4) | Owner |
 |---|------|-----------|--------------|------------|------------------------|-------|
-| 1 | Music Library | `#library` | Song list, search with "No results" state, + Add song | 2 older songs pre-loaded; only Viva La Vida opens | View 1 | Tan Qi |
-| 2 | Import Score + Audio | `#import` | Pick score and learning track, required song title, Step 1 of 3 | File picker is a scripted list of Telegram downloads | View 3 | Tan Qi |
-| 3 | Choose Your Part | `#parts` | Pick part, voice range shown, Hear preview, Step 2 of 3 | Parts "detected" from the score; only Tenor continues | View 4 | Tan Qi |
-| 4 | Sync Check | `#sync` | Slide the learning track until its first sung note sits on bar 1; Play, Set marker, Undo; Step 3 of 3. Confirming while still off opens a "Track is still n s off" warning | Sync detection scripted; correct offset is -3.48 s | View 5 | Tan Qi |
+| 1 | Music Library | `#library` | Song list, search with "No results" state, + Add song opens the setup popup. A setup closed halfway shows as a "Setup not finished · Step n of 3" row that resumes it | 2 older songs pre-loaded; only Viva La Vida opens | View 1 | Tan Qi |
+| 2 | Import Score + Audio | `#import` | **Popup** over the library. Pick score and learning track, required song title, Step 1 of 3, Help and Close (X) top-right | File picker is a scripted list of Telegram downloads | View 3 | Tan Qi |
+| 3 | Choose Your Part | `#parts` | **Popup**, Step 2 of 3. Pick part, voice range shown, Hear preview, Back and Close (X) | Parts "detected" from the score; only Tenor continues | View 4 | Tan Qi |
+| 4 | Sync Check | `#sync` | **Popup**, Step 3 of 3, Back and Close (X). Slide the learning track until its first sung note sits on bar 1; Play, Set marker, Undo; Step 3 of 3. Confirming while still off opens a "Track is still n s off" warning | Sync detection scripted; correct offset is -3.48 s | View 5 | Tan Qi |
 | 5 | Practice Workspace | `#workspace` | Score with playhead, loop timeline with drag handles, tempo (− / + with hold, 1-BPM slider, or typed BPM), metronome, part volumes, keyboard, play/pause, Record take. First take asks for the microphone with a reason | Reference audio is a Web Audio synth | View 6 | Tan Qi |
 | 6 | Sing Along + Recording | `#record` | Count-in ("Get ready", meter says "Starts after the count-in"), then "Recording", scrolling score, live level meter, End take, Cancel with confirmation | No microphone; meter animation is fixed | View 7 | Tan Qi |
 | 7 | Take Feedback | `#feedback` | Overall + Pitch / Timing / Held notes with (i) and labels, bar-by-bar strip with symbols (✓ good, ? check, ! fix first), "Fix this first: bar 42", "Hear what went wrong" button, Autosaved (kept 7 days), Re-record take, Save to history, Discard take on its own row | Scores scripted per take number | Views 8 + 9 | Tan Qi |
@@ -52,12 +52,13 @@ Dropped from Iter1.4: View 2 App Usage Tutorial (removed from the Iteration 2 ea
 Source for the Iter2.04 navigation diagram. Every branch is labelled with the control that triggers it. Every view also has **Help (?)**, which opens a step-by-step overlay and returns to the same view.
 
 - **Music Library**
-  - "+ Add song" → Import
-  - Tap "Viva La Vida" (after import) → Practice Workspace
+  - "+ Add song" → setup popup at Import (or at the step where setup was closed)
+  - Tap "Setup not finished" row → setup popup at the step where it was closed
+  - Tap "Viva La Vida" (after setup) → Practice Workspace
   - Tap another song → off-path message, stay
   - Search with no match → "No songs match" + "Clear search", stay
+- **Setup popup (views 2-4), shown over the Music Library.** On every step: Close (X) or Escape → Music Library, progress kept, toast "Setup saved. Tap the song to finish." (no toast if nothing was picked yet)
 - **Import (Step 1 of 3)**
-  - Back → Music Library
   - "Choose" → file sheet → pick file → Import (invalid photo shows an error and stays)
   - "Next" (enabled only with score, track and title) → Choose Your Part
 - **Choose Your Part (Step 2 of 3)**
@@ -124,7 +125,7 @@ All scripted data is at the top of the `<script>` in `index.html`: `NOTES` / `BR
 | 1 | 4 | "Autosaved" chip (kept 7 days), "Re-record take", "Save to history", "Discard take" on its own row with confirmation; drill takes autosaved with play back and discard | 7, 9 | Change 1 (**label changed from "Re-record passage"**) |
 | 2 | 4 | One Play/Pause/Resume toggle that keeps position (dashed playhead when paused); recording ends with "End take" | 5, 6, 9 | Change 2 |
 | 4 | 3 | Loop chosen by dragging two handles on a waveform timeline labelled Intro / Verse 1 / Verse 2 / Chorus / Bridge / Final chorus, live bar and time readout, arrow keys also move handles | 5 | Change 3 |
-| 3 | 3 | Back button top-left on every setup step | 2, 3, 4 | Smaller fixes |
+| 3 | 3 | Back button top-left on setup steps 2 and 3; Close (X) top-right on all three setup steps, which keeps progress; setup is a popup over the library, not a sequence of full screens | 2, 3, 4 | Smaller fixes (**update wording: Close (X) and popup**) |
 | 5 | 3 | Help (?) fixed top-right on every view; overlay dims the screen, outlines each control and places the tip beside it | all | **Not fixed list: needs updating to "fixed"** |
 | 8 | 3 | (i) explanation and Needs work / Good / Excellent label per metric; issues named in plain words; missed drill takes say why | 7, 8, 9 | Smaller fixes |
 | 9 | 3 | Live input-level meter, "Voice picked up · good level" | 6, 9 | Smaller fixes |
@@ -165,6 +166,7 @@ Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been 
 | 2026-10-26 | App forced to light mode | Dark mode wasn't designed or tested for the experiment; one theme keeps screenshots and participants' view identical | Following the phone theme | Iter2.04 screenshots |
 | 2026-10-26 | UX checklist fixes: sync warning, bar-strip symbols, 44 px targets, larger type, contrast, one record label, count-in state, mic prompt | A mobile UX checklist (Nielsen, Apple HIG, Material 3, WCAG 2.2) run on all 11 views found 2 Sev 3, 8 Sev 2 and 4 Sev 1 problems | n/a | Iter2.03 Change 1 label; Iter2.04 screenshots of views 4-7, navigation diagram (mic and sync sheets); Iter2.05 script if it says "Sing & record" |
 | 2026-10-26 | Version A drill archived; main prototype keeps the coach-adapts drill only | The 26 Oct screen rewrite was built without the A/B switch | Porting Version A into the rewrite (deferred until the experiment is decided) | Iter2.05 |
+| 2026-10-26 | Setup (views 2-4) becomes a popup over the library with Close (X) on every step; closing keeps progress and leaves a "Setup not finished" row | Full-screen setup steps felt like a trap: the only way out of step 1 was a back arrow and steps 2-3 could only go back one step. A popup reads as onboarding you can step out of, and the library stays visible behind it | Full-screen steps (screenshots `docs/screenshots/alternatives/2026-10-26-setup-fullscreen-*.png`) | Iter2.04 views 2-4 screenshots and navigation diagram; Iter2.03 HE #3 wording; Iter2.07 Journal alternative design |
 | 2026-10-26 | One main design: removed the parallel designs, design-a/b/c, shared CSS and alternatives/ | Several copies drift apart and confuse which one is current; all future work goes into `index.html` | Keeping old designs in the repo | Iter2.07 Journal uses the screenshots in `docs/screenshots/alternatives/` |
 
 ## AI assistance log
@@ -176,6 +178,7 @@ Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been 
 | 2026-10-26 | Tan Qi | Claude Code | Full hi-fi prototype (`index.html`), this CLAUDE.md, CHANGELOG | To fill in after the team tests it on a phone |
 | 2026-10-26 | Tan Qi | Claude Code | Scale-to-fit for the phone frame | To fill in |
 | 2026-10-26 | Tan Qi | Claude Code | UX checklist, the audit of all 11 views and the fixes in this PR | To fill in after the team checks the fixes on a phone |
+| 2026-10-26 | Tan Qi | Claude Code | Setup popup for views 2-4 (code and this CLAUDE.md entry) | Idea from Tan Qi (setup felt like a trapped screen); to fill in after the team tries it |
 
 ## Open issues
 
