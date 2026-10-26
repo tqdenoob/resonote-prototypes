@@ -2,6 +2,7 @@
 
 Newest first. One line per merged PR.
 
+- 2026-10-26 · Three-tone colour scheme: cream background, blue main, orange accent; green and red kept only as good / error indicators. Replaces the Gamified Studio trial (screenshotted in `docs/screenshots/alternatives/`).
 - 2026-10-26 · Trial "Gamified Studio" colour scheme: cream/grey ground, sky blue primary, orange/yellow secondary, coral/mint accents (contrast-safe shades for text). Old palette screenshotted in `docs/screenshots/alternatives/`.
 - 2026-10-26 · One serif across the app: Young Serif replaces Fraunces for the library greeting and is used for page titles and guide headings; all other text stays Figtree.
 - 2026-10-26 · Music Library greets the singer by name ("Evening, Clarence", phrase picked by time of day; "Nicely sung" after mastering bar 42). Phone frame now 402 × 830 with an iPhone-style bezel, wider and less tall than before. Touches Iter2.04 View 1 screenshot.
