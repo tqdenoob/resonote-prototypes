@@ -23,6 +23,10 @@ From Iter2.02 Requirements, Scenario 1 (Easy): "Learn and master a new part befo
 
 Borrowed from the hard scenario: the manual sync correction and the adjust-drill path (after 2 misses). Exceptional cases added: an invalid file (a photo instead of a PDF), an empty song title, a search with no results, discarding a take, and a loop outside the scripted bars.
 
+## One main design
+
+`index.html` is the only design. Every change, fix or experiment variant goes into it, never into a new copy. A/B variants are switched inside `index.html` with a URL parameter (collab.md §6). When a design is dropped, save screenshots to `docs/screenshots/alternatives/` before removing its code.
+
 ## Current prototype state (last updated: 2026-10-26 by Tan Qi)
 
 `index.html` is the whole prototype: one self-contained HTML file, plain JavaScript, no build step. **11 views** (the brief allows 6-14). A "Prototype guide" panel beside the phone lists the views, their HE fixes and what is simulated, and lets you jump to any view. The app is **light mode only**, whatever the phone's theme. Every tap target is at least 44 px.
@@ -141,16 +145,16 @@ Not addressed: #6 (audio/score mismatch warning, hard scenario), #7 (segmented r
 
 Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been decided.
 
-- **Archived 2026-10-26:** the main prototype now has only the coach-adapts drill (old Version B). The version with the A/B switch (`?v=A` / `?v=B`, Version A = user sets tempo and guidance) is kept as `alternatives/ab-drill-2026-10-26.html`. It predates the 26 Oct screen rewrite and UX checklist fixes, so its other views are out of date.
-- **If we run the drill A/B:** port Version A and the `?v=` switch into `index.html` so both variants share every other screen. Comparing the archived file against `index.html` would add confounds (different feedback, issue and summary screens).
+- **Archived 2026-10-26:** the main prototype now has only the coach-adapts drill (old Version B). The version with the A/B switch (`?v=A` / `?v=B`, Version A = user sets tempo and guidance) was removed from the repo on 26 Oct. Screenshots are in `docs/screenshots/alternatives/2026-10-26-ab-drill-version-a.png` and `-b.png`; the code is in git history before PR #4.
+- **If we run the drill A/B:** rebuild Version A and the `?v=` switch inside `index.html` (recover the old code from git history) so both variants share every other screen.
 - **Still to do before launch:** pick DVs, log them or use a testing tool (Maze, Loop11), add a participant mode that hides the guide panel, decide whether A and B follow the same scripted outcome sequence, then tag `experiment-v1` and freeze (collab.md §6).
 
 ## Decision log
 
 | Date | Decision | Why | Alternatives tried | Affects deliverable |
 |---|---|---|---|---|
-| 2026-10-20 | Three parallel designs (score-first, timeline-first, coach-first) | Avoid design fixation before committing to hi-fi | n/a | Iter2.07 Journal (alternative designs); now in `parallel-designs.html` |
-| 2026-10-21 | Drill rebuilt with HE fixes; moderator panel kept | Apply Iter1.5 fixes to the 12 Oct Claude Design drill | 12 Oct drill (playhead reset on pause, "Finish attempt") | Iter2.03; `alternatives/drill-he-fixes-2026-10-21.html` |
+| 2026-10-20 | Three parallel designs (score-first, timeline-first, coach-first) | Avoid design fixation before committing to hi-fi | n/a | Iter2.07 Journal (alternative designs); screenshots in `docs/screenshots/alternatives/` |
+| 2026-10-21 | Drill rebuilt with HE fixes; moderator panel kept | Apply Iter1.5 fixes to the 12 Oct Claude Design drill | 12 Oct drill (playhead reset on pause, "Finish attempt") | Iter2.03; screenshot in `docs/screenshots/alternatives/` |
 | 2026-10-26 | Full hi-fi prototype, 11 views, becomes the site root | Cover the whole easy scenario from Iter2.02 in one clickable file | Separate per-view files (rejected: harder to keep consistent) | Iter2.04 all views; Iter2.01 prototype link |
 | 2026-10-26 | Scorecard uses 3 metrics: Pitch, Timing, Held notes | Matches what evaluators saw and the scenario's three problems at bar 42 | 4 metrics incl. rhythm and diction (Iter1.4 View 8) | Iter2.04 View 7; Iter1.5 #8 open question. **Team to confirm.** |
 | 2026-10-26 | Views 8+9 merged into Take Feedback; Views 11-14 merged into one Drill view | Fewer screens on the main path; one priority stays visible with the scores | Separate scorecard and priority screens (low-fi) | Iter2.04 navigation diagram |
@@ -161,6 +165,7 @@ Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been 
 | 2026-10-26 | App forced to light mode | Dark mode wasn't designed or tested for the experiment; one theme keeps screenshots and participants' view identical | Following the phone theme | Iter2.04 screenshots |
 | 2026-10-26 | UX checklist fixes: sync warning, bar-strip symbols, 44 px targets, larger type, contrast, one record label, count-in state, mic prompt | A mobile UX checklist (Nielsen, Apple HIG, Material 3, WCAG 2.2) run on all 11 views found 2 Sev 3, 8 Sev 2 and 4 Sev 1 problems | n/a | Iter2.03 Change 1 label; Iter2.04 screenshots of views 4-7, navigation diagram (mic and sync sheets); Iter2.05 script if it says "Sing & record" |
 | 2026-10-26 | Version A drill archived; main prototype keeps the coach-adapts drill only | The 26 Oct screen rewrite was built without the A/B switch | Porting Version A into the rewrite (deferred until the experiment is decided) | Iter2.05 |
+| 2026-10-26 | One main design: removed the parallel designs, design-a/b/c, shared CSS and alternatives/ | Several copies drift apart and confuse which one is current; all future work goes into `index.html` | Keeping old designs in the repo | Iter2.07 Journal uses the screenshots in `docs/screenshots/alternatives/` |
 
 ## AI assistance log
 
