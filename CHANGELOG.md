@@ -2,6 +2,7 @@
 
 Newest first. One line per merged PR.
 
+- 2026-10-26 · UI/UX audit fixes: bigger score on a paper band (2 lines on the workspace, 3 while recording); Take Feedback leads with "Fix this first" (bar score 58) and puts Re-record take in the footer; one colour rule; Cancel button on Recording; Sync slider centred on 0 with one status; sentence-case headings and flat lists; "Start drill" label.
 - 2026-10-26 · Sync check: learning track drawn as an audio waveform (count-in clicks, then sung notes) instead of grey blocks.
 - 2026-10-26 · Setup (views 2-4) now opens as a popup over the library with Close (X) on every step; closing keeps progress and shows a "Setup not finished" row. Old full-screen steps screenshotted in `docs/screenshots/alternatives/`.
 - 2026-10-26 · One main design: removed the 20 Oct parallel designs and the old drill alternatives; screenshots kept in `docs/screenshots/alternatives/`. All future changes go into `index.html`.
