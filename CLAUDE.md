@@ -29,23 +29,23 @@ Borrowed from the hard scenario: the manual sync correction and the adjust-drill
 
 ## Current prototype state (last updated: 2026-10-26 by Tan Qi)
 
-`index.html` is the whole prototype: one self-contained HTML file, plain JavaScript, no build step. **11 views** (the brief allows 6-14). Views 2-4 (setup) open as one popup over the Music Library rather than full screens, so adding a song feels like onboarding the user can leave at any point. A "Prototype guide" panel beside the phone lists the views, their HE fixes and what is simulated, and lets you jump to any view. The app is **light mode only**, whatever the phone's theme. Every tap target is at least 44 px.
+`index.html` is the whole prototype: one self-contained HTML file, plain JavaScript, no build step. **11 views** (the brief allows 6-14). Views 2-4 (setup) open as one popup over the Music Library rather than full screens, so adding a song feels like onboarding the user can leave at any point. The score is printed on a full-width white "paper" band (two lines on the workspace, three while recording), the one surface that isn't a card; section headings are sentence case. Colour rule: green = good, amber = check / needs work, orange = fix first, blue = actions only. A "Prototype guide" panel beside the phone lists the views, their HE fixes and what is simulated, and lets you jump to any view. The phone screen is **402 × 830 pt** (iPhone 16 Pro width) inside a 12 px bezel, so the frame is about 2:1 like a real iPhone body. The app is **light mode only**, whatever the phone's theme. Every tap target is at least 44 px.
 
 **Colour scheme (26 Oct trial, "Gamified Studio"):** soft cream app background (#F9F8F3) on a soft grey page (#ECF0F1); sky blue primary (#3498DB); cheerful orange and yellow secondary (#E67E22, #F1C40F); coral and mint accents (#E74C3C, #2ECC71). Why: a playful, game-like feel to keep casual learners motivated through repeated drills, while blue keeps it reading as a reliable tool. The pure swatches only colour fills without text (score ring, score bars, input meter, keyboard hits, drill progress). Buttons and coloured text use deeper shades of the same hues (blue #1C70AD, orange #B35C14, red #C0392B, green #1A7F45, amber #7A5F00) so text stays at 4.5:1 contrast. The previous indigo/orange palette is screenshotted in `docs/screenshots/alternatives/2026-10-26-colour-original-*.png`. Deliverables touched: Iter2.04 Prototype (every view screenshot), Iter2.07 Journal (alternative designs).
 
 | # | View | Hash link | What it does | Simulated? | Low-fi source (Iter1.4) | Owner |
 |---|------|-----------|--------------|------------|------------------------|-------|
-| 1 | Music Library | `#library` | Song list, search with "No results" state, + Add song opens the setup popup. A setup closed halfway shows as a "Setup not finished · Step n of 3" row that resumes it | 2 older songs pre-loaded; only Viva La Vida opens | View 1 | Tan Qi |
+| 1 | Music Library | `#library` | Personal greeting at the top ("Evening, Clarence" style: a time-of-day phrase, then the name; "Nicely sung, Clarence" once bar 42 is mastered) with a one-line reminder about Wednesday's practice. Song list, search with "No results" state, + Add song opens the setup popup. A setup closed halfway shows as a "Setup not finished · Step n of 3" row that resumes it | 2 older songs pre-loaded; only Viva La Vida opens | View 1 | Tan Qi |
 | 2 | Import Score + Audio | `#import` | **Popup** over the library. Pick score and learning track, required song title, Step 1 of 3, Help and Close (X) top-right | File picker is a scripted list of Telegram downloads | View 3 | Tan Qi |
 | 3 | Choose Your Part | `#parts` | **Popup**, Step 2 of 3. Pick part, voice range shown, Hear preview, Back and Close (X) | Parts "detected" from the score; only Tenor continues | View 4 | Tan Qi |
-| 4 | Sync Check | `#sync` | **Popup**, Step 3 of 3, Back and Close (X). The learning track is drawn as an audio waveform (orange count-in clicks, then the sung notes). Slide the learning track until its first sung note sits on bar 1; Play, Set marker, Undo; Step 3 of 3. Confirming while still off opens a "Track is still n s off" warning | Sync detection scripted; correct offset is -3.48 s | View 5 | Tan Qi |
-| 5 | Practice Workspace | `#workspace` | Score with playhead, loop timeline with drag handles, tempo (− / + with hold, 1-BPM slider, or typed BPM), metronome, part volumes, keyboard, play/pause, Record take. First take asks for the microphone with a reason | Reference audio is a Web Audio synth | View 6 | Tan Qi |
-| 6 | Sing Along + Recording | `#record` | Count-in ("Get ready", meter says "Starts after the count-in"), then "Recording", scrolling score, live level meter, End take, Cancel with confirmation | No microphone; meter animation is fixed | View 7 | Tan Qi |
-| 7 | Take Feedback | `#feedback` | Overall + Pitch / Timing / Held notes with (i) and labels, bar-by-bar strip with symbols (✓ good, ? check, ! fix first), "Fix this first: bar 42", "Hear what went wrong" button, Autosaved (kept 7 days), Re-record take, Save to history, Discard take on its own row | Scores scripted per take number | Views 8 + 9 | Tan Qi |
-| 8 | Understand the Issue | `#issue` | Your take / reference / both, pitch overlay chart, three numbered problems in plain words (tap to hear that part), "Show music details" | "Your take" is the reference played flat, rushed and cut short | View 10 | Tan Qi |
+| 4 | Sync Check | `#sync` | **Popup**, Step 3 of 3, Back and Close (X). The learning track is drawn as an audio waveform (amber count-in clicks labelled "count-in, not on the score", then the sung notes). Slide the track until its first sung note sits on the "Line up here" marker; the slider has 0 in the middle (earlier left, later right) and one status badge shows the gap ("3.48 s off" / "Lined up"). Play, Set marker, Undo, with a hint explaining Set marker. Confirming while still off opens a "Track is still n s off" warning | Sync detection scripted; correct offset is -3.48 s | View 5 | Tan Qi |
+| 5 | Practice Workspace | `#workspace` | Two lines of the score (8 bars) on a paper band with playhead, loop timeline with drag handles, tempo (− / + with hold, 1-BPM slider, or typed BPM), metronome, part volumes, keyboard, play/pause, Record take. First take asks for the microphone with a reason | Reference audio is a Web Audio synth | View 6 | Tan Qi |
+| 6 | Sing Along + Recording | `#record` | Count-in ("Get ready", big beat number "n of 4", meter says "Listening after the count-in"), then "Recording", three lines of the score to read ahead with a progress bar under them, live level meter, End take; **Cancel** is a labelled text button top-left with confirmation | No microphone; meter animation is fixed | View 7 | Tan Qi |
+| 7 | Take Feedback | `#feedback` | Order: overall ring (coloured by its label), then **"Fix this first: bar 42" with "Bar score 58 / 100"** and "Hear what went wrong", then Pitch / Timing / Held notes with (i) and labels, bar-by-bar strip with symbols (✓ good, ? check, ! fix first), then This take: Autosaved (kept 7 days), Save to history, Discard take. Footer: **Re-record take** and **Start drill** | Scores scripted per take number | Views 8 + 9 | Tan Qi |
+| 8 | Understand the Issue | `#issue` | One three-way player (Your take / Reference / Both), pitch overlay chart, three numbered problems in plain words (tap to hear that part), "Show music details" | "Your take" is the reference played flat, rushed and cut short | View 10 | Tan Qi |
 | 9 | Targeted Drill | `#drill` | Drill bar 42 to 2 clean takes in a row at 100%, guidance off. The coach sets tempo and guidance and offers an Adjust sheet after 2 misses (the old Version A is archived, see A/B section) | Take results scripted | Views 11-14 | Tan Qi |
-| 10 | Passage Complete | `#complete` | Bar 42 mastered, before/after playback, bars still to fix (tap to loop), three labelled next steps | Before/after scores scripted | View 15 | Tan Qi |
-| 11 | Session Summary | `#summary` | Session saved, time, takes with breakdown, mastered bar, still to fix before Wednesday, reminder switch | Time counted from page load | View 16 | Tan Qi |
+| 10 | Passage Complete | `#complete` | Bar 42 mastered, one sentence "Bar score 58 → 92 in 9 drill takes, about 8 minutes" (replaces stat tiles), before/after playback, bars still to fix (tap to loop), three labelled next steps | Before/after scores scripted | View 15 | Tan Qi |
+| 11 | Session Summary | `#summary` | Session saved, tonight's win (bar score 58 → 92), minutes practised with takes (drill row shows "9 takes · 2 missed"), mastered bar, still to fix before Wednesday, reminder switch | Time counted from page load | View 16 | Tan Qi |
 
 Dropped from Iter1.4: View 2 App Usage Tutorial (removed from the Iteration 2 easy scenario, see Iter2.03). Per-screen help is kept instead (see HE #5).
 
@@ -80,18 +80,18 @@ Source for the Iter2.04 navigation diagram. Every branch is labelled with the co
   - "Record take" with any other loop → sheet: "Use bars 33-48" → Recording / "Keep my loop" → stay
 - **Sing Along + Recording**
   - "End take", or the loop ends → "Checking your take…" → Take Feedback
-  - "Cancel" → sheet: "Delete recording" → Practice Workspace / "Keep recording" → stay
+  - "Cancel" (text button, top-left) → sheet: "Delete recording" → Practice Workspace / "Keep recording" → stay
 - **Take Feedback**
   - Back → Practice Workspace
   - "Hear what went wrong" → Understand the Issue
-  - "Re-record take" → Sing Along + Recording
+  - "Re-record take" (footer) → Sing Along + Recording
   - "Save to history" → toggles saved, stay
   - "Discard take" → sheet: "Discard take" → Practice Workspace / "Keep take" → stay
-  - "Start drill on bar 42" → Targeted Drill
+  - "Start drill" → Targeted Drill
 - **Understand the Issue**
   - Back / "Back" → Take Feedback
   - Play your take / Play reference / Hear both / tap a problem → stay
-  - "Start drill on bar 42" → Targeted Drill
+  - "Start drill" → Targeted Drill
 - **Targeted Drill**
   - Back → Take Feedback
   - "Play bar 42" ↔ Pause/Resume, "Record take" → "End take" → checking → result, stay
@@ -116,15 +116,15 @@ All scripted data is at the top of the `<script>` in `index.html`: `NOTES` / `BR
 - **Import:** no real files. The picker lists 2 scripted files per slot. `IMG_4021.HEIC` triggers the invalid-file error.
 - **Sync:** the learning-track waveform is generated from the scripted notes (`syncWave()`), so it looks the same every run. The track has a scripted 2-bar count-in at 138 BPM (3.48 s). "Lined up" shows within 0.12 s. Confirming with a gap opens a warning sheet; "Confirm anyway" continues with a toast and plays aligned anyway.
 - **Recording:** no microphone access. The microphone prompt is a scripted sheet; "Microphone: blocked" in the guide shows the blocked state. The level meter is a fixed animation. The take length is real (time from start to End take).
-- **Coach feedback:** take 1 = 72 overall (pitch 64, timing 70, held notes 78); take 2 = 76; take 3+ = 79. Priority is always bar 42.
-- **Drill results:** the first 2 takes at the goal settings (whole bar, 100%, guidance off) are missed, pitch then timing. Every other take is clean. Discarding a take undoes its effect.
+- **Coach feedback:** take 1 = 72 overall (pitch 64, timing 70, held notes 78); take 2 = 76; take 3+ = 79. Priority is always bar 42, scored 58 before the drill and 92 after (`BAR42`); the same two numbers appear on Take Feedback, the mastered sheet, Passage Complete and Session Summary.
+- **Drill results:** the first 2 takes at the goal settings (whole bar, 100%, guidance off) are missed, pitch then timing. Every other take is clean. Discarding a take undoes its effect. With the default "one beat at a time" adjustment the drill takes 9 takes (2 missed); jumping straight to Passage Complete or Session Summary from the guide uses the same numbers.
 - **Safe-path warnings:** other songs, other parts and loops other than bars 33-48 show a message with a way back. No dead buttons.
 
 ## Heuristic evaluation changes implemented
 
 | HE # | Severity | Change in prototype | View(s) | Iter2.03 section |
 |---|---|---|---|---|
-| 1 | 4 | "Autosaved" chip (kept 7 days), "Re-record take", "Save to history", "Discard take" on its own row with confirmation; drill takes autosaved with play back and discard | 7, 9 | Change 1 (**label changed from "Re-record passage"**) |
+| 1 | 4 | "Autosaved" chip (kept 7 days), "Re-record take" in the footer (always visible), "Save to history", "Discard take" on its own row with confirmation; drill takes autosaved with play back and discard; Cancel recording is a labelled button with confirmation | 6, 7, 9 | Change 1 (**label changed from "Re-record passage"**) |
 | 2 | 4 | One Play/Pause/Resume toggle that keeps position (dashed playhead when paused); recording ends with "End take" | 5, 6, 9 | Change 2 |
 | 4 | 3 | Loop chosen by dragging two handles on a waveform timeline labelled Intro / Verse 1 / Verse 2 / Chorus / Bridge / Final chorus, live bar and time readout, arrow keys also move handles | 5 | Change 3 |
 | 3 | 3 | Back button top-left on setup steps 2 and 3; Close (X) top-right on all three setup steps, which keeps progress; setup is a popup over the library, not a sequence of full screens | 2, 3, 4 | Smaller fixes (**update wording: Close (X) and popup**) |
@@ -153,12 +153,15 @@ Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been 
 - **Still to do before launch:** pick DVs, log them or use a testing tool (Maze, Loop11), add a participant mode that hides the guide panel, decide whether A and B follow the same scripted outcome sequence, then tag `experiment-v1` and freeze (collab.md §6).
 
 ## Decision log
+| 2026-10-26 | Headings and the library greeting in Young Serif (replaces Fraunces from the greeting PR), everything else stays Figtree | One serif across the app instead of two. A serif on page titles gives ResoNote a printed-music feel and separates headings from controls; Young Serif is less common than the usual Playfair/Fraunces choices. Only page titles (`.h1`) and the guide titles use it, so buttons, labels and numbers keep Figtree | Bodoni Moda (too thin at phone sizes), Newsreader, a single sans family | Iter2.04 Prototype (all view screenshots retaken after merge) |
 
 | Date | Decision | Why | Alternatives tried | Affects deliverable |
 |---|---|---|---|---|
 | 2026-10-20 | Three parallel designs (score-first, timeline-first, coach-first) | Avoid design fixation before committing to hi-fi | n/a | Iter2.07 Journal (alternative designs); screenshots in `docs/screenshots/alternatives/` |
 | 2026-10-21 | Drill rebuilt with HE fixes; moderator panel kept | Apply Iter1.5 fixes to the 12 Oct Claude Design drill | 12 Oct drill (playhead reset on pause, "Finish attempt") | Iter2.03; screenshot in `docs/screenshots/alternatives/` |
 | 2026-10-26 | Full hi-fi prototype, 11 views, becomes the site root | Cover the whole easy scenario from Iter2.02 in one clickable file | Separate per-view files (rejected: harder to keep consistent) | Iter2.04 all views; Iter2.01 prototype link |
+| 2026-10-26 | Library greets the singer by name with a time-of-day phrase | Makes the app feel like Clarence's own practice space; the subline keeps Wednesday's deadline in view (persona: anxious before combined practice) | Plain "ResoNote / Your songs" header (previous version) | Iter2.04 View 1 screenshot |
+| 2026-10-26 | Phone frame 402 x 830 with a 12 px bezel | Previous 390 x 844 with a thin border looked too tall and narrow next to a real iPhone | 390 x 844 (iPhone 14 screen) | All Iter2.04 screenshots |
 | 2026-10-26 | Scorecard uses 3 metrics: Pitch, Timing, Held notes | Matches what evaluators saw and the scenario's three problems at bar 42 | 4 metrics incl. rhythm and diction (Iter1.4 View 8) | Iter2.04 View 7; Iter1.5 #8 open question. **Team to confirm.** |
 | 2026-10-26 | Views 8+9 merged into Take Feedback; Views 11-14 merged into one Drill view | Fewer screens on the main path; one priority stays visible with the scores | Separate scorecard and priority screens (low-fi) | Iter2.04 navigation diagram |
 | 2026-10-26 | Help overlay kept on every view | Already built; fixes HE #5 | Removing help (Iter2.03 current text) | Iter2.03 "not fixed" list |
@@ -169,9 +172,11 @@ Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been 
 | 2026-10-26 | UX checklist fixes: sync warning, bar-strip symbols, 44 px targets, larger type, contrast, one record label, count-in state, mic prompt | A mobile UX checklist (Nielsen, Apple HIG, Material 3, WCAG 2.2) run on all 11 views found 2 Sev 3, 8 Sev 2 and 4 Sev 1 problems | n/a | Iter2.03 Change 1 label; Iter2.04 screenshots of views 4-7, navigation diagram (mic and sync sheets); Iter2.05 script if it says "Sing & record" |
 | 2026-10-26 | Version A drill archived; main prototype keeps the coach-adapts drill only | The 26 Oct screen rewrite was built without the A/B switch | Porting Version A into the rewrite (deferred until the experiment is decided) | Iter2.05 |
 | 2026-10-26 | Setup (views 2-4) becomes a popup over the library with Close (X) on every step; closing keeps progress and leaves a "Setup not finished" row | Full-screen setup steps felt like a trap: the only way out of step 1 was a back arrow and steps 2-3 could only go back one step. A popup reads as onboarding you can step out of, and the library stays visible behind it | Full-screen steps (screenshots `docs/screenshots/alternatives/2026-10-26-setup-fullscreen-*.png`) | Iter2.04 views 2-4 screenshots and navigation diagram; Iter2.03 HE #3 wording; Iter2.07 Journal alternative design |
+| 2026-10-26 | UI/UX audit fixes: score as the hero (bigger staff, 2 lines on the workspace, 3 while recording, on a paper band); Take Feedback reordered so "Fix this first" follows the overall score and Re-record take moves to the footer; one colour rule (green good, amber check, orange fix first, blue actions); Cancel recording is a labelled button; Sync slider centred on 0 with one status and a "Line up here" target; bar 42 score (58) shown on Feedback; sentence-case headings, flat lists and no stat tiles; drill CTA renamed "Start drill" | A UI/UX audit (ui-ux-pro-max checklist, bencium and frontend-design skills) found: the score had the least space on the screens where Clarence relies on it most; the one-priority message and the Sev 4 HE #1 Re-record were below the fold; "Good" was blue in one place and green in another; a back arrow deleted the take; the sync slider put 0 at 80%; 58 appeared on Passage Complete with no earlier source and the guide fallback said 4 clean when the scripted path gives 7; tracked ALL-CAPS labels, identical cards and stat tiles read as a template | Screenshots before the change: `docs/screenshots/alternatives/2026-10-26-pre-audit-*.png` | Iter2.04 screenshots of views 4-11 and navigation diagram labels ("Start drill", "Cancel"); Iter2.03 Change 1 (Re-record take now in the footer, Cancel button) and Change 2 unchanged; Iter2.05 script if it says "Start drill on bar 42"; Iter2.07 Journal alternative designs |
 | 2026-10-26 | One main design: removed the parallel designs, design-a/b/c, shared CSS and alternatives/ | Several copies drift apart and confuse which one is current; all future work goes into `index.html` | Keeping old designs in the repo | Iter2.07 Journal uses the screenshots in `docs/screenshots/alternatives/` |
 
 ## AI assistance log
+| 2026-10-26 | Tan Qi | Claude | Shortlist of font pairings and the CSS change applying Young Serif to headings | Tan Qi chose Young Serif with the existing Figtree |
 
 | Date | Who | Tool | What was AI-drafted | What we changed or added |
 |---|---|---|---|---|
@@ -181,6 +186,7 @@ Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been 
 | 2026-10-26 | Tan Qi | Claude Code | Scale-to-fit for the phone frame | To fill in |
 | 2026-10-26 | Tan Qi | Claude Code | UX checklist, the audit of all 11 views and the fixes in this PR | To fill in after the team checks the fixes on a phone |
 | 2026-10-26 | Tan Qi | Claude Code | Setup popup for views 2-4 (code and this CLAUDE.md entry) | Idea from Tan Qi (setup felt like a trapped screen); to fill in after the team tries it |
+| 2026-10-26 | Tan Qi | Claude Code | UI/UX audit of all 11 views and the fixes in this PR (score as hero, feedback order, colour rule, Cancel, sync, numbers, headings) | Tan Qi asked for the audit and chose which findings to fix; to fill in after the team checks it on a phone |
 
 ## Open issues
 
@@ -190,3 +196,4 @@ Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been 
 - A/B: pick DVs, add logging or a testing tool, add participant mode, resolve the A-variant confound, then freeze.
 - Not yet tested on a real phone (only headless Chrome at 390 px and desktop). One-handed reach and screen-reader checks from the UX checklist are still open.
 - Staff has no clef or key signature; the arrangement is shown in C for simplicity.
+- Audit findings not fixed yet: Passage Complete and Session Summary still repeat the "still to fix" list and Complete has 3 stacked footer buttons; drill "Takes / No takes yet" label is weak; loop section labels clip at 375 px; sheets don't move keyboard focus into themselves (only the setup popup has `aria-modal`); 11 px labels on the timeline and bar strip; on phones ≤480 px the app sits inside a rounded frame; the desktop phone frame has no status bar.
