@@ -26,13 +26,16 @@
 <style>
 /* Layout: a phone-sized app on the left, a "prototype guide" rail on the right (stacks below on phones). */
 :root{
-  --page:#E7E5DE; --bg:#F4F3EE; --card:#FFFFFF; --sunk:#F2F1EC; --ink:#17181C; --muted:#5B5E66;
-  --line:#E2E0D8; --line2:#D2CFC5; --staff:#8F929A;
-  --blue:#2F45C6; --blue-soft:#E8EBFA; --blue-ink:#22339A; --on-accent:#FFFFFF;
-  --orange:#C2570F; --orange-soft:#FBEADF; --orange-ink:#8A3A0C;
-  --red:#B42318; --red-soft:#FBE4E1; --green:#1E7B4A; --green-soft:#E1F2E8;
-  --amber:#865C00; --amber-soft:#FBF1D6; --scrim:rgba(23,24,28,.48); --spot:#FFB547;
-  --sec-a:#ECEAE3; --sec-b:#E3E1D9; --wave:#B8B5AB;
+  /* "Gamified Studio" palette (26 Oct trial): soft cream/grey ground, sky blue primary, orange/yellow secondary,
+     coral and mint accents. Text and white-on-colour shades are deepened from the swatches to keep 4.5:1 (WCAG 1.4.3);
+     the pure swatches (--sky, --sun, --mint, --coral) are used only for fills without text. */
+  --page:#ECF0F1; --bg:#F9F8F3; --card:#FFFFFF; --sunk:#F2F1EA; --ink:#1B1F24; --muted:#5A6068;
+  --line:#E5E3D9; --line2:#D3D0C4; --staff:#8F949A;
+  --blue:#1C70AD; --blue-soft:#E3F1FB; --blue-ink:#155A8C; --on-accent:#FFFFFF; --sky:#3498DB;
+  --orange:#B35C14; --orange-soft:#FCEBDA; --orange-ink:#8A440E; --cheer:#E67E22;
+  --red:#C0392B; --red-soft:#FDE4E1; --coral:#E74C3C; --green:#1A7F45; --green-soft:#E6F8ED; --mint:#2ECC71;
+  --amber:#7A5F00; --amber-soft:#FDF3C7; --sun:#F1C40F; --scrim:rgba(27,31,36,.48); --spot:#F1C40F;
+  --sec-a:#EEF1EC; --sec-b:#E4E9EC; --wave:#B6BCC2;
   --edge:#80838B; /* 3:1+ boundary for inputs, switch tracks and radios (WCAG 1.4.11) */
   --f-ui:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;
   color-scheme:light; /* the app is light-only, whatever the OS theme */
@@ -202,7 +205,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .tl .wv{position:absolute;left:0;right:0;top:22px;height:40px;border-radius:6px;background:var(--sunk);overflow:hidden}
 .tl .wv svg{width:100%;height:100%;display:block}
 .tl .wv rect{fill:var(--wave)}
-.tl .sel{position:absolute;top:20px;height:44px;background:rgba(47,69,198,.16);border:2px solid var(--blue);border-radius:6px;pointer-events:none}
+.tl .sel{position:absolute;top:20px;height:44px;background:rgba(52,152,219,.18);border:2px solid var(--blue);border-radius:6px;pointer-events:none}
 .tl .hd{position:absolute;top:16px;width:44px;height:52px;margin-left:-22px;display:flex;align-items:center;justify-content:center;border:0;background:transparent;padding:0;cursor:ew-resize}
 .tl .hd i{width:14px;height:44px;border-radius:5px;background:var(--blue);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 .tl .hd i::after{content:"";width:2px;height:16px;border-left:1px solid var(--on-accent);border-right:1px solid var(--on-accent);opacity:.8}
@@ -218,18 +221,18 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .kb{position:relative;height:110px;display:flex;width:max-content;background:#FAFAF7}
 .kb .w{flex:none;width:44px;position:relative;border:0;border-right:1px solid #C9C7BF;background:#FAFAF7;display:flex;align-items:flex-end;justify-content:center;padding-bottom:5px;font-size:10px;font-weight:700;color:#5B5E66}
 .kb .w:last-child{border-right:0}
-.kb .w.hit{background:#DDE2FB;color:#22339A}
+.kb .w.hit{background:var(--blue-soft);color:var(--blue-ink)}
 .kb .k{position:absolute;top:0;width:28px;height:60%;background:#17181C;border:0;border-radius:0 0 4px 4px;padding:0}
-.kb .k.hit{background:#2F45C6}
-.kb .w.mid::before{content:"";position:absolute;bottom:22px;left:50%;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:#2F45C6}
-.kb .w.mid{color:#22339A}
+.kb .k.hit{background:var(--sky)}
+.kb .w.mid::before{content:"";position:absolute;bottom:22px;left:50%;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--sky)}
+.kb .w.mid{color:var(--blue-ink)}
 .kbkey{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
-.kbkey i{width:8px;height:8px;border-radius:50%;background:#2F45C6;display:inline-block}
+.kbkey i{width:8px;height:8px;border-radius:50%;background:var(--sky);display:inline-block}
 
 /* meter (HE #9) */
 .meter{display:flex;align-items:center;gap:10px}
 .meter .bars{display:flex;align-items:flex-end;gap:3px;height:26px;flex:none}
-.meter .bars i{display:block;width:5px;border-radius:2px;background:var(--green);height:4px}
+.meter .bars i{display:block;width:5px;border-radius:2px;background:var(--mint);height:4px}
 .meter .lvl{font-size:13px;font-weight:700;color:var(--green)}
 .meter .lvl.wait{color:var(--muted)}
 
@@ -265,7 +268,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .overall{display:flex;align-items:center;gap:14px}
 .ring{width:72px;height:72px;flex:none}
 .ring .bg{stroke:var(--line);fill:none;stroke-width:8}
-.ring .fg{stroke:var(--blue);fill:none;stroke-width:8;stroke-linecap:round}
+.ring .fg{stroke:var(--sky);fill:none;stroke-width:8;stroke-linecap:round}
 .ring text{fill:var(--ink);font:800 20px var(--f-ui)}
 .metric{display:flex;flex-direction:column;gap:6px;padding:10px 0}
 .metric+.metric{border-top:1px solid var(--line)}
@@ -326,7 +329,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .coach-tag{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--blue-ink);background:var(--blue-soft);padding:3px 8px;border-radius:999px}
 .dsteps{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:8px 0 4px}
 .dsteps .bar{height:6px;border-radius:3px;background:var(--line)}
-.dsteps .bar.on{background:var(--blue)}
+.dsteps .bar.on{background:var(--sky)}
 .dsteps .t{font-size:12px;line-height:1.25;color:var(--muted);margin-top:4px}
 .dsteps .t.on{font-weight:700;color:var(--ink)}
 .ro{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:6px 0 12px}
@@ -380,7 +383,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .sync .mk{position:absolute;top:8px;bottom:6px;width:2px;background:var(--blue);z-index:2}
 .sync .mk span{position:absolute;top:-2px;left:5px;font-size:11px;font-weight:700;color:var(--blue-ink);white-space:nowrap}
 .sync .uph{position:absolute;top:28px;bottom:6px;width:2px;background:var(--ink);z-index:3;display:none}
-.sync .umk{position:absolute;top:70px;height:46px;width:2px;background:var(--green);z-index:2}
+.sync .umk{position:absolute;top:70px;height:46px;width:2px;background:var(--mint);z-index:2}
 
 /* overlays */
 .scrim{position:absolute;inset:0;background:var(--scrim);display:flex;flex-direction:column;justify-content:flex-end;z-index:20}
@@ -957,7 +960,7 @@ SCREENS.feedback = function(){
   ];
   h += '<section class="card pad" data-tour="metrics" style="padding-block:4px">';
   M.forEach(function(m){
-    var v = t[m.k], L = label(v), open = S.openInfo === m.k, col = L[1] === "g" ? "var(--green)" : L[1] === "b" ? "var(--blue)" : "var(--amber)";
+    var v = t[m.k], L = label(v), open = S.openInfo === m.k, col = L[1] === "g" ? "var(--mint)" : L[1] === "b" ? "var(--sky)" : "var(--sun)";
     h += '<div class="metric"><div class="top"><span class="nm">' + m.n + '</span><button class="info" aria-expanded="' + open + '" aria-label="What ' + m.n + ' means" data-act="info" data-arg="' + m.k + '"><span>i</span></button><span class="badge ' + L[1] + '">' + L[0] + '</span><span class="sc">' + v + '</span></div>' +
       '<div class="bar"><i style="width:' + v + '%;background:' + col + '"></i></div>' + (open ? '<div class="tip">' + m.tip + '</div>' : '') + '</div>';
   });

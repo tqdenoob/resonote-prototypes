@@ -2,6 +2,7 @@
 
 Newest first. One line per merged PR.
 
+- 2026-10-26 · Trial "Gamified Studio" colour scheme: cream/grey ground, sky blue primary, orange/yellow secondary, coral/mint accents (contrast-safe shades for text). Old palette screenshotted in `docs/screenshots/alternatives/`.
 - 2026-10-26 · Sync check: learning track drawn as an audio waveform (count-in clicks, then sung notes) instead of grey blocks.
 - 2026-10-26 · Setup (views 2-4) now opens as a popup over the library with Close (X) on every step; closing keeps progress and shows a "Setup not finished" row. Old full-screen steps screenshotted in `docs/screenshots/alternatives/`.
 - 2026-10-26 · One main design: removed the 20 Oct parallel designs and the old drill alternatives; screenshots kept in `docs/screenshots/alternatives/`. All future changes go into `index.html`.
