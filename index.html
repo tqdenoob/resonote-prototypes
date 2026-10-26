@@ -85,9 +85,12 @@ button{cursor:pointer}
 
 /* ---------- Phone ---------- */
 .phone{width:390px;height:844px;max-width:100%;border-radius:32px;overflow:hidden;position:relative;background:var(--bg);
-  box-shadow:0 0 0 8px var(--ink),0 18px 40px rgba(0,0,0,.18);display:flex;flex-direction:column;flex:none}
+  box-shadow:0 0 0 8px var(--ink),0 18px 40px rgba(0,0,0,.18);display:flex;flex-direction:column;flex:none;
+  transform:scale(var(--s,1));transform-origin:top left}
+.phone-box{flex:none;width:calc(390px * var(--s,1));height:calc(844px * var(--s,1))}
 @media (max-width:480px){
-  .phone{width:100%;height:calc(100svh - 40px);min-height:640px;border-radius:22px;box-shadow:0 0 0 1px var(--line2)}
+  .phone-box{width:100%;height:auto}
+  .phone{width:100%;height:calc(100svh - 40px);min-height:640px;border-radius:22px;box-shadow:0 0 0 1px var(--line2);transform:none}
   .wrap{gap:24px}
 }
 .scr{display:flex;flex-direction:column;height:100%;min-height:0}
@@ -354,7 +357,7 @@ input[type=range]{width:100%;accent-color:var(--blue);margin:0}
 </style>
 
 <div class="wrap">
-  <div class="phone" id="phone" aria-label="ResoNote app, phone screen"></div>
+  <div class="phone-box"><div class="phone" id="phone" aria-label="ResoNote app, phone screen"></div></div>
   <aside class="guide" id="guide" aria-label="Prototype guide"></aside>
 </div>
 
@@ -1080,8 +1083,8 @@ function placeTour(){
   var target = phone.querySelector('[data-tour="' + st.t + '"]'), spot = phone.querySelector("[data-spot]"), tip = phone.querySelector("[data-tip]");
   if (!target || !spot || !tip) return;
   target.scrollIntoView({block:"nearest"});
-  var pr = phone.getBoundingClientRect(), tr = target.getBoundingClientRect();
-  var top = tr.top - pr.top - 4, left = tr.left - pr.left - 4, w = tr.width + 8, ht = tr.height + 8;
+  var pr = phone.getBoundingClientRect(), tr = target.getBoundingClientRect(), k = pr.width / phone.offsetWidth || 1;
+  var top = (tr.top - pr.top) / k - 4, left = (tr.left - pr.left) / k - 4, w = tr.width / k + 8, ht = tr.height / k + 8;
   spot.style.cssText = "top:" + top + "px;left:" + left + "px;width:" + w + "px;height:" + ht + "px";
   var tipH = tip.offsetHeight;
   tip.style.top = (top + ht + 12 + tipH < phone.offsetHeight - 8 ? top + ht + 12 : Math.max(8, top - tipH - 12)) + "px";
@@ -1567,7 +1570,13 @@ guide.addEventListener("click", function(e){
   if (a === "variant"){ S.variant = arg; S.drill = freshDrill(); if (S.view === "drill") render(); else renderGuide(); }
   if (a === "reset"){ stopAll(); var v = S.variant; S = fresh(); S.variant = v; T0 = Date.now(); go("library"); }
 });
-window.addEventListener("resize", function(){ if (S.sheet === "tour") placeTour(); });
+// Shrink the phone to fit the window height (laptop screens); never enlarge past 390x844.
+function fitPhone(){
+  var sc = Math.max(0.55, Math.min(1, (window.innerHeight - 48) / 844));
+  document.documentElement.style.setProperty("--s", sc.toFixed(3));
+}
+fitPhone();
+window.addEventListener("resize", function(){ fitPhone(); if (S.sheet === "tour") placeTour(); });
 window.addEventListener("hashchange", function(){ var v = (location.hash || "").slice(1); if (SCREENS[v] && v !== S.view) seedTo(v); });
 
 /* ================= Boot ================= */
