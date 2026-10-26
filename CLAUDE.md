@@ -160,6 +160,7 @@ Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been 
 | 2026-10-26 | Help overlay kept on every view | Already built; fixes HE #5 | Removing help (Iter2.03 current text) | Iter2.03 "not fixed" list |
 | 2026-10-26 | Moderator judging replaced by scripted results | Brief requires the experiment to run with no team intervention | MODERATOR ONLY Clean/Missed buttons | Iter2.05 |
 | 2026-10-26 | Recording limited to bars 33-48 | Coach feedback is scripted for the bridge only | Free recording with generic feedback | Iter2.04 simulation section |
+| 2026-10-26 | Phone frame scales down to fit the window height (never above 390x844) | At full size the frame was taller than a laptop screen, so the bottom buttons were cut off | Shortening the phone instead (rejected: crowds the screens) | None; Iter2.04 screenshots can still be taken at full size on a tall window |
 
 ## AI assistance log
 
@@ -168,6 +169,7 @@ Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been 
 | 2026-10-20 | Tan Qi | Claude | The three parallel designs (A, B, C), README | To fill in |
 | 2026-10-21 | Tan Qi | Claude | Drill HE-fix rebuild, HE traceability doc, revised Iter1.5 HE text | To fill in |
 | 2026-10-26 | Tan Qi | Claude Code | Full hi-fi prototype (`index.html`), this CLAUDE.md, CHANGELOG | To fill in after the team tests it on a phone |
+| 2026-10-26 | Tan Qi | Claude Code | Scale-to-fit for the phone frame | To fill in |
 
 ## Open issues
 
