@@ -267,12 +267,12 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .song .meta b{display:block;font-size:15px}
 .song .meta span{display:block;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .greet{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:14px 4px 10px}
-.greet h1{margin:0;display:flex;align-items:center;justify-content:center;gap:10px;font:400 27px/1.15 var(--f-serif);letter-spacing:-.01em;text-wrap:balance}
-.greet h1 svg{flex:none;color:var(--orange)}
+.greet h1{margin:0;display:flex;align-items:center;justify-content:center;gap:10px;max-width:100%;font:400 24px/1.2 var(--f-serif);letter-spacing:-.01em;white-space:nowrap}
+.greet h1 span{min-width:0;overflow:hidden;text-overflow:ellipsis} /* greeting stays on one line */
+.greet h1 svg{flex:none;color:var(--blue)}
 .greet h1 svg rect{animation:hum 1.6s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
 .greet h1 svg rect:nth-child(2){animation-delay:.2s}.greet h1 svg rect:nth-child(3){animation-delay:.4s}
 @keyframes hum{50%{transform:scaleY(.55)}}
-.greet p{margin:0;font-size:13px;color:var(--muted)}
 .lib-h{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:6px 2px -2px}
 .search{display:flex;align-items:center;gap:8px;height:46px;border:1px solid var(--edge);border-radius:14px;padding:0 12px;background:var(--card)}
 .search input{border:0;background:transparent;flex:1;min-width:0;height:100%;font-size:15px;outline:none}
@@ -817,8 +817,8 @@ var SETUP = {import:1, parts:1, sync:1};   // views 2-4 show as a popup over the
 var USER = "Clarence";
 var GREET = (function(){
   var hr = new Date().getHours();
-  var pool = hr < 5 ? ["Late-night run-through", "Still humming"] :
-             hr < 12 ? ["Morning", "Rise and sing", "Fresh voice today"] :
+  var pool = hr < 5 ? ["Night owl", "Still humming"] :
+             hr < 12 ? ["Morning", "Rise and sing", "Fresh voice"] :
              hr < 18 ? ["Afternoon", "Find your note", "Ready to sing"] :
                        ["Evening", "Back in tune", "Warm up time"];
   return pool[Math.floor(Math.random() * pool.length)];
@@ -826,11 +826,8 @@ var GREET = (function(){
 function greetHtml(){
   var mastered = S.session.mastered.length;
   var phrase = mastered ? "Nicely sung" : GREET;
-  var sub = mastered ? "Bar 42 sorted. Bar 38 is next before Wednesday." :
-            S.song ? "Viva La Vida is ready when you are." :
-            "Combined practice is on Wednesday.";
   return '<div class="greet"><h1>' + svg('<rect x="3" y="8" width="3" height="8" rx="1.5" fill="currentColor" stroke="none"/><rect x="10.5" y="4" width="3" height="16" rx="1.5" fill="currentColor" stroke="none"/><rect x="18" y="7" width="3" height="10" rx="1.5" fill="currentColor" stroke="none"/>', 22) +
-    '<span>' + esc(phrase) + ', ' + esc(USER) + '</span></h1><p>' + esc(sub) + '</p></div>';
+    '<span>' + esc(phrase) + ', ' + esc(USER) + '</span></h1></div>';
 }
 
 SCREENS.library = function(){
