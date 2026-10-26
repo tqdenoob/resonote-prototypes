@@ -23,6 +23,16 @@ From Iter2.02 Requirements, Scenario 1 (Easy): "Learn and master a new part befo
 
 Borrowed from the hard scenario: the manual sync correction and the adjust-drill path (after 2 misses). Exceptional cases added: an invalid file (a photo instead of a PDF), an empty song title, a search with no results, discarding a take, and a loop outside the scripted bars.
 
+## Product voice
+
+In-app copy is **casual, concise and playful** (decided 2026-10-26 by Tan Qi). Short sentences, contractions, a light joke where it costs nothing ("Fix it once, win twice", "Nailed it!"). Rules:
+
+- **Keep labels the deliverables cite.** Buttons and states named in Iter2.03, the HE table and the navigation map stay literal: Play / Pause / Resume, Sing & record, End take, Re-record passage, Save to history, Discard take, Autosaved, Fix this first, Needs work / Good / Excellent, Step n of 3, Required, Lined up, Confirm sync. Playfulness goes in headings, hints, toasts, sheets, help tips and coach messages.
+- **Errors stay clear first, cheeky second.** Say what's wrong and how to fix it ("IMG_4021.HEIC is a photo, not a score. Pick the PDF.").
+- **Coach feedback keeps the numbers.** Cents, beats and seconds stay in the explanations; only the phrasing loosens.
+- **Same voice in drill Versions A and B**, so tone doesn't become a confound in the A/B test.
+- The guide panel beside the phone is documentation for evaluators, not product copy, and stays neutral.
+
 ## Current prototype state (last updated: 2026-10-26 by Tan Qi)
 
 `index.html` is the whole prototype: one self-contained HTML file, plain JavaScript, no build step. **11 views** (the brief allows 6-14). A "Prototype guide" panel beside the phone lists the views, their HE fixes and what is simulated, and lets you jump to any view.
@@ -34,7 +44,7 @@ Borrowed from the hard scenario: the manual sync correction and the adjust-drill
 | 3 | Choose Your Part | `#parts` | Pick part, voice range shown, Hear preview, Step 2 of 3 | Parts "detected" from the score; only Tenor continues | View 4 | Tan Qi |
 | 4 | Sync Check | `#sync` | Slide the learning track until its first sung note sits on bar 1; Play, Set marker, Undo; Step 3 of 3 | Sync detection scripted; correct offset is -3.48 s | View 5 | Tan Qi |
 | 5 | Practice Workspace | `#workspace` | Score with playhead, loop timeline with drag handles, tempo (typed BPM), metronome, part volumes, keyboard, play/pause, Sing & record | Reference audio is a Web Audio synth | View 6 | Tan Qi |
-| 6 | Sing Along + Recording | `#record` | Count-in, scrolling score, live level meter, End take, Cancel with confirmation | No microphone; meter animation is fixed | View 7 | Tan Qi |
+| 6 | Sing Along + Recording | `#record` | Count-in, scrolling score, live level meter ("Hearing you · nice level"), End take, Cancel with confirmation ("Scrap this take?") | No microphone; meter animation is fixed | View 7 | Tan Qi |
 | 7 | Take Feedback | `#feedback` | Overall + Pitch / Timing / Held notes with (i) and labels, bar-by-bar strip, "Fix this first: bar 42", Autosaved, Re-record passage, Save to history, Discard take | Scores scripted per take number | Views 8 + 9 | Tan Qi |
 | 8 | Understand the Issue | `#issue` | Your take vs reference playback, pitch overlay chart, three plain-language explanations | "Your take" is the reference played flat, rushed and cut short | View 10 | Tan Qi |
 | 9 | Targeted Drill | `#drill` | Drill bar 42 to 2 clean takes in a row at 100%, guidance off. Version A or B (see A/B section) | Take results scripted | Views 11-14 | Tan Qi |
@@ -51,7 +61,7 @@ Source for the Iter2.04 navigation diagram. Every branch is labelled with the co
   - "+ Add song" → Import
   - Tap "Viva La Vida" (after import) → Practice Workspace
   - Tap another song → off-path message, stay
-  - Search with no match → "No songs match" + "Clear search", stay
+  - Search with no match → "Nothing called … yet" + "Clear search", stay
 - **Import (Step 1 of 3)**
   - Back → Music Library
   - "Choose" → file sheet → pick file → Import (invalid photo shows an error and stays)
@@ -70,8 +80,8 @@ Source for the Iter2.04 navigation diagram. Every branch is labelled with the co
   - "Sing & record" with loop = bars 33-48 → Sing Along + Recording
   - "Sing & record" with any other loop → sheet: "Set loop to bars 33-48 and record" → Recording / "Keep my loop" → stay
 - **Sing Along + Recording**
-  - "End take", or the loop ends → "Checking your take…" → Take Feedback
-  - "Cancel" → sheet: "Delete recording" → Practice Workspace / "Keep recording" → stay
+  - "End take", or the loop ends → "Listening back…" → Take Feedback
+  - "Cancel" → sheet "Scrap this take?": "Delete recording" → Practice Workspace / "Keep singing" → stay
 - **Take Feedback**
   - Back → Practice Workspace
   - "Hear what went wrong" → Understand the Issue
@@ -121,9 +131,9 @@ All scripted data is at the top of the `<script>` in `index.html`: `NOTES` / `BR
 | 3 | 3 | Back button top-left on every setup step | 2, 3, 4 | Smaller fixes |
 | 5 | 3 | Help (?) fixed top-right on every view; overlay dims the screen, outlines each control and places the tip beside it | all | **Not fixed list: needs updating to "fixed"** |
 | 8 | 3 | (i) explanation and Needs work / Good / Excellent label per metric; issues named in plain words; missed drill takes say why | 7, 8, 9 | Smaller fixes |
-| 9 | 3 | Live input-level meter, "Voice picked up · good level" | 6, 9 | Smaller fixes |
+| 9 | 3 | Live input-level meter, "Hearing you · nice level" | 6, 9 | Smaller fixes |
 | 10 | 2 | Track moves against a fixed bar 1 marker while dragging | 4 | Not listed |
-| 11 | 2 | "No songs match" message with "Clear search" | 1 | Not listed |
+| 11 | 2 | "Nothing called \"…\" yet" message with "Clear search" | 1 | Not listed |
 | 13 | 2 | Song title marked Required, Next disabled with a reason, inline error | 2 | Not listed |
 | 14 | 2 | "+4 since take 1" on feedback; all takes listed on the summary | 7, 11 | Not listed |
 | 15 | 2 | "Step n of 3" with progress bar on all three setup steps | 2, 3, 4 | Smaller fixes |
@@ -159,6 +169,7 @@ Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been 
 | 2026-10-26 | Views 8+9 merged into Take Feedback; Views 11-14 merged into one Drill view | Fewer screens on the main path; one priority stays visible with the scores | Separate scorecard and priority screens (low-fi) | Iter2.04 navigation diagram |
 | 2026-10-26 | Help overlay kept on every view | Already built; fixes HE #5 | Removing help (Iter2.03 current text) | Iter2.03 "not fixed" list |
 | 2026-10-26 | Moderator judging replaced by scripted results | Brief requires the experiment to run with no team intervention | MODERATOR ONLY Clean/Missed buttons | Iter2.05 |
+| 2026-10-26 | Product voice: casual, concise, playful (see Product voice) | Tan Qi's direction; short, friendly copy suits practice in short pockets (MRT, between classes) | Neutral instructional copy (previous version) | Iter2.04 screenshots of every view; Iter2.03 wording if it quotes on-screen text other than the kept labels; Iter2.05 script if it quotes coach messages |
 | 2026-10-26 | Recording limited to bars 33-48 | Coach feedback is scripted for the bridge only | Free recording with generic feedback | Iter2.04 simulation section |
 
 ## AI assistance log
@@ -168,6 +179,7 @@ Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been 
 | 2026-10-20 | Tan Qi | Claude | The three parallel designs (A, B, C), README | To fill in |
 | 2026-10-21 | Tan Qi | Claude | Drill HE-fix rebuild, HE traceability doc, revised Iter1.5 HE text | To fill in |
 | 2026-10-26 | Tan Qi | Claude Code | Full hi-fi prototype (`index.html`), this CLAUDE.md, CHANGELOG | To fill in after the team tests it on a phone |
+| 2026-10-26 | Tan Qi | Claude Code | Rewrite of in-app copy to the casual, concise, playful voice | Tan Qi set the voice; team to review the wording on a phone |
 
 ## Open issues
 

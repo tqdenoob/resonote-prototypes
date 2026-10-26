@@ -436,7 +436,7 @@ var VIEWS = [
    sim:"Reference audio is a synth of the tenor line. Other parts are a soft chord on each beat."},
   {id:"record",name:"Sing Along + Recording",lofi:"View 7 Sing Along + Recording",
    does:"Count-in, then the passage plays and scrolls while the user sings. Ends automatically at the loop end or with End take.",
-   he:[["#2","'End take' replaces the ambiguous Stop (Change 2)"],["#9","Live input-level meter with 'Voice picked up'"]],
+   he:[["#2","'End take' replaces the ambiguous Stop (Change 2)"],["#9","Live input-level meter with 'Hearing you · nice level'"]],
    sim:"No microphone is used. The level meter is animated the same way every time."},
   {id:"feedback",name:"Take Feedback",lofi:"Views 8 + 9 Diagnostic Scorecard, Review Feedback",
    does:"Scores the take on pitch, timing and held notes, shows which bars need work, and names one bar to fix first.",
@@ -462,35 +462,35 @@ var VIEWS = [
 function viewIndex(id){ for (var i=0;i<VIEWS.length;i++) if (VIEWS[i].id===id) return i; return 0; }
 
 var TOURS = {
-  library:[{t:"search",title:"Search",text:"Type a song title. If nothing matches, you'll see a message and a way to clear the search."},
-           {t:"add",title:"Add song",text:"Import the score and learning track your music director shared."},
-           {t:"help",title:"Help",text:"This button stays in the top-right corner on every screen."}],
-  import:[{t:"score",title:"Score",text:"The PDF your music director shared. Tap to choose it."},
-          {t:"audio",title:"Learning track",text:"The MIDI or audio file that goes with the score."},
-          {t:"title",title:"Song title",text:"Required. It's how you'll find the song in your library."}],
-  parts:[{t:"parts",title:"Your part",text:"Pick the line you sing. Voice range shows the lowest and highest notes. Tap Hear to check it."},
-         {t:"back",title:"Back",text:"Goes to the previous step. Your choices are kept."}],
-  sync:[{t:"lanes",title:"Line them up",text:"The top row is the score. The bottom row is the learning track. Slide the track until its first sung note sits on the bar 1 line."},
-        {t:"offset",title:"Offset",text:"Drag the slider or use − / + for small steps. 'Lined up' appears when it's right."},
-        {t:"tools",title:"Play, Set marker, Undo",text:"Play the track, tap Set marker when you hear the first sung note, and Undo if you get it wrong."}],
-  workspace:[{t:"score",title:"Score",text:"The blue line follows the music. Bars in your loop are shaded."},
-             {t:"loop",title:"Loop",text:"Drag the two blue handles to choose the bars to repeat. Section names help you find your place without reading the score."},
-             {t:"controls",title:"Practice settings",text:"Slow the tempo down (tap the number to type it), turn on a steady click, set part volumes, or show the keyboard to check a note."},
-             {t:"play",title:"Play / Pause",text:"One button. Pausing keeps your place, and Resume carries on from there."},
-             {t:"rec",title:"Sing & record",text:"Records you singing the looped bars, then the coach gives feedback."}],
-  record:[{t:"meter",title:"Level meter",text:"Shows your voice is being picked up. If it stays flat, move closer to the phone."},
-          {t:"end",title:"End take",text:"Stops recording and sends the take to the coach. The take also ends by itself at the end of the loop."}],
+  library:[{t:"search",title:"Search",text:"Type a title. No match? We'll tell you and help you clear it."},
+           {t:"add",title:"Add song",text:"Bring in the score and track your music director shared."},
+           {t:"help",title:"Help",text:"Lost? This button lives top-right on every screen."}],
+  import:[{t:"score",title:"Score",text:"The PDF from your music director. Tap to pick it."},
+          {t:"audio",title:"Learning track",text:"The MIDI or audio that goes with it."},
+          {t:"title",title:"Song title",text:"Required. It's how you'll find the song later."}],
+  parts:[{t:"parts",title:"Your part",text:"Pick the line you sing. Voice range is its lowest to highest note. Tap Hear to check."},
+         {t:"back",title:"Back",text:"Goes back a step. Your picks stay put."}],
+  sync:[{t:"lanes",title:"Line them up",text:"Top row: the score. Bottom row: the track. Slide the track until the first sung note hits the bar 1 line."},
+        {t:"offset",title:"Offset",text:"Drag the slider or tap − / + to nudge. 'Lined up' pops up when it's spot on."},
+        {t:"tools",title:"Play, Set marker, Undo",text:"Hit Play, tap Set marker when the singing starts, and Undo if you miss."}],
+  workspace:[{t:"score",title:"Score",text:"The blue line follows the music. Shaded bars are in your loop."},
+             {t:"loop",title:"Loop",text:"Drag the blue handles to pick the bars to repeat. Section names show where you are, no score-reading needed."},
+             {t:"controls",title:"Practice settings",text:"Slow it down (tap the number to type one), add a click, balance the parts, or pop open the keyboard to check a note."},
+             {t:"play",title:"Play / Pause",text:"One button. Pause keeps your spot; Resume picks up right there."},
+             {t:"rec",title:"Sing & record",text:"Sing the looped bars and the coach tells you how it went."}],
+  record:[{t:"meter",title:"Level meter",text:"Bouncing bars mean we can hear you. Flat? Move closer to the phone."},
+          {t:"end",title:"End take",text:"Stops recording and sends it to the coach. It also stops by itself at the end of the loop."}],
   feedback:[{t:"metrics",title:"Scores",text:"Tap (i) to see what each score means. Labels say Needs work, Good or Excellent."},
-            {t:"prio",title:"Fix this first",text:"The coach picks one bar to work on, so you don't have to fix everything at once."},
-            {t:"takeacts",title:"Your take",text:"Takes are autosaved. Re-record the passage, save the take to your history, or discard it."}],
-  issue:[{t:"cmp",title:"Listen and compare",text:"Play your take, then the reference, for bar 42."},
-         {t:"chart",title:"Pitch overlay",text:"Blue blocks are the right notes. The orange line is you."}],
-  drill:[{t:"play",title:"Play bar 42",text:"Hear the reference. Tap again to pause; Resume carries on from the same beat."},
-         {t:"set",title:"Support",text:"Version B: the coach sets tempo and guidance and takes support away as you get it right. Version A: you set them yourself."},
-         {t:"takes",title:"Goal and takes",text:"Every take is autosaved here. Ticks are clean, crosses are missed with the reason."},
-         {t:"record",title:"Record take",text:"Sing bar 42. Tap End take when you finish, or it ends by itself."}],
-  complete:[{t:"next",title:"What next",text:"Go to the next problem bar, repeat this drill, or end the session."}],
-  summary:[{t:"next",title:"Next time",text:"The passage the coach suggests you practise in your next session."}]
+            {t:"prio",title:"Fix this first",text:"One bar to fix first, so you're not fixing everything at once."},
+            {t:"takeacts",title:"Your take",text:"Takes save themselves. Re-record, keep it in your history, or ditch it."}],
+  issue:[{t:"cmp",title:"Listen and compare",text:"Play your take, then the reference. Spot the difference."},
+         {t:"chart",title:"Pitch overlay",text:"Blue blocks are the target notes. The orange line is you."}],
+  drill:[{t:"play",title:"Play bar 42",text:"Hear how it goes. Tap again to pause; Resume picks up on the same beat."},
+         {t:"set",title:"Support",text:"Version B: the coach sets tempo and guidance, and eases off as you get it right. Version A: you set them yourself."},
+         {t:"takes",title:"Goal and takes",text:"Every take saves itself here. Ticks are clean; crosses are misses, with the reason."},
+         {t:"record",title:"Record take",text:"Sing bar 42. Tap End take when you're done, or it stops by itself."}],
+  complete:[{t:"next",title:"What next",text:"Tackle the next bar, run this drill again, or call it a night."}],
+  summary:[{t:"next",title:"Next time",text:"What the coach suggests for your next session."}]
 };
 
 /* ================= Icons ================= */
@@ -538,7 +538,7 @@ try { var qv = new URLSearchParams(location.search).get("v"); if (qv === "A" || 
 function freshDrill(){
   return {tempo:80, guidance:true, chunk:null, phase:"idle", playing:false, pos:0, takes:[], streak:0, misses:0,
     targetTries:0, sheet:null, choice:"beats", last:null, undo:null, editingBpm:false, bpmError:"", playingBack:false, countBeat:0,
-    msg:"We'll start slower with guidance on. I'll take support away as you get it right."};
+    msg:"Let's start slow with guidance on. Nail it and I'll ease off."};
 }
 
 /* ================= Audio (Web Audio synth) ================= */
@@ -680,7 +680,7 @@ function sw(act, on, lab){
 }
 function meterHTML(){
   return '<div class="meter" data-tour="meter" aria-label="Microphone input level"><span class="sub">Mic</span><span class="bars" data-meter>' +
-    new Array(13).join("<i></i>") + '</span><span class="lvl">Voice picked up · good level</span></div>';
+    new Array(13).join("<i></i>") + '</span><span class="lvl">Hearing you · nice level</span></div>';
 }
 var phone = document.getElementById("phone"), guide = document.getElementById("guide");
 
@@ -689,17 +689,17 @@ var SCREENS = {};
 
 SCREENS.library = function(){
   var songs = [];
-  if (S.song) songs.push({id:"viva", t:"Viva La Vida", m: S.session.mastered.length ? "Tenor · bar 42 mastered · next: bar 38" : (S.takes.length ? "Tenor · practised tonight" : "Tenor · new, not practised yet"), c:"b"});
+  if (S.song) songs.push({id:"viva", t:"Viva La Vida", m: S.session.mastered.length ? "Tenor · bar 42 mastered · up next: bar 38" : (S.takes.length ? "Tenor · practised tonight" : "Tenor · brand new"), c:"b"});
   songs.push({id:"seasons", t:"Seasons of Love", m:"Tenor · 3 of 4 passages mastered", c:"g"});
   songs.push({id:"bridge", t:"Bridge Over Troubled Water", m:"Tenor · last practised 12 Oct", c:"a"});
   var q = S.query.trim().toLowerCase();
   var shown = songs.filter(function(s){ return !q || s.t.toLowerCase().indexOf(q) >= 0; });
   var h = hdr('<span></span>', "ResoNote", "Your songs");
   h += '<div class="body">';
-  h += '<label class="search" data-tour="search">' + I.search + '<input id="q" type="search" placeholder="Search your songs" value="' + esc(S.query) + '" aria-label="Search your songs" autocomplete="off" data-input="query"></label>';
-  if (!S.song) h += '<div class="card pad" style="background:var(--blue-soft);border-color:transparent"><div class="lbl" style="color:var(--blue-ink)">New in SMU VOIX Telegram</div><div class="sub" style="color:var(--blue-ink)">Viva La Vida: SATB score (PDF) and tenor learning track (MIDI). Combined practice on Wednesday.</div></div>';
+  h += '<label class="search" data-tour="search">' + I.search + '<input id="q" type="search" placeholder="Find a song" value="' + esc(S.query) + '" aria-label="Find a song" autocomplete="off" data-input="query"></label>';
+  if (!S.song) h += '<div class="card pad" style="background:var(--blue-soft);border-color:transparent"><div class="lbl" style="color:var(--blue-ink)">Fresh from SMU VOIX Telegram</div><div class="sub" style="color:var(--blue-ink)">Viva La Vida score and tenor track just dropped. Combined practice is Wednesday.</div></div>';
   if (!shown.length){
-    h += '<div class="card empty" role="status"><b style="font-size:15px">No songs match "' + esc(S.query) + '"</b><span class="sub">Check the spelling, or the song may not be imported yet.</span><button class="link" data-act="clear-q">Clear search</button></div>';
+    h += '<div class="card empty" role="status"><b style="font-size:15px">Nothing called "' + esc(S.query) + '" yet</b><span class="sub">Typo? Or it\'s not imported yet.</span><button class="link" data-act="clear-q">Clear search</button></div>';
   }
   shown.forEach(function(s){
     h += '<button class="song" data-act="open-song" data-arg="' + s.id + '"><span class="art badge ' + s.c + '" style="border-radius:12px;padding:0">' + s.t[0] + '</span><span class="meta"><b>' + esc(s.t) + '</b><span>' + esc(s.m) + '</span></span>' + svg('<path d="M9 6l6 6-6 6"/>', 18) + '</button>';
@@ -713,21 +713,21 @@ SCREENS.import = function(){
   var m = S.imp, titleOk = m.title.trim().length > 0;
   var h = hdr(backBtn("cancel-import", "Cancel and go back to library"), "Add a song", "");
   h += '<div class="body">' + steps3(1, "Files and title");
-  h += '<p class="lead">Add the score and learning track your music director shared.</p>';
+  h += '<p class="lead">Grab the score and learning track from your music director.</p>';
   function fileCard(kind, f, tour, label, ic, hintTxt){
     var cls = f ? (f.bad ? "bad" : "ok") : "";
     return '<div class="file ' + cls + '" data-tour="' + tour + '"><span class="fi">' + ic + '</span><span class="ft"><b>' + label + ' <span class="hint" style="display:inline">· Required</span></b><span>' +
       (f ? esc(f.name) + (f.bad ? "" : " · " + f.size) : hintTxt) + '</span></span><button class="mini" data-act="pick" data-arg="' + kind + '">' + (f && !f.bad ? "Change" : "Choose") + '</button></div>';
   }
   h += fileCard("score", m.score, "score", "Score", I.doc, "PDF");
-  if (m.score && m.score.bad) h += '<div class="err" role="alert">' + esc(m.score.name) + ' is a photo, not a score. Choose a PDF.</div>';
+  if (m.score && m.score.bad) h += '<div class="err" role="alert">' + esc(m.score.name) + ' is a photo, not a score. Pick the PDF.</div>';
   h += fileCard("audio", m.audio, "audio", "Learning track", I.note, "MIDI, MP3 or WAV");
   var showErr = m.titleTouched && !titleOk;
   h += '<div class="field" data-tour="title"><label for="title">Song title <span class="hint">Required</span></label><input id="title" class="' + (showErr ? "bad" : "") + '" value="' + esc(m.title) + '" placeholder="e.g. Viva La Vida" data-input="title" autocomplete="off">' +
-    (showErr ? '<div class="err" role="alert" style="margin-top:6px">Enter a song title so you can find it in your library.</div>' : '') + '</div>';
+    (showErr ? '<div class="err" role="alert" style="margin-top:6px">Give it a name so you can find it later.</div>' : '') + '</div>';
   h += '</div>';
   var ready = m.score && !m.score.bad && m.audio && titleOk;
-  h += '<footer class="ftr col">' + (!ready ? '<span class="hint" style="text-align:center">' + (!m.score || m.score.bad ? "Add the score to continue" : !m.audio ? "Add the learning track to continue" : "Add a song title to continue") + '</span>' : '') +
+  h += '<footer class="ftr col">' + (!ready ? '<span class="hint" style="text-align:center">' + (!m.score || m.score.bad ? "Add the score to keep going" : !m.audio ? "Now the learning track" : "Just needs a title") + '</span>' : '') +
     '<button class="btn pri" data-act="import-next"' + (ready ? "" : " disabled") + '>Next</button></footer>';
   return h;
 };
@@ -741,14 +741,14 @@ var PARTS = [
 SCREENS.parts = function(){
   var h = hdr(backBtn("to-import", "Back to Add a song"), "Choose your part", "Viva La Vida");
   h += '<div class="body">' + steps3(2, "Your part");
-  h += '<p class="lead">4 parts found in the score. Pick the one you sing; ResoNote will play and check only that line.</p>';
+  h += '<p class="lead">Found 4 parts. Which one\'s yours? We\'ll play and check just that line.</p>';
   h += '<div style="display:flex;flex-direction:column;gap:8px" data-tour="parts">';
   PARTS.forEach(function(p){
     var on = S.part === p.id;
     h += '<div class="row" style="gap:8px"><button class="opt' + (on ? " on" : "") + '" role="radio" aria-checked="' + on + '" data-act="part" data-arg="' + p.id + '"><span class="radio"></span><span><span class="ot">' + p.name + '</span><span class="od">Voice range: ' + p.range + '</span></span></button>' +
       '<button class="mini" data-act="hear-part" data-arg="' + p.id + '" aria-label="Hear the ' + p.name + ' part">' + I.play + 'Hear</button></div>';
   });
-  h += '</div><p class="hint">Voice range is the lowest to highest note in that part. Not sure which is yours? Pick the one your music director assigned you.</p></div>';
+  h += '</div><p class="hint">Voice range = lowest to highest note. Not sure? Go with what your music director gave you.</p></div>';
   h += '<footer class="ftr"><button class="btn pri" data-act="parts-next"' + (S.part ? "" : " disabled") + '>Continue</button></footer>';
   return h;
 };
@@ -759,7 +759,7 @@ SCREENS.sync = function(){
   var y = S.sync, off = y.offset, err = Math.abs(off - SYNC_TRUE), ok = err <= .12;
   var h = hdr(backBtn("to-parts", "Back to Choose your part"), "Sync check", "Viva La Vida · Tenor");
   h += '<div class="body">' + steps3(3, "Line up audio and score");
-  h += '<div class="card pad" style="background:var(--amber-soft);border-color:transparent"><div class="lbl" style="color:var(--amber)">Auto-sync couldn\'t line these up</div><div class="sub">The learning track seems to start with a 2-bar count-in that isn\'t on the score. Slide the track until its first sung note sits on the bar 1 line.</div></div>';
+  h += '<div class="card pad" style="background:var(--amber-soft);border-color:transparent"><div class="lbl" style="color:var(--amber)">Hmm, these don\'t line up</div><div class="sub">The track opens with a 2-bar count-in that\'s not on the score. Slide it until the first sung note hits the bar 1 line.</div></div>';
   h += '<section class="card sync" data-tour="lanes" aria-label="Score and learning track"><div class="lt">Score</div><div class="lane" data-score-lane>';
   for (var b = 0; b < 4; b++){
     h += '<div class="bx" style="left:' + (40 + b * 4 * 240 / BPM / 4 * SYNC_PX * 4 / 4) + 'px;width:' + (240 / BPM * SYNC_PX) + 'px">Bar ' + (b + 1) + '</div>';
@@ -781,8 +781,8 @@ SCREENS.sync = function(){
   h += '<div class="acts" data-tour="tools"><button class="mini' + (y.playing ? " on" : "") + '" data-act="sync-play">' + (y.playing ? I.pause + "Pause" : I.play + "Play") + '</button>' +
     '<button class="mini" data-act="sync-mark"' + (y.playing ? "" : " disabled") + '>' + I.flag + 'Set marker</button>' +
     '<button class="mini" data-act="sync-undo"' + (y.hist.length ? "" : " disabled") + '>' + I.undo + 'Undo</button></div>';
-  h += '<p class="hint" style="margin:0">Tip: tap Play, then Set marker the moment you hear the first sung note.</p></div>';
-  h += '<footer class="ftr col">' + (!ok ? '<span class="hint" style="text-align:center">Bar 1 is ' + err.toFixed(2) + ' s away from the first sung note</span>' : '') +
+  h += '<p class="hint" style="margin:0">Pro tip: hit Play, then Set marker the second you hear singing.</p></div>';
+  h += '<footer class="ftr col">' + (!ok ? '<span class="hint" style="text-align:center">Still ' + err.toFixed(2) + ' s off</span>' : '') +
     '<button class="btn pri" data-act="sync-done">Confirm sync</button></footer>';
   return h;
 };
@@ -812,7 +812,7 @@ SCREENS.workspace = function(){
   h += '<button class="hd" data-hd="b" role="slider" aria-label="Loop end bar" aria-valuemin="1" aria-valuemax="' + NBARS + '" aria-valuenow="' + w.loopB + '" style="left:' + (w.loopB / NBARS * 100) + '%"><i></i></button>';
   h += '<div class="ax">';
   [1, 9, 17, 25, 33, 41, 49, 56].forEach(function(b){ h += '<span style="left:' + ((b - .5) / NBARS * 100) + '%">' + b + '</span>'; });
-  h += '</div></div><div class="row"><span class="hint">Drag the handles to choose bars</span>' + sw("loop-toggle", w.loop, "Repeat loop") + '</div></section>';
+  h += '</div></div><div class="row"><span class="hint">Drag the handles to pick your bars</span>' + sw("loop-toggle", w.loop, "Repeat loop") + '</div></section>';
   // settings
   h += '<section class="card" data-tour="controls" style="padding:2px 14px">';
   h += '<div class="set-row"><span class="lbl">Tempo</span><div class="stepper">';
@@ -820,7 +820,7 @@ SCREENS.workspace = function(){
   else h += '<button class="sbtn" data-act="ws-slower" aria-label="Slower">−</button><button class="bpm-btn" data-act="bpm-edit" data-arg="ws" aria-label="Tempo ' + bpm + ' BPM, tap to type an exact value"><b>' + bpm + ' BPM</b><span> · ' + Math.round(w.tempo) + '%</span></button><button class="sbtn" data-act="ws-faster" aria-label="Faster">+</button>';
   h += '</div></div>';
   if (w.bpmError) h += '<div class="err" role="alert" style="padding-bottom:8px">' + esc(w.bpmError) + '</div>';
-  h += '<div class="set-row"><div><div class="lbl">Metronome</div><div class="hint">Click on every beat</div></div>' + sw("ws-metro", w.metro, "Metronome") + '</div>';
+  h += '<div class="set-row"><div><div class="lbl">Metronome</div><div class="hint">A click on every beat</div></div>' + sw("ws-metro", w.metro, "Metronome") + '</div>';
   h += '<div class="set-row"><div><div class="lbl">Part volumes</div><div class="hint">Tenor ' + (w.tenorMute ? "muted" : w.tenorVol + "%") + ' · Others ' + (w.othersMute ? "muted" : w.othersVol + "%") + '</div></div><button class="mini" data-act="parts-sheet">Adjust</button></div>';
   h += '<div class="set-row"><div><div class="lbl">Keyboard</div><div class="hint">Tap a key to hear a note</div></div>' + sw("ws-kb", w.kb, "Keyboard") + '</div>';
   h += '</section>';
@@ -850,7 +850,7 @@ SCREENS.record = function(){
   h += '<section class="card" aria-label="Score"><div class="scap"><span class="recl"><span class="recdot"></span>Recording</span><span class="sub tnum" data-rtime>Bar ' + cur + ' · ' + fmt(barTime(r.pos - (w.loopA - 1), wsBpm())) + '</span></div>' +
     '<div class="score" style="width:' + SCORE_W + 'px;max-width:100%" data-score>' + staff(bars, SCORE_W, {loop:[w.loopA, w.loopB]}) + '<div class="ph" data-ph style="top:8px;height:58px"></div>' +
     (r.phase === "countin" ? '<div class="countin" data-count>' + (r.countBeat + 1) + '</div>' : '') + '</div></section>';
-  h += '<section class="card pad" style="display:flex;flex-direction:column;gap:10px">' + meterHTML() + '<div class="hint">Learning track plays quietly in your earbuds so you can sing along. Tempo ' + wsBpm() + ' BPM.</div></section>';
+  h += '<section class="card pad" style="display:flex;flex-direction:column;gap:10px">' + meterHTML() + '<div class="hint">Track\'s playing softly in your earbuds. Sing along! · ' + wsBpm() + ' BPM</div></section>';
   h += '<section class="card pad"><div class="eyebrow" style="margin-bottom:4px">Progress</div><div style="height:6px;border-radius:3px;background:var(--line);overflow:hidden"><i data-rprog style="display:block;height:100%;width:0;background:var(--red)"></i></div><div class="row" style="margin-top:6px"><span class="hint">Bar ' + w.loopA + '</span><span class="hint">Bar ' + w.loopB + '</span></div></section>';
   h += '</div><footer class="ftr"><button class="btn sec" data-act="rec-cancel">Cancel</button><button class="btn stop" data-act="rec-end" data-tour="end"><span class="sq"></span>End take</button></footer>';
   return h;
@@ -863,11 +863,11 @@ SCREENS.feedback = function(){
   h += '<div class="row"><span class="saved">' + I.tick(12) + (t.saved ? "Saved to history" : "Autosaved") + '</span><span class="hint">Just now · ' + fmt(t.len) + ' long</span></div>';
   var C = 2 * Math.PI * 30, frac = t.overall / 100;
   h += '<section class="card pad overall"><svg class="ring" viewBox="0 0 72 72" aria-hidden="true"><circle class="bg" cx="36" cy="36" r="30"/><circle class="fg" cx="36" cy="36" r="30" stroke-dasharray="' + (C * frac) + ' ' + C + '" transform="rotate(-90 36 36)"/><text x="36" y="43" text-anchor="middle">' + t.overall + '</text></svg>' +
-    '<div><div class="lbl">Overall ' + t.overall + ' / 100 · ' + label(t.overall)[0] + '</div><div class="sub">' + (prev ? (t.overall - prev.overall >= 0 ? "+" : "") + (t.overall - prev.overall) + " since take " + prev.n : "First take of the bridge. Your notes are mostly there; one bar needs work.") + '</div></div></section>';
+    '<div><div class="lbl">Overall ' + t.overall + ' / 100 · ' + label(t.overall)[0] + '</div><div class="sub">' + (prev ? (t.overall - prev.overall >= 0 ? "+" : "") + (t.overall - prev.overall) + " since take " + prev.n : "First go at the bridge. Mostly there, just one bar to sort out.") + '</div></div></section>';
   var M = [
-    {k:"pitch", n:"Pitch", tip:"Singing the right notes. We compare the pitch you sang with each note on the score. Within 25 cents (a quarter of a semitone) counts as on pitch."},
-    {k:"timing", n:"Timing", tip:"Starting each note at the right moment. We compare when each note starts with the beat. Within an eighth of a beat counts as on time."},
-    {k:"held", n:"Held notes", tip:"Holding long notes for their full length. A half note at this tempo should last about 0.9 seconds."}
+    {k:"pitch", n:"Pitch", tip:"Hitting the right notes. Within 25 cents (a quarter of a semitone) of the score counts as on pitch."},
+    {k:"timing", n:"Timing", tip:"Starting each note on time. Within an eighth of a beat of the score counts."},
+    {k:"held", n:"Held notes", tip:"Holding long notes all the way. A half note here lasts about 0.9 seconds."}
   ];
   h += '<section class="card pad" data-tour="metrics" style="padding-block:4px">';
   M.forEach(function(m){
@@ -881,10 +881,10 @@ SCREENS.feedback = function(){
   h += '</div><div class="legend"><span><i style="background:var(--green-soft)"></i>Good</span><span><i style="background:var(--amber-soft)"></i>Check</span><span><i style="background:var(--orange)"></i>Fix first</span></div></section>';
   h += '<section class="card pad prio" data-tour="prio" style="display:flex;flex-direction:column;gap:10px"><div class="row"><span class="badge o">' + I.flag + 'Fix this first</span><span class="hint">1 of 5 flagged bars</span></div>' +
     '<div class="lbl" style="font-size:17px">Bar 42: the high run into the held note</div>' +
-    '<div class="issue"><span class="tag">Pitch</span><span>You go flat on the high notes, most on the top G.</span></div>' +
-    '<div class="issue"><span class="tag">Timing</span><span>The eighth-note run rushes, so you arrive early.</span></div>' +
-    '<div class="issue"><span class="tag">Held note</span><span>The last E is cut short: about 1 beat instead of 2.</span></div>' +
-    '<p class="hint" style="margin:0">Why this bar: it has the lowest score in the bridge, and the same jump comes back in bar 46.</p>' +
+    '<div class="issue"><span class="tag">Pitch</span><span>A bit flat up high, especially the top G.</span></div>' +
+    '<div class="issue"><span class="tag">Timing</span><span>The run rushes, so you land early.</span></div>' +
+    '<div class="issue"><span class="tag">Held note</span><span>The last E stops after 1 beat. It wants 2.</span></div>' +
+    '<p class="hint" style="margin:0">Why this one? Lowest score in the bridge, and the same jump comes back in bar 46. Fix it once, win twice.</p>' +
     '<button class="link" style="align-self:flex-start" data-act="to-issue">Hear what went wrong →</button></section>';
   h += '<section class="card pad" data-tour="takeacts" style="display:flex;flex-direction:column;gap:8px"><div class="eyebrow">This take</div><div class="acts">' +
     '<button class="mini" data-act="rerecord">' + I.restart + 'Re-record passage</button>' +
@@ -919,9 +919,9 @@ SCREENS.issue = function(){
   h += '<section class="card pad" data-tour="chart" style="display:flex;flex-direction:column;gap:6px"><div class="row"><span class="eyebrow">Pitch overlay</span><span class="hint">beats of bar 42</span></div>' + c +
     '<div class="legend"><span><i style="background:var(--blue-soft);border:1px solid var(--blue)"></i>Target notes</span><span><i style="background:var(--orange)"></i>You</span></div></section>';
   h += '<section class="card pad" style="display:flex;flex-direction:column;gap:10px"><div class="eyebrow">What the coach heard</div>' +
-    '<div class="issue"><span class="tag">Pitch</span><span>The run climbs to a G, the highest note in your part. You sang it about 40 cents low, close to F♯. Aim higher than feels natural.</span></div>' +
-    '<div class="issue"><span class="tag">Timing</span><span>Four eighth notes should take 2 beats. You fitted them into about 1¾, so you reached the held E early.</span></div>' +
-    '<div class="issue"><span class="tag">Held note</span><span>The E on beat 3 should last 2 beats. You let go after 1, probably to breathe. Take the breath before the run instead.</span></div></section>';
+    '<div class="issue"><span class="tag">Pitch</span><span>The run peaks on G, your highest note. You landed about 40 cents low, nearly F♯. Aim higher than feels natural.</span></div>' +
+    '<div class="issue"><span class="tag">Timing</span><span>Four eighth notes get 2 beats. You squeezed them into about 1¾, so you hit the E early.</span></div>' +
+    '<div class="issue"><span class="tag">Held note</span><span>That E wants 2 beats. You let go after 1, probably for a breath. Sneak the breath in before the run instead.</span></div></section>';
   h += '</div><footer class="ftr"><button class="btn sec" data-act="to-feedback">Back</button><button class="btn pri" data-act="start-drill">Start drill on bar 42</button></footer>';
   return h;
 };
@@ -959,11 +959,11 @@ SCREENS.drill = function(){
   h += d.takes.length ? d.takes.slice(-6).map(function(t){
     var lab = "#" + t.n + " · " + t.tempo + "%" + (t.guidance ? " · guided" : "") + (t.chunk !== null ? " · " + CHUNKS[t.chunk].name.split(" ·")[0].toLowerCase() : "") + (t.clean ? "" : " · " + MISS[t.reason].short);
     return '<span class="chip ' + (t.clean ? "clean" : "miss") + '">' + (t.clean ? I.tick(12) : I.cross(12)) + esc(lab) + '</span>';
-  }).join("") : '<span class="sub">No takes yet</span>';
+  }).join("") : '<span class="sub">No takes yet. Your move.</span>';
   h += '</div></section>';
   var res = null;
   if (isB) res = {cls: d.last ? (d.last.clean ? "clean" : "miss") : "", text: d.msg};
-  else if (d.last) res = !d.last.clean ? {cls:"miss", text:"Missed: " + MISS[d.last.reason].long + ". Try again."} : d.last.atTarget ? {cls:"clean", text:"Clean. " + d.streak + " of 2 at the goal settings."} : {cls:"clean", text:"Clean, but the goal needs 100% tempo with guidance off."};
+  else if (d.last) res = !d.last.clean ? {cls:"miss", text:"Missed: " + MISS[d.last.reason].long + ". Go again."} : d.last.atTarget ? {cls:"clean", text:"Clean! " + d.streak + " of 2 at the goal settings."} : {cls:"clean", text:"Clean! The goal needs 100% tempo, guidance off, though."};
   if (res){
     h += '<section class="card pad" aria-live="polite" style="display:flex;flex-direction:column;gap:8px"><div class="msg ' + res.cls + '">' + (isB ? '<span style="color:var(--blue);flex:none">' + I.coach + '</span>' : '') + '<span>' + esc(res.text) + '</span></div>';
     if (d.last && d.phase === "idle") h += '<div class="acts"><button class="mini" data-act="dr-playback" aria-pressed="' + d.playingBack + '">' + (d.playingBack ? I.pause + "Pause take #" : I.play + "Play back take #") + d.last.n + '</button>' + (d.undo ? '<button class="mini danger" data-act="dr-ask-discard">Discard take</button>' : '') + '</div>';
@@ -979,9 +979,9 @@ SCREENS.drill = function(){
 SCREENS.complete = function(){
   var d = S.drill || freshDrill(), n = d.takes.length || 9;
   var h = hdr(backBtn("to-drill", "Back to drill"), "Passage complete", "Viva La Vida · Tenor");
-  h += '<div class="body" style="gap:14px"><div style="display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding-top:8px"><span class="big-ic">' + I.tick(30) + '</span><div class="h1">Bar 42 mastered</div><p class="lead">2 clean takes in a row at full speed, guidance off. Progress saved to this song.</p></div>';
+  h += '<div class="body" style="gap:14px"><div style="display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding-top:8px"><span class="big-ic">' + I.tick(30) + '</span><div class="h1">Bar 42 mastered</div><p class="lead">2 clean in a row at full speed, no guidance. Saved to this song.</p></div>';
   h += '<div class="stat3"><div><b>' + n + '</b><span>drill takes</span></div><div><b>64→88</b><span>bar 42 pitch</span></div><div><b>' + Math.max(4, Math.round(n * .9)) + ' min</b><span>on this bar</span></div></div>';
-  h += '<section class="card pad" style="display:flex;flex-direction:column;gap:6px"><div class="eyebrow">Still to check in the bridge</div><div class="hist">' +
+  h += '<section class="card pad" style="display:flex;flex-direction:column;gap:6px"><div class="eyebrow">Next up in the bridge</div><div class="hist">' +
     '<div><span><b>Bar 38</b> · timing</span><span class="sub">came in early after the rest</span></div><div><span><b>Bar 40</b> · timing</span><span class="sub">eighth-note run uneven</span></div><div><span><b>Bar 35</b> · pitch</span><span class="sub">slightly flat on C</span></div></div></section></div>';
   h += '<footer class="ftr col" data-tour="next"><button class="btn ghost full" data-act="next-problem">Next problem: bar 38 → Practice workspace</button><button class="btn ghost full" data-act="repeat-drill">Repeat drill on bar 42</button><button class="btn pri full" data-act="end-session">End session → Summary</button></footer>';
   return h;
@@ -990,15 +990,15 @@ SCREENS.complete = function(){
 SCREENS.summary = function(){
   var mins = Math.max(1, Math.round((Date.now() - T0) / 60000)), dt = S.drill ? S.drill.takes.length : 0;
   var h = hdr(backBtn("to-complete", "Back to passage complete"), "Session summary", "Sunday evening");
-  h += '<div class="body" style="gap:12px"><div class="h1">Good work on the bridge</div><p class="lead">Combined practice is on Wednesday. You have 2 more evenings to practise.</p>';
+  h += '<div class="body" style="gap:12px"><div class="h1">The bridge is shaping up</div><p class="lead">Combined practice is Wednesday. 2 more evenings to go.</p>';
   h += '<div class="stat3"><div><b>' + mins + ' min</b><span>practised</span></div><div><b>' + S.takes.length + '</b><span>passage takes</span></div><div><b>' + dt + '</b><span>drill takes</span></div></div>';
   h += '<section class="card pad" style="display:flex;flex-direction:column;gap:6px"><div class="eyebrow">Mastered tonight</div><div class="row"><span class="lbl">Bar 42 · high run and held note</span><span class="badge g">' + I.tick(12) + 'Mastered</span></div><div class="sub">Pitch on bar 42 went from 64 to 88.</div></section>';
   h += '<section class="card pad" style="display:flex;flex-direction:column;gap:2px"><div class="eyebrow">All takes</div><div class="hist">';
   S.takes.forEach(function(t){ h += '<div><span>Take ' + t.n + ' · bars 33–48</span><span class="tnum">' + t.overall + ' overall' + (t.saved ? ' · saved' : '') + '</span></div>'; });
   if (dt) h += '<div><span>Drill · bar 42</span><span class="tnum">' + dt + ' takes · ' + S.drill.takes.filter(function(t){ return t.clean; }).length + ' clean</span></div>';
-  if (!S.takes.length && !dt) h += '<div><span class="sub">No takes recorded</span></div>';
+  if (!S.takes.length && !dt) h += '<div><span class="sub">No takes yet</span></div>';
   h += '</div></section>';
-  h += '<section class="card pad prio" data-tour="next" style="display:flex;flex-direction:column;gap:6px"><span class="badge o" style="align-self:flex-start">Suggested next</span><div class="lbl" style="font-size:16px">Bar 38 · entry after the rest</div><div class="sub">You came in early on beat 2 in every take. About 10 minutes, good for the MRT tomorrow.</div></section>';
+  h += '<section class="card pad prio" data-tour="next" style="display:flex;flex-direction:column;gap:6px"><span class="badge o" style="align-self:flex-start">Suggested next</span><div class="lbl" style="font-size:16px">Bar 38 · entry after the rest</div><div class="sub">You jumped in early on beat 2 every time. About 10 minutes: perfect for tomorrow\'s MRT ride.</div></section>';
   h += '</div><footer class="ftr"><button class="btn pri" data-act="done">Done</button></footer>';
   return h;
 };
@@ -1017,23 +1017,23 @@ function overlays(){
   }
   if (sh === "parts-vol"){
     var w = S.ws;
-    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Part volumes"><div class="row"><h3>Part volumes</h3><button class="ib" data-act="close" aria-label="Close">' + I.close + '</button></div><p>Turn your own line up to learn it, or down to test yourself against the other parts.</p>';
+    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Part volumes"><div class="row"><h3>Part volumes</h3><button class="ib" data-act="close" aria-label="Close">' + I.close + '</button></div><p>Turn your line up to learn it. Turn it down to test yourself.</p>';
     [["tenor","Tenor (your part)",w.tenorVol,w.tenorMute],["others","Soprano, alto, bass",w.othersVol,w.othersMute]].forEach(function(p){
       h += '<div style="display:flex;flex-direction:column;gap:6px"><div class="row"><span class="lbl">' + p[1] + '</span><span class="row" style="gap:6px"><span class="tnum sub" data-vol-out="' + p[0] + '">' + p[2] + '%</span><button class="mini' + (p[3] ? " on" : "") + '" aria-pressed="' + p[3] + '" data-act="mute" data-arg="' + p[0] + '">' + (p[3] ? "Muted" : "Mute") + '</button></span></div><input id="vol-' + p[0] + '" type="range" min="0" max="100" step="5" value="' + p[2] + '" aria-label="' + p[1] + ' volume" data-input="vol-' + p[0] + '"></div>';
     });
     h += '<button class="btn pri full" data-act="close">Done</button></div></div>';
   }
   if (sh === "off-loop"){
-    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Loop outside the scenario"><h3>Record the bridge for this prototype</h3><p>The coach\'s feedback in this prototype is scripted for the bridge, bars 33–48. Your loop is bars ' + S.ws.loopA + '–' + S.ws.loopB + '.</p><button class="btn pri full" data-act="set-bridge-record">Set loop to bars 33–48 and record</button><button class="btn ghost full" data-act="close">Keep my loop</button></div></div>';
+    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Loop outside the scenario"><h3>This demo only knows the bridge</h3><p>The coach is scripted for bars 33–48. Your loop is bars ' + S.ws.loopA + '–' + S.ws.loopB + '.</p><button class="btn pri full" data-act="set-bridge-record">Set loop to bars 33–48 and record</button><button class="btn ghost full" data-act="close">Keep my loop</button></div></div>';
   }
   if (sh === "rec-cancel"){
-    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Cancel recording"><h3>Stop and delete this recording?</h3><p>Nothing from this take will be saved. You\'ll go back to the practice workspace.</p><button class="btn danger full" data-act="rec-cancel-yes">Delete recording</button><button class="btn ghost full" data-act="rec-cancel-no">Keep recording</button></div></div>';
+    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Cancel recording"><h3>Scrap this take?</h3><p>Nothing gets saved. You\'ll head back to practice.</p><button class="btn danger full" data-act="rec-cancel-yes">Delete recording</button><button class="btn ghost full" data-act="rec-cancel-no">Keep singing</button></div></div>';
   }
   if (sh === "judging" || (d && d.phase === "judging" && S.view === "drill")){
-    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Checking your take"><h3>Checking your take…</h3><p>Comparing your pitch and timing with ' + (S.view === "drill" ? "bar 42" : "bars " + S.ws.loopA + "–" + S.ws.loopB) + ' of the tenor part.</p><div style="height:6px;border-radius:3px;background:var(--line);overflow:hidden"><i data-judge style="display:block;height:100%;width:0;background:var(--blue)"></i></div></div></div>';
+    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Checking your take"><h3>Listening back…</h3><p>Checking your pitch and timing against ' + (S.view === "drill" ? "bar 42" : "bars " + S.ws.loopA + "–" + S.ws.loopB) + ' of the tenor part.</p><div style="height:6px;border-radius:3px;background:var(--line);overflow:hidden"><i data-judge style="display:block;height:100%;width:0;background:var(--blue)"></i></div></div></div>';
   }
   if (sh === "discard-take"){
-    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Discard take"><h3>Discard take ' + S.cur.n + '?</h3><p>The recording and its feedback will be deleted. You\'ll go back to the practice workspace.</p><button class="btn danger full" data-act="discard-take">Discard take</button><button class="btn ghost full" data-act="close">Keep take</button></div></div>';
+    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Discard take"><h3>Discard take ' + S.cur.n + '?</h3><p>The recording and its feedback go too. You\'ll head back to practice.</p><button class="btn danger full" data-act="discard-take">Discard take</button><button class="btn ghost full" data-act="close">Keep take</button></div></div>';
   }
   if (S.view === "drill" && d){
     if (d.sheet === "adjust"){
@@ -1043,15 +1043,15 @@ function overlays(){
         {id:"restore", title:"Bring back guidance", detail:"Count-in, pitch line and note names"}
       ];
       var recent = d.takes.slice(-2).map(function(t){ return MISS[t.reason].short; }).join(", then ");
-      h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Adjust the drill"><h3>Not yet. Let\'s make it easier for a moment.</h3><p>2 misses in a row on your own at full speed (' + recent + '). Pick one change, then try again.</p><div style="display:flex;flex-direction:column;gap:8px" role="radiogroup" aria-label="Adjustment">';
+      h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Adjust the drill"><h3>Tricky one! Let\'s make it easier for a sec.</h3><p>2 misses in a row at full speed (' + recent + '). Pick one change and go again.</p><div style="display:flex;flex-direction:column;gap:8px" role="radiogroup" aria-label="Adjustment">';
       opts.forEach(function(o){ var on = d.choice === o.id; h += '<button class="opt' + (on ? " on" : "") + '" role="radio" aria-checked="' + on + '" data-act="dr-choice" data-arg="' + o.id + '"><span class="radio"></span><span><span class="ot">' + o.title + '</span><span class="od">' + o.detail + '</span></span></button>'; });
       h += '</div><button class="btn pri full" data-act="dr-apply">Try again</button></div></div>';
     }
     if (d.sheet === "discard"){
-      h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Discard take"><h3>Discard take #' + d.takes.length + '?</h3><p>It will be removed from your takes and won\'t count toward the goal.' + (S.variant === "B" ? " The coach's settings go back to what they were before this take." : "") + '</p><button class="btn danger full" data-act="dr-discard">Discard take</button><button class="btn ghost full" data-act="dr-close">Keep take</button></div></div>';
+      h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Discard take"><h3>Discard take #' + d.takes.length + '?</h3><p>It\'s removed and won\'t count toward the goal.' + (S.variant === "B" ? " The coach's settings roll back to before this take." : "") + '</p><button class="btn danger full" data-act="dr-discard">Discard take</button><button class="btn ghost full" data-act="dr-close">Keep take</button></div></div>';
     }
     if (d.sheet === "done"){
-      h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Bar mastered"><span class="big-ic" style="width:48px;height:48px">' + I.tick(26) + '</span><h3 style="font-size:22px">Bar 42 mastered</h3><p>2 clean takes in a row at 100% tempo, guidance off. ' + d.takes.length + ' takes in total, all autosaved.</p><button class="btn pri full" data-act="to-complete">Continue</button><button class="btn ghost full" data-act="dr-reset">Practise this bar again</button></div></div>';
+      h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Bar mastered"><span class="big-ic" style="width:48px;height:48px">' + I.tick(26) + '</span><h3 style="font-size:22px">Nailed it! Bar 42 mastered</h3><p>2 clean in a row at full speed, no guidance. ' + d.takes.length + ' takes, all autosaved.</p><button class="btn pri full" data-act="to-complete">Continue</button><button class="btn ghost full" data-act="dr-reset">Practise this bar again</button></div></div>';
     }
   }
   if (S.toast) h += '<div class="toast" role="status"><span>' + esc(S.toast) + '</span><button data-act="toast-ok">OK</button></div>';
@@ -1170,17 +1170,17 @@ function markDrill(){
     if (r.clean){
       d.misses = 0;
       if (d.chunk !== null){
-        if (d.chunk < 2){ d.chunk++; d.msg = "Clean. Now " + CHUNKS[d.chunk].name.toLowerCase() + "."; }
-        else { d.chunk = null; d.streak = 0; d.msg = "All three pieces clean. Put them together: the whole bar, full speed, on your own."; }
+        if (d.chunk < 2){ d.chunk++; d.msg = "Clean! Now " + CHUNKS[d.chunk].name.toLowerCase() + "."; }
+        else { d.chunk = null; d.streak = 0; d.msg = "All three pieces clean. Now the whole bar, full speed, solo."; }
       }
-      else if (d.tempo < 100){ d.tempo = 100; d.streak = 0; d.msg = "Clean! Tempo up to 100%. Guidance stays on for now."; }
+      else if (d.tempo < 100){ d.tempo = 100; d.streak = 0; d.msg = "Clean! Bumping you to full speed. Guidance stays on for now."; }
       else if (d.guidance){ d.guidance = false; d.streak = 0; d.msg = "Clean at full speed. Guidance off: this one's all you."; }
-      else { d.streak++; if (d.streak >= 2){ d.sheet = "done"; d.msg = "Mastered."; } else d.msg = "1 of 2 clean on your own. One more like that."; }
+      else { d.streak++; if (d.streak >= 2){ d.sheet = "done"; d.msg = "Nailed it."; } else d.msg = "1 down, 1 to go. Do that again."; }
     } else {
       d.streak = 0; d.misses++;
       var why = MISS[r.reason].long;
-      if (d.misses >= 2){ d.sheet = "adjust"; d.choice = "beats"; d.msg = "Not yet: " + why + ". Let's make it easier for a moment."; }
-      else d.msg = "Not quite: " + why + ". Same settings, once more.";
+      if (d.misses >= 2){ d.sheet = "adjust"; d.choice = "beats"; d.msg = "Not yet: " + why + ". Let's make it easier for a sec."; }
+      else d.msg = "So close: " + why + ". Run it back.";
     }
   }
   if (d.sheet === "done" && S.session.mastered.indexOf(42) < 0) S.session.mastered.push(42);
@@ -1362,7 +1362,7 @@ function act(a, arg, el){
     case "add": go("import"); break;
     case "open-song":
       if (arg === "viva") go("workspace");
-      else { S.toast = "Only Viva La Vida is set up in this prototype. Tap + Add song, or open Viva La Vida."; render(); }
+      else { S.toast = "Only Viva La Vida works in this demo. Open it, or tap + Add song."; render(); }
       break;
     // import
     case "cancel-import": go("library"); break;
@@ -1381,7 +1381,7 @@ function act(a, arg, el){
       [1, 2].forEach(function(bar){ NOTES[bar].forEach(function(n){ tone(n[0] + sh, n[2] * 60 / BPM * .95, .22, 0, (bar - 1) * 240 / BPM + n[1] * 60 / BPM); }); });
       break;
     case "parts-next":
-      if (S.part !== "T"){ S.toast = "This prototype follows the tenor part. Choose Tenor to continue."; render(); }
+      if (S.part !== "T"){ S.toast = "This demo follows the tenors. Pick Tenor to carry on."; render(); }
       else go("sync");
       break;
     // sync
@@ -1398,7 +1398,7 @@ function act(a, arg, el){
     case "sync-done":
       if (Math.abs(S.sync.offset - SYNC_TRUE) > .12){ S.sync.hist.push(S.sync.offset); }
       go("workspace");
-      if (Math.abs(S.sync.offset - SYNC_TRUE) > .12){ S.toast = "Synced with a " + Math.abs(S.sync.offset - SYNC_TRUE).toFixed(2) + " s gap. For this prototype, playback uses the correct alignment."; render(); }
+      if (Math.abs(S.sync.offset - SYNC_TRUE) > .12){ S.toast = "Close enough: " + Math.abs(S.sync.offset - SYNC_TRUE).toFixed(2) + " s off. This demo snaps it into place for you."; render(); }
       break;
     // workspace
     case "to-library": go("library"); break;
@@ -1424,7 +1424,7 @@ function act(a, arg, el){
     case "rec-end": finishRecording(); break;
     case "rec-cancel": S.recPaused = S.rec.phase; S.rec.phase = "idle"; S.sheet = "rec-cancel"; render(); break;
     case "rec-cancel-no": S.rec.phase = S.recPaused || "recording"; S.sheet = null; render(); break;
-    case "rec-cancel-yes": go("workspace"); S.toast = "Recording deleted. Nothing was saved."; render(); break;
+    case "rec-cancel-yes": go("workspace"); S.toast = "Scrapped. Nothing saved."; render(); break;
     // feedback
     case "to-workspace": go("workspace"); break;
     case "info": S.openInfo = S.openInfo === arg ? null : arg; render(); break;
@@ -1435,7 +1435,7 @@ function act(a, arg, el){
       var gone = S.cur.n; S.takes = S.takes.filter(function(t){ return t !== S.cur; });
       S.takes.forEach(function(t, i){ t.n = i + 1; });
       S.cur = S.takes[S.takes.length - 1] || null;
-      go("workspace"); S.toast = "Take " + gone + " discarded."; render(); break;
+      go("workspace"); S.toast = "Take " + gone + " is gone."; render(); break;
     case "to-issue": go("issue"); break;
     case "start-drill": if (!S.drill) S.drill = freshDrill(); go("drill"); break;
     case "to-feedback": ensureTake(); go("feedback"); break;
@@ -1458,9 +1458,9 @@ function act(a, arg, el){
     case "dr-choice": d.choice = arg; render(); break;
     case "dr-apply":
       d.sheet = null; d.misses = 0; d.streak = 0; d.pos = 0;
-      if (d.choice === "beats"){ d.chunk = 0; d.msg = "Beat 1 on its own: the jump up to the high E and F. Sing just that beat."; }
-      else if (d.choice === "slow"){ d.tempo = 80; d.msg = "Slowed to 80%. Get one clean and I'll speed it back up."; }
-      else { d.guidance = true; d.msg = "Guidance is back on. Follow the count-in and the pitch line."; }
+      if (d.choice === "beats"){ d.chunk = 0; d.msg = "Just beat 1: the jump up to the high E and F. Nothing else yet."; }
+      else if (d.choice === "slow"){ d.tempo = 80; d.msg = "Down to 80%. One clean and we speed back up."; }
+      else { d.guidance = true; d.msg = "Guidance is back. Follow the count-in and the pitch line."; }
       render(); break;
     case "dr-playback":
       d.playingBack = !d.playingBack; d.playing = false;
@@ -1477,11 +1477,11 @@ function act(a, arg, el){
       var u = JSON.parse(d.undo), n = d.takes.length;
       for (var k in u) d[k] = u[k];
       d.undo = null; d.sheet = null; S.session.drillTakes = Math.max(0, S.session.drillTakes - 1);
-      S.toast = "Take #" + n + " discarded. It no longer counts toward the goal."; render(); break;
+      S.toast = "Take #" + n + " is gone. It won't count."; render(); break;
     case "dr-reset": S.drill = freshDrill(); render(); break;
     // complete / summary
     case "to-complete": if (S.session.mastered.indexOf(42) < 0) S.session.mastered.push(42); go("complete"); break;
-    case "next-problem": w.loopA = 37; w.loopB = 40; w.pos = 36; w.started = false; w.tempo = 50; go("workspace"); S.toast = "Loop set to bars 37–40 at half speed, around bar 38."; render(); break;
+    case "next-problem": w.loopA = 37; w.loopB = 40; w.pos = 36; w.started = false; w.tempo = 50; go("workspace"); S.toast = "Looping bars 37–40 at half speed. Bar 38, you're up."; render(); break;
     case "repeat-drill": S.drill = freshDrill(); go("drill"); break;
     case "end-session": go("summary"); break;
     case "done": go("library"); break;
@@ -1489,7 +1489,7 @@ function act(a, arg, el){
 }
 function commitBpm(which, raw){
   var n = Number(raw), o = which === "ws" ? S.ws : S.drill;
-  if (!raw || isNaN(n) || n < 69 || n > 138){ o.bpmError = "Enter a tempo from 69 to 138 BPM (half to full speed)."; render(); return; }
+  if (!raw || isNaN(n) || n < 69 || n > 138){ o.bpmError = "Try 69 to 138 BPM (half to full speed)."; render(); return; }
   o.tempo = Math.round(n / BPM * 100); o.editingBpm = false; o.bpmError = ""; render();
 }
 
