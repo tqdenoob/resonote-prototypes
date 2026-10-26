@@ -2,6 +2,7 @@
 
 Newest first. One line per merged PR.
 
+- 2026-10-26 · Trial "Gamified Studio" colour scheme: cream/grey ground, sky blue primary, orange/yellow secondary, coral/mint accents (contrast-safe shades for text). Old palette screenshotted in `docs/screenshots/alternatives/`.
 - 2026-10-26 · One serif across the app: Young Serif replaces Fraunces for the library greeting and is used for page titles and guide headings; all other text stays Figtree.
 - 2026-10-26 · Music Library greets the singer by name ("Evening, Clarence", phrase picked by time of day; "Nicely sung" after mastering bar 42). Phone frame now 402 × 830 with an iPhone-style bezel, wider and less tall than before. Touches Iter2.04 View 1 screenshot.
 - 2026-10-26 · UI/UX audit fixes: bigger score on a paper band (2 lines on the workspace, 3 while recording); Take Feedback leads with "Fix this first" (bar score 58) and puts Re-record take in the footer; one colour rule; Cancel button on Recording; Sync slider centred on 0 with one status; sentence-case headings and flat lists; "Start drill" label.
