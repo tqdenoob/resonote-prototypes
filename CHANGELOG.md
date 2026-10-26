@@ -2,6 +2,7 @@
 
 Newest first. One line per merged PR.
 
+- 2026-10-26 · Music Library greets the singer by name ("Evening, Clarence", phrase picked by time of day; "Nicely sung" after mastering bar 42). Phone frame now 402 × 830 with an iPhone-style bezel, wider and less tall than before. Touches Iter2.04 View 1 screenshot.
 - 2026-10-26 · Sync check: learning track drawn as an audio waveform (count-in clicks, then sung notes) instead of grey blocks.
 - 2026-10-26 · Setup (views 2-4) now opens as a popup over the library with Close (X) on every step; closing keeps progress and shows a "Setup not finished" row. Old full-screen steps screenshotted in `docs/screenshots/alternatives/`.
 - 2026-10-26 · One main design: removed the 20 Oct parallel designs and the old drill alternatives; screenshots kept in `docs/screenshots/alternatives/`. All future changes go into `index.html`.
