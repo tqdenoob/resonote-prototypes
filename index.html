@@ -372,9 +372,11 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .sync .bx{position:absolute;top:0;height:46px;border:1px solid var(--line2);border-radius:6px;background:var(--sunk);font-size:11px;font-weight:700;color:var(--muted);padding:3px 4px;white-space:nowrap;overflow:hidden}
 .sync .bx i{position:absolute;bottom:8px;width:6px;height:6px;border-radius:50%;background:var(--ink)}
 .sync .aud{position:absolute;top:0;height:46px;left:0;will-change:transform}
-.sync .aud .ci{position:absolute;top:14px;width:3px;height:18px;border-radius:2px;background:var(--orange)}
 .sync .aud .sn{position:absolute;top:8px;height:30px;border-radius:4px;background:var(--wave)}
-.sync .aud .lab{position:absolute;top:34px;font-size:11px;font-weight:700;color:var(--orange-ink);white-space:nowrap}
+.sync .aud .wf{position:absolute;left:0;top:-3px;height:40px;overflow:visible}
+.sync .aud .wf .c{fill:var(--orange)}
+.sync .aud .wf .v{fill:var(--muted)}
+.sync .aud .lab{position:absolute;top:36px;font-size:11px;font-weight:700;color:var(--orange-ink);white-space:nowrap}
 .sync .mk{position:absolute;top:8px;bottom:6px;width:2px;background:var(--blue);z-index:2}
 .sync .mk span{position:absolute;top:-2px;left:5px;font-size:11px;font-weight:700;color:var(--blue-ink);white-space:nowrap}
 .sync .uph{position:absolute;top:28px;bottom:6px;width:2px;background:var(--ink);z-index:3;display:none}
@@ -822,6 +824,27 @@ SCREENS.parts = function(){
 
 var SYNC_TRUE = -2 * 240 / BPM;   // -3.478 s
 var SYNC_PX = 22;                 // pixels per second in the sync view
+// Learning-track waveform: count-in clicks (orange spikes) then the sung tenor notes (attack, sustain with a little
+// wobble, release). Same shape every run.
+function syncWave(){
+  var beat = 60 / BPM, end = -SYNC_TRUE + 4 * 240 / BPM, W = Math.ceil(end * SYNC_PX) + 4, H = 40, mid = H / 2, step = 1.5;
+  var notes = [];
+  for (var bb = 1; bb <= 4; bb++) NOTES[bb].forEach(function(n){ notes.push({t:-SYNC_TRUE + (bb - 1) * 240 / BPM + n[1] * beat, d:n[2] * beat * .8, m:n[0]}); });
+  var c = "", v = "";
+  for (var x = 0; x < W; x += step){
+    var t = x / SYNC_PX, a = 0, click = false;
+    for (var k = 0; k < 8; k++){ var dt = t - k * beat; if (dt >= 0 && dt < .14){ a = Math.max(a, (k % 4 === 0 ? 1 : .7) * Math.exp(-dt * 22)); click = true; } }
+    notes.forEach(function(n){
+      var dt = t - n.t; if (dt < 0 || dt > n.d + .06) return;
+      var env = dt < .03 ? dt / .03 : dt > n.d ? 1 - (dt - n.d) / .06 : .8 + .2 * Math.exp(-(dt - .03) * 6);
+      a = Math.max(a, env * (.55 + .03 * (n.m - 52)) * (.85 + .15 * Math.sin(x * 1.7 + n.m)));
+    });
+    if (a < .04) continue;
+    var hh = Math.max(2, a * (H - 2)), r = '<rect x="' + x + '" y="' + (mid - hh / 2).toFixed(1) + '" width="1.1" height="' + hh.toFixed(1) + '" rx=".7"/>';
+    if (click) c += r; else v += r;
+  }
+  return '<svg class="wf" width="' + W + '" viewBox="0 0 ' + W + ' ' + H + '" aria-hidden="true"><g class="c">' + c + '</g><g class="v">' + v + '</g></svg>';
+}
 SCREENS.sync = function(){
   var y = S.sync, off = y.offset, err = Math.abs(off - SYNC_TRUE), ok = err <= .12;
   var h = setupHdr(backBtn("to-parts", "Back to Choose your part"), "Sync check", "Viva La Vida · Tenor");
@@ -832,12 +855,7 @@ SCREENS.sync = function(){
     h += '<div class="bx" style="left:' + (40 + b * 4 * 240 / BPM / 4 * SYNC_PX * 4 / 4) + 'px;width:' + (240 / BPM * SYNC_PX) + 'px">Bar ' + (b + 1) + '</div>';
   }
   h += '</div><div class="lt">Learning track</div><div class="lane" style="overflow:visible"><div class="aud" data-aud style="transform:translateX(' + (40 + off * SYNC_PX) + 'px)">';
-  for (var c = 0; c < 8; c++) h += '<i class="ci" style="left:' + (c * 60 / BPM * SYNC_PX) + 'px"></i>';
-  h += '<span class="lab" style="left:0">count-in</span>';
-  for (var bb = 1; bb <= 4; bb++) NOTES[bb].forEach(function(n){
-    var t = (-SYNC_TRUE) + (bb - 1) * 240 / BPM + n[1] * 60 / BPM;
-    h += '<i class="sn" style="left:' + (t * SYNC_PX) + 'px;width:' + Math.max(4, n[2] * 60 / BPM * SYNC_PX - 2) + 'px"></i>';
-  });
+  h += syncWave() + '<span class="lab" style="left:0">count-in</span>';
   if (y.marker !== null) h += '<i class="sn" style="left:' + (y.marker * SYNC_PX) + 'px;width:2px;background:var(--green);top:0;height:46px"></i>';
   h += '<i class="sn" data-aph style="left:0;width:2px;background:var(--ink);top:0;height:46px;display:none"></i>';
   h += '</div></div><div class="mk" style="left:52px"><span>Bar 1</span></div></section>';
