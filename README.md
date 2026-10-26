@@ -9,7 +9,7 @@ IS211 Interaction Design and Prototyping, Iteration 2.
 | `index.html` | **Prototype 2.0: the full high-fidelity prototype.** 11 clickable views covering the Iteration 2 easy scenario (Clarence learns the tenor part of "Viva La Vida"). |
 | `parallel-designs.html` | The three parallel UI designs from 20 Oct (static screens). |
 | `design-a/`, `design-b/`, `design-c/` | Score-first, timeline-first and coach-first designs. |
-| `alternatives/` | Earlier designs kept for the Journal, e.g. the 21 Oct drill with HE fixes. |
+| `alternatives/` | Earlier designs kept for the Journal: the 21 Oct drill with HE fixes, and the 26 Oct version with the A/B drill switch (`?v=A` / `?v=B`). |
 | `docs/` | Revised Iter1.5 heuristic evaluation and the HE-to-drill traceability notes. |
 | `CLAUDE.md` | Current prototype state, navigation map, simulation, HE fixes, A/B, decision and AI logs. **Update it in every PR.** |
 | `collab.md` | How the team works in this repo. |
@@ -25,7 +25,7 @@ Open `index.html` in a browser, or the live link. No install or build step.
 
 ## Editing the prototype
 
-`index.html` is one self-contained file. Scripted data (tenor notes, feedback scores, drill results) is at the top of the `<script>`. Each view is a function in `SCREENS`. Colours are `:root` tokens at the top of the `<style>`, with a dark theme.
+`index.html` is one self-contained file. Scripted data (tenor notes, feedback scores, drill results) is at the top of the `<script>`. Each view is a function in `SCREENS`. Colours are `:root` tokens at the top of the `<style>`. The app is light mode only.
 
 ## Editing the parallel designs
 

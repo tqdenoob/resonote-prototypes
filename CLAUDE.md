@@ -25,21 +25,21 @@ Borrowed from the hard scenario: the manual sync correction and the adjust-drill
 
 ## Current prototype state (last updated: 2026-10-26 by Tan Qi)
 
-`index.html` is the whole prototype: one self-contained HTML file, plain JavaScript, no build step. **11 views** (the brief allows 6-14). A "Prototype guide" panel beside the phone lists the views, their HE fixes and what is simulated, and lets you jump to any view.
+`index.html` is the whole prototype: one self-contained HTML file, plain JavaScript, no build step. **11 views** (the brief allows 6-14). A "Prototype guide" panel beside the phone lists the views, their HE fixes and what is simulated, and lets you jump to any view. The app is **light mode only**, whatever the phone's theme. Every tap target is at least 44 px.
 
 | # | View | Hash link | What it does | Simulated? | Low-fi source (Iter1.4) | Owner |
 |---|------|-----------|--------------|------------|------------------------|-------|
 | 1 | Music Library | `#library` | Song list, search with "No results" state, + Add song | 2 older songs pre-loaded; only Viva La Vida opens | View 1 | Tan Qi |
 | 2 | Import Score + Audio | `#import` | Pick score and learning track, required song title, Step 1 of 3 | File picker is a scripted list of Telegram downloads | View 3 | Tan Qi |
 | 3 | Choose Your Part | `#parts` | Pick part, voice range shown, Hear preview, Step 2 of 3 | Parts "detected" from the score; only Tenor continues | View 4 | Tan Qi |
-| 4 | Sync Check | `#sync` | Slide the learning track until its first sung note sits on bar 1; Play, Set marker, Undo; Step 3 of 3 | Sync detection scripted; correct offset is -3.48 s | View 5 | Tan Qi |
-| 5 | Practice Workspace | `#workspace` | Score with playhead, loop timeline with drag handles, tempo (typed BPM), metronome, part volumes, keyboard, play/pause, Sing & record | Reference audio is a Web Audio synth | View 6 | Tan Qi |
-| 6 | Sing Along + Recording | `#record` | Count-in, scrolling score, live level meter, End take, Cancel with confirmation | No microphone; meter animation is fixed | View 7 | Tan Qi |
-| 7 | Take Feedback | `#feedback` | Overall + Pitch / Timing / Held notes with (i) and labels, bar-by-bar strip, "Fix this first: bar 42", Autosaved, Re-record passage, Save to history, Discard take | Scores scripted per take number | Views 8 + 9 | Tan Qi |
-| 8 | Understand the Issue | `#issue` | Your take vs reference playback, pitch overlay chart, three plain-language explanations | "Your take" is the reference played flat, rushed and cut short | View 10 | Tan Qi |
-| 9 | Targeted Drill | `#drill` | Drill bar 42 to 2 clean takes in a row at 100%, guidance off. Version A or B (see A/B section) | Take results scripted | Views 11-14 | Tan Qi |
-| 10 | Passage Complete | `#complete` | Bar 42 mastered, remaining bars to check, three labelled next steps | Before/after scores scripted | View 15 | Tan Qi |
-| 11 | Session Summary | `#summary` | Time, takes, mastered bar, all takes, suggested next passage | Time counted from page load | View 16 | Tan Qi |
+| 4 | Sync Check | `#sync` | Slide the learning track until its first sung note sits on bar 1; Play, Set marker, Undo; Step 3 of 3. Confirming while still off opens a "Track is still n s off" warning | Sync detection scripted; correct offset is -3.48 s | View 5 | Tan Qi |
+| 5 | Practice Workspace | `#workspace` | Score with playhead, loop timeline with drag handles, tempo (− / + with hold, 1-BPM slider, or typed BPM), metronome, part volumes, keyboard, play/pause, Record take. First take asks for the microphone with a reason | Reference audio is a Web Audio synth | View 6 | Tan Qi |
+| 6 | Sing Along + Recording | `#record` | Count-in ("Get ready", meter says "Starts after the count-in"), then "Recording", scrolling score, live level meter, End take, Cancel with confirmation | No microphone; meter animation is fixed | View 7 | Tan Qi |
+| 7 | Take Feedback | `#feedback` | Overall + Pitch / Timing / Held notes with (i) and labels, bar-by-bar strip with symbols (✓ good, ? check, ! fix first), "Fix this first: bar 42", "Hear what went wrong" button, Autosaved (kept 7 days), Re-record take, Save to history, Discard take on its own row | Scores scripted per take number | Views 8 + 9 | Tan Qi |
+| 8 | Understand the Issue | `#issue` | Your take / reference / both, pitch overlay chart, three numbered problems in plain words (tap to hear that part), "Show music details" | "Your take" is the reference played flat, rushed and cut short | View 10 | Tan Qi |
+| 9 | Targeted Drill | `#drill` | Drill bar 42 to 2 clean takes in a row at 100%, guidance off. The coach sets tempo and guidance and offers an Adjust sheet after 2 misses (the old Version A is archived, see A/B section) | Take results scripted | Views 11-14 | Tan Qi |
+| 10 | Passage Complete | `#complete` | Bar 42 mastered, before/after playback, bars still to fix (tap to loop), three labelled next steps | Before/after scores scripted | View 15 | Tan Qi |
+| 11 | Session Summary | `#summary` | Session saved, time, takes with breakdown, mastered bar, still to fix before Wednesday, reminder switch | Time counted from page load | View 16 | Tan Qi |
 
 Dropped from Iter1.4: View 2 App Usage Tutorial (removed from the Iteration 2 easy scenario, see Iter2.03). Per-screen help is kept instead (see HE #5).
 
@@ -63,41 +63,43 @@ Source for the Iter2.04 navigation diagram. Every branch is labelled with the co
 - **Sync Check (Step 3 of 3)**
   - Back → Choose Your Part
   - Play / Set marker / Undo / slider / − + → stay
-  - "Confirm sync" → Practice Workspace
+  - "Confirm sync" when lined up → Practice Workspace
+  - "Confirm sync" when still off → sheet: "Keep lining up" → stay / "Confirm anyway" → Practice Workspace with a warning toast
 - **Practice Workspace**
   - Back → Music Library
   - Play ↔ Pause/Resume, restart-to-loop-start, loop handles, tempo, metronome, part volumes sheet, keyboard → stay
-  - "Sing & record" with loop = bars 33-48 → Sing Along + Recording
-  - "Sing & record" with any other loop → sheet: "Set loop to bars 33-48 and record" → Recording / "Keep my loop" → stay
+  - First "Record take" of the session → sheet: "Allow microphone" → continues / "Not now" → stay (if blocked in the guide: "Microphone is off" → "Try again" / "Not now")
+  - "Record take" with loop = bars 33-48 → Sing Along + Recording
+  - "Record take" with any other loop → sheet: "Use bars 33-48" → Recording / "Keep my loop" → stay
 - **Sing Along + Recording**
   - "End take", or the loop ends → "Checking your take…" → Take Feedback
   - "Cancel" → sheet: "Delete recording" → Practice Workspace / "Keep recording" → stay
 - **Take Feedback**
   - Back → Practice Workspace
   - "Hear what went wrong" → Understand the Issue
-  - "Re-record passage" → Sing Along + Recording
+  - "Re-record take" → Sing Along + Recording
   - "Save to history" → toggles saved, stay
   - "Discard take" → sheet: "Discard take" → Practice Workspace / "Keep take" → stay
   - "Start drill on bar 42" → Targeted Drill
 - **Understand the Issue**
   - Back / "Back" → Take Feedback
-  - Play your take / Play reference → stay
+  - Play your take / Play reference / Hear both / tap a problem → stay
   - "Start drill on bar 42" → Targeted Drill
 - **Targeted Drill**
   - Back → Take Feedback
   - "Play bar 42" ↔ Pause/Resume, "Record take" → "End take" → checking → result, stay
   - "Play back take #n" → stay
   - "Discard take" → sheet: discard / keep → stay
-  - Version B, 2 misses → Adjust sheet: one beat at a time / slow down / bring back guidance → "Try again" → stay
+  - 2 misses → Adjust sheet: one beat at a time / slow down / bring back guidance → "Try again" → stay
   - Goal met → "Bar 42 mastered" sheet: "Continue" → Passage Complete / "Practise this bar again" → resets drill
 - **Passage Complete**
   - Back → Targeted Drill
-  - "Next problem: bar 38" → Practice Workspace (loop bars 37-40, half speed)
-  - "Repeat drill on bar 42" → Targeted Drill (reset)
+  - "Practise bar 38 next" or tap a bar in "Still to fix" → Practice Workspace (loops that bar, half speed)
+  - "Repeat bar 42 drill" → Targeted Drill (reset)
   - "End session" → Session Summary
-- **Session Summary**
-  - Back → Passage Complete
-  - "Done" → Music Library
+- **Session Summary** (no back button: the session is saved)
+  - "Practise bar 38 now" or tap a bar → Practice Workspace
+  - "Back to library" → Music Library
 
 ## Simulation and Wizard-of-Oz
 
@@ -105,8 +107,8 @@ All scripted data is at the top of the `<script>` in `index.html`: `NOTES` / `BR
 
 - **Audio:** Web Audio triangle-wave synth of the tenor line; other parts are a soft chord on each beat; metronome clicks. Sound starts after the first tap (browser rule).
 - **Import:** no real files. The picker lists 2 scripted files per slot. `IMG_4021.HEIC` triggers the invalid-file error.
-- **Sync:** the learning track has a scripted 2-bar count-in at 138 BPM (3.48 s). "Lined up" shows within 0.12 s. Confirming with a gap shows a toast and plays aligned anyway.
-- **Recording:** no microphone access. The level meter is a fixed animation. The take length is real (time from start to End take).
+- **Sync:** the learning track has a scripted 2-bar count-in at 138 BPM (3.48 s). "Lined up" shows within 0.12 s. Confirming with a gap opens a warning sheet; "Confirm anyway" continues with a toast and plays aligned anyway.
+- **Recording:** no microphone access. The microphone prompt is a scripted sheet; "Microphone: blocked" in the guide shows the blocked state. The level meter is a fixed animation. The take length is real (time from start to End take).
 - **Coach feedback:** take 1 = 72 overall (pitch 64, timing 70, held notes 78); take 2 = 76; take 3+ = 79. Priority is always bar 42.
 - **Drill results:** the first 2 takes at the goal settings (whole bar, 100%, guidance off) are missed, pitch then timing. Every other take is clean. Discarding a take undoes its effect.
 - **Safe-path warnings:** other songs, other parts and loops other than bars 33-48 show a message with a way back. No dead buttons.
@@ -115,7 +117,7 @@ All scripted data is at the top of the `<script>` in `index.html`: `NOTES` / `BR
 
 | HE # | Severity | Change in prototype | View(s) | Iter2.03 section |
 |---|---|---|---|---|
-| 1 | 4 | "Autosaved" chip, "Re-record passage", "Save to history", "Discard take" with confirmation; drill takes autosaved with play back and discard | 7, 9 | Change 1 |
+| 1 | 4 | "Autosaved" chip (kept 7 days), "Re-record take", "Save to history", "Discard take" on its own row with confirmation; drill takes autosaved with play back and discard | 7, 9 | Change 1 (**label changed from "Re-record passage"**) |
 | 2 | 4 | One Play/Pause/Resume toggle that keeps position (dashed playhead when paused); recording ends with "End take" | 5, 6, 9 | Change 2 |
 | 4 | 3 | Loop chosen by dragging two handles on a waveform timeline labelled Intro / Verse 1 / Verse 2 / Chorus / Bridge / Final chorus, live bar and time readout, arrow keys also move handles | 5 | Change 3 |
 | 3 | 3 | Back button top-left on every setup step | 2, 3, 4 | Smaller fixes |
@@ -128,8 +130,8 @@ All scripted data is at the top of the `<script>` in `index.html`: `NOTES` / `BR
 | 14 | 2 | "+4 since take 1" on feedback; all takes listed on the summary | 7, 11 | Not listed |
 | 15 | 2 | "Step n of 3" with progress bar on all three setup steps | 2, 3, 4 | Smaller fixes |
 | 16 | 2 | "Voice range: E3-G4" under each part, with an explanation | 3 | Not listed |
-| 17 | 2 | Tap the BPM to type an exact value (69-138), inline error outside the range; − / + in 5% steps | 5, 9 (A) | Not listed |
-| 18 | 2 | Keyboard (and metronome, loop, guidance) switches show the word On / Off | 5, 9 (A) | Not listed |
+| 17 | 2 | − / + in 1-BPM steps (hold to repeat), a 1-BPM slider, or tap the BPM to type 69-138 with an inline error | 5 | Not listed |
+| 18 | 2 | Keyboard, metronome and loop switches show the word On / Off | 5 | Not listed |
 | 19 | 0 | Record buttons keep a filled-dot icon with a text label | 5, 9 | Kept |
 | 20 | 0 | Sync Play, Set marker and Undo all work | 4 | Smaller fixes |
 
@@ -139,14 +141,9 @@ Not addressed: #6 (audio/score mismatch warning, hard scenario), #7 (segmented r
 
 Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been decided.
 
-- **Candidate IV:** how drill support is controlled on the Targeted Drill view (Iter1 feedback asked us to compare adaptive drills with ordinary looping).
-  - **A (control):** the user sets tempo (− / + or a typed BPM) and switches guidance on or off.
-  - **B (treatment):** the coach sets tempo and guidance in 3 steps (Guided slower → Guided full speed → On your own) and after 2 misses offers an Adjust sheet (one beat at a time / slow down / bring back guidance).
-  - Everything else on the screen is identical.
-- **Selecting a variant:** `?v=A` or `?v=B` in the URL, e.g. `https://tqdenoob.github.io/resonote-prototypes/?v=A#drill`. The guide panel also has an A/B switch. Default is B (it matches the easy scenario).
-- **DVs:** not chosen. The prototype doesn't log anything yet. If we use this, decide the DVs and either log them in the page or capture them with the testing tool (Maze, Loop11).
-- **Known confound to resolve before launch:** scripted results depend on settings, so A users who never reach 100% with guidance off never see a miss. Decide whether A and B should follow the same scripted outcome sequence.
-- **Before launch:** add a participant mode that hides the guide panel and variant switch, then tag `experiment-v1` and freeze (collab.md §6).
+- **Archived 2026-10-26:** the main prototype now has only the coach-adapts drill (old Version B). The version with the A/B switch (`?v=A` / `?v=B`, Version A = user sets tempo and guidance) is kept as `alternatives/ab-drill-2026-10-26.html`. It predates the 26 Oct screen rewrite and UX checklist fixes, so its other views are out of date.
+- **If we run the drill A/B:** port Version A and the `?v=` switch into `index.html` so both variants share every other screen. Comparing the archived file against `index.html` would add confounds (different feedback, issue and summary screens).
+- **Still to do before launch:** pick DVs, log them or use a testing tool (Maze, Loop11), add a participant mode that hides the guide panel, decide whether A and B follow the same scripted outcome sequence, then tag `experiment-v1` and freeze (collab.md §6).
 
 ## Decision log
 
@@ -161,6 +158,9 @@ Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been 
 | 2026-10-26 | Moderator judging replaced by scripted results | Brief requires the experiment to run with no team intervention | MODERATOR ONLY Clean/Missed buttons | Iter2.05 |
 | 2026-10-26 | Recording limited to bars 33-48 | Coach feedback is scripted for the bridge only | Free recording with generic feedback | Iter2.04 simulation section |
 | 2026-10-26 | Phone frame scales down to fit the window height (never above 390x844) | At full size the frame was taller than a laptop screen, so the bottom buttons were cut off | Shortening the phone instead (rejected: crowds the screens) | None; Iter2.04 screenshots can still be taken at full size on a tall window |
+| 2026-10-26 | App forced to light mode | Dark mode wasn't designed or tested for the experiment; one theme keeps screenshots and participants' view identical | Following the phone theme | Iter2.04 screenshots |
+| 2026-10-26 | UX checklist fixes: sync warning, bar-strip symbols, 44 px targets, larger type, contrast, one record label, count-in state, mic prompt | A mobile UX checklist (Nielsen, Apple HIG, Material 3, WCAG 2.2) run on all 11 views found 2 Sev 3, 8 Sev 2 and 4 Sev 1 problems | n/a | Iter2.03 Change 1 label; Iter2.04 screenshots of views 4-7, navigation diagram (mic and sync sheets); Iter2.05 script if it says "Sing & record" |
+| 2026-10-26 | Version A drill archived; main prototype keeps the coach-adapts drill only | The 26 Oct screen rewrite was built without the A/B switch | Porting Version A into the rewrite (deferred until the experiment is decided) | Iter2.05 |
 
 ## AI assistance log
 
@@ -170,12 +170,13 @@ Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been 
 | 2026-10-21 | Tan Qi | Claude | Drill HE-fix rebuild, HE traceability doc, revised Iter1.5 HE text | To fill in |
 | 2026-10-26 | Tan Qi | Claude Code | Full hi-fi prototype (`index.html`), this CLAUDE.md, CHANGELOG | To fill in after the team tests it on a phone |
 | 2026-10-26 | Tan Qi | Claude Code | Scale-to-fit for the phone frame | To fill in |
+| 2026-10-26 | Tan Qi | Claude Code | UX checklist, the audit of all 11 views and the fixes in this PR | To fill in after the team checks the fixes on a phone |
 
 ## Open issues
 
 - Team to confirm the 3-metric scorecard and the merged views before Iter2.04 screenshots.
-- Iter2.03: move #5 to fixed; mention #10, #11, #13, #14, #16, #17, #18 as smaller fixes; Change 2 label is "End take" everywhere.
+- Iter2.03: move #5 to fixed; mention #10, #11, #13, #14, #16, #17, #18 as smaller fixes; Change 2 label is "End take" everywhere; Change 1 label is now "Re-record take".
 - Iter2.01: prototype link = https://tqdenoob.github.io/resonote-prototypes/ ; "App Tools Used" = HTML, CSS, JavaScript, Web Audio API, GitHub Pages, Claude (AI-assisted).
 - A/B: pick DVs, add logging or a testing tool, add participant mode, resolve the A-variant confound, then freeze.
-- Not yet tested on a real phone (only headless Chrome at 390 px and desktop).
+- Not yet tested on a real phone (only headless Chrome at 390 px and desktop). One-handed reach and screen-reader checks from the UX checklist are still open.
 - Staff has no clef or key signature; the arrangement is shown in C for simplicity.
