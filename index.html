@@ -29,15 +29,15 @@
 <style>
 /* Layout: a phone-sized app on the left, a "prototype guide" rail on the right (stacks below on phones). */
 :root{
-  /* "Gamified Studio" palette (26 Oct trial): soft cream/grey ground, sky blue primary, orange/yellow secondary,
-     coral and mint accents. Text and white-on-colour shades are deepened from the swatches to keep 4.5:1 (WCAG 1.4.3);
-     the pure swatches (--sky, --sun, --mint, --coral) are used only for fills without text. */
+  /* Three-tone palette: cream background, blue main (actions, selection, your progress), orange accent
+     (highlights and "check / fix first"). Green and red are kept only as universal indicators
+     (green = good, red = error, recording, delete). Text shades keep 4.5:1 (WCAG 1.4.3). */
   --page:#ECF0F1; --bg:#F9F8F3; --card:#FFFFFF; --sunk:#F2F1EA; --ink:#1B1F24; --muted:#5A6068;
   --line:#E5E3D9; --line2:#D3D0C4; --staff:#8F949A;
-  --blue:#1C70AD; --blue-soft:#E3F1FB; --blue-ink:#155A8C; --on-accent:#FFFFFF; --sky:#3498DB;
-  --orange:#B35C14; --orange-soft:#FCEBDA; --orange-ink:#8A440E; --cheer:#E67E22;
-  --red:#C0392B; --red-soft:#FDE4E1; --coral:#E74C3C; --green:#1A7F45; --green-soft:#E6F8ED; --mint:#2ECC71;
-  --amber:#7A5F00; --amber-soft:#FDF3C7; --sun:#F1C40F; --amber-bar:#F1C40F; --scrim:rgba(27,31,36,.48); --spot:#F1C40F;
+  --blue:#1C70AD; --blue-soft:#E3F1FB; --blue-ink:#155A8C; --on-accent:#FFFFFF;
+  --orange:#B35C14; --orange-soft:#FCEBDA; --orange-ink:#8A440E;
+  --red:#C0392B; --green:#1A7F45; --green-soft:#E6F8ED;
+  --scrim:rgba(27,31,36,.48);
   --sec-a:#EEF1EC; --sec-b:#E4E9EC; --wave:#B6BCC2;
   --edge:#80838B; /* 3:1+ boundary for inputs, switch tracks and radios (WCAG 1.4.11) */
   --pw:402px; --ph:830px;
@@ -158,7 +158,7 @@ button{cursor:pointer}
 .badge.o{background:var(--orange-soft);color:var(--orange-ink)}
 .badge.b{background:var(--blue-soft);color:var(--blue-ink)}
 .badge.g{background:var(--green-soft);color:var(--green)}
-.badge.a{background:var(--amber-soft);color:var(--amber)}
+.badge.a{background:var(--orange-soft);color:var(--orange-ink)}
 .chip{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;font-size:12px;font-weight:600}
 .chip.clean{background:var(--green-soft);color:var(--green)}
 .chip.miss{background:var(--orange-soft);color:var(--orange-ink)}
@@ -229,7 +229,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .tl .wv{position:absolute;left:0;right:0;top:22px;height:40px;border-radius:6px;background:var(--sunk);overflow:hidden}
 .tl .wv svg{width:100%;height:100%;display:block}
 .tl .wv rect{fill:var(--wave)}
-.tl .sel{position:absolute;top:20px;height:44px;background:rgba(52,152,219,.18);border:2px solid var(--blue);border-radius:6px;pointer-events:none}
+.tl .sel{position:absolute;top:20px;height:44px;background:rgba(28,112,173,.16);border:2px solid var(--blue);border-radius:6px;pointer-events:none}
 .tl .hd{position:absolute;top:16px;width:44px;height:52px;margin-left:-22px;display:flex;align-items:center;justify-content:center;border:0;background:transparent;padding:0;cursor:ew-resize}
 .tl .hd i{width:14px;height:44px;border-radius:5px;background:var(--blue);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 .tl .hd i::after{content:"";width:2px;height:16px;border-left:1px solid var(--on-accent);border-right:1px solid var(--on-accent);opacity:.8}
@@ -247,16 +247,16 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .kb .w:last-child{border-right:0}
 .kb .w.hit{background:var(--blue-soft);color:var(--blue-ink)}
 .kb .k{position:absolute;top:0;width:28px;height:60%;background:#17181C;border:0;border-radius:0 0 4px 4px;padding:0}
-.kb .k.hit{background:var(--sky)}
-.kb .w.mid::before{content:"";position:absolute;bottom:22px;left:50%;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--sky)}
+.kb .k.hit{background:var(--blue)}
+.kb .w.mid::before{content:"";position:absolute;bottom:22px;left:50%;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--blue)}
 .kb .w.mid{color:var(--blue-ink)}
 .kbkey{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
-.kbkey i{width:8px;height:8px;border-radius:50%;background:var(--sky);display:inline-block}
+.kbkey i{width:8px;height:8px;border-radius:50%;background:var(--blue);display:inline-block}
 
 /* meter (HE #9) */
 .meter{display:flex;align-items:center;gap:10px}
 .meter .bars{display:flex;align-items:flex-end;gap:3px;height:26px;flex:none}
-.meter .bars i{display:block;width:5px;border-radius:2px;background:var(--mint);height:4px}
+.meter .bars i{display:block;width:5px;border-radius:2px;background:var(--green);height:4px}
 .meter .lvl{font-size:13px;font-weight:700;color:var(--green);margin-left:auto;text-align:right}
 .meter .lvl.wait{color:var(--muted)}
 
@@ -300,9 +300,9 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .overall{display:flex;align-items:center;gap:14px}
 .ring{width:72px;height:72px;flex:none}
 .ring .bg{stroke:var(--line);fill:none;stroke-width:8}
-.ring .fg{stroke:var(--sky);fill:none;stroke-width:8;stroke-linecap:round}
-.ring .fg.a{stroke:var(--amber-bar)}
-.ring .fg.g{stroke:var(--mint)}
+.ring .fg{stroke:var(--blue);fill:none;stroke-width:8;stroke-linecap:round}
+.ring .fg.a{stroke:var(--orange)}
+.ring .fg.g{stroke:var(--green)}
 .ring text{fill:var(--ink);font:800 20px var(--f-ui)}
 .ring text.of{fill:var(--muted);font:600 10px var(--f-ui)}
 .metric{display:flex;flex-direction:column;gap:6px;padding:10px 0}
@@ -322,7 +322,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .bstrip span{height:38px;border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:11px;font-weight:700;line-height:1}
 .bstrip span i{font-style:normal;font-size:11px}
 .bstrip .g{background:var(--green-soft);color:var(--green)}
-.bstrip .a{background:var(--amber-soft);color:var(--amber)}
+.bstrip .a{background:var(--orange-soft);color:var(--orange-ink)}
 .bstrip .r{background:var(--orange);color:var(--on-accent)}
 .prio{border:2px solid var(--orange);background:var(--card)}
 .issue{display:flex;gap:10px;align-items:flex-start;font-size:14px}
@@ -356,7 +356,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .legend i{display:inline-block;width:14px;height:8px;border-radius:2px;margin-right:5px;vertical-align:middle}
 .legend i.lg{width:18px;height:18px;border-radius:4px;font-style:normal;font-size:11px;font-weight:800;line-height:18px;text-align:center}
 .lg.g{background:var(--green-soft);color:var(--green)}
-.lg.a{background:var(--amber-soft);color:var(--amber)}
+.lg.a{background:var(--orange-soft);color:var(--orange-ink)}
 .lg.r{background:var(--orange);color:var(--on-accent)}
 
 /* drill */
@@ -364,7 +364,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .coach-tag{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--blue-ink);background:var(--blue-soft);padding:3px 8px;border-radius:999px}
 .dsteps{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:8px 0 4px}
 .dsteps .bar{height:6px;border-radius:3px;background:var(--line)}
-.dsteps .bar.on{background:var(--sky)}
+.dsteps .bar.on{background:var(--blue)}
 .dsteps .t{font-size:12px;line-height:1.25;color:var(--muted);margin-top:4px}
 .dsteps .t.on{font-weight:700;color:var(--ink)}
 .ro{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:6px 0 12px}
@@ -415,13 +415,13 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .sync .aud{position:absolute;top:0;height:46px;left:0;will-change:transform}
 .sync .aud .sn{position:absolute;top:8px;height:30px;border-radius:4px;background:var(--wave)}
 .sync .aud .wf{position:absolute;left:0;top:-3px;height:40px;overflow:visible}
-.sync .aud .wf .c{fill:var(--amber-bar)}
+.sync .aud .wf .c{fill:var(--orange)}
 .sync .aud .wf .v{fill:var(--muted)}
-.sync .aud .lab{position:absolute;top:36px;font-size:12px;font-weight:700;color:var(--amber);white-space:nowrap}
+.sync .aud .lab{position:absolute;top:36px;font-size:12px;font-weight:700;color:var(--orange-ink);white-space:nowrap}
 .sync .mk{position:absolute;top:8px;bottom:6px;width:2px;background:var(--blue);z-index:2}
 .sync .mk span{position:absolute;top:-2px;left:5px;font-size:12px;font-weight:700;color:var(--blue-ink);white-space:nowrap}
 .sync .uph{position:absolute;top:28px;bottom:6px;width:2px;background:var(--ink);z-index:3;display:none}
-.sync .umk{position:absolute;top:70px;height:46px;width:2px;background:var(--mint);z-index:2}
+.sync .umk{position:absolute;top:70px;height:46px;width:2px;background:var(--green);z-index:2}
 
 /* overlays */
 .scrim{position:absolute;inset:0;background:var(--scrim);display:flex;flex-direction:column;justify-content:flex-end;z-index:20}
@@ -429,7 +429,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .sheet h3{margin:0;font-size:19px;text-wrap:balance}
 .sheet p{margin:0;font-size:14px;color:var(--muted)}
 .tour{position:absolute;inset:0;z-index:30}
-.spot{position:absolute;border:3px solid var(--spot);border-radius:14px;box-shadow:0 0 0 2000px rgba(13,14,17,.62);pointer-events:none;transition:all .2s}
+.spot{position:absolute;border:3px solid var(--orange);border-radius:14px;box-shadow:0 0 0 2000px rgba(13,14,17,.62);pointer-events:none;transition:all .2s}
 .tip{position:absolute;left:14px;right:14px;background:var(--card);border-radius:16px;padding:14px 16px;box-shadow:0 8px 24px rgba(0,0,0,.3);display:flex;flex-direction:column;gap:8px}
 .tip .tt{font-size:16px;font-weight:700}
 .tip .tx{font-size:14px;line-height:1.45}
@@ -933,7 +933,7 @@ SCREENS.sync = function(){
   var y = S.sync, off = y.offset, err = Math.abs(off - SYNC_TRUE), ok = err <= .12;
   var h = setupHdr(backBtn("to-parts", "Back to Choose your part"), "Sync check", "Viva La Vida · Tenor");
   h += '<div class="body">' + steps3(3, "Line up");
-  h += '<div class="card pad" style="background:var(--amber-soft);border-color:transparent"><div class="lbl" style="color:var(--amber)">Couldn\'t line up automatically</div><div class="sub">Slide the track so the first sung note sits on bar 1.</div></div>';
+  h += '<div class="card pad" style="background:var(--orange-soft);border-color:transparent"><div class="lbl" style="color:var(--orange-ink)">Couldn\'t line up automatically</div><div class="sub">Slide the track so the first sung note sits on bar 1.</div></div>';
   h += '<section class="card sync" data-tour="lanes" aria-label="Score and learning track"><div class="lt">Score</div><div class="lane" data-score-lane>';
   for (var b = 0; b < 4; b++){
     h += '<div class="bx" style="left:' + (40 + b * 4 * 240 / BPM / 4 * SYNC_PX * 4 / 4) + 'px;width:' + (240 / BPM * SYNC_PX) + 'px">Bar ' + (b + 1) + '</div>';
@@ -1067,7 +1067,7 @@ SCREENS.feedback = function(){
   ];
   h += '<section class="card pad" data-tour="metrics" style="padding-block:4px">';
   M.forEach(function(m){
-    var v = t[m.k], L = label(v), open = S.openInfo === m.k, col = L[1] === "g" ? "var(--mint)" : "var(--amber-bar)";
+    var v = t[m.k], L = label(v), open = S.openInfo === m.k, col = L[1] === "g" ? "var(--green)" : "var(--orange)";
     h += '<div class="metric"><div class="top"><span class="nm">' + m.n + '</span><button class="info" aria-expanded="' + open + '" aria-label="What ' + m.n + ' means" data-act="info" data-arg="' + m.k + '"><span>i</span></button><span class="badge ' + L[1] + '">' + L[0] + '</span><span class="sc">' + v + '</span></div>' +
       '<div class="bar"><i style="width:' + v + '%;background:' + col + '"></i></div>' + (open ? '<div class="tip">' + m.tip + '</div>' : '') + '</div>';
   });
