@@ -29,11 +29,11 @@ Borrowed from the hard scenario: the manual sync correction and the adjust-drill
 
 ## Current prototype state (last updated: 2026-10-26 by Tan Qi)
 
-`index.html` is the whole prototype: one self-contained HTML file, plain JavaScript, no build step. **11 views** (the brief allows 6-14). Views 2-4 (setup) open as one popup over the Music Library rather than full screens, so adding a song feels like onboarding the user can leave at any point. The score is printed on a full-width white "paper" band (two lines on the workspace, three while recording), the one surface that isn't a card; section headings are sentence case. Colour rule: green = good, amber = check / needs work, orange = fix first, blue = actions only. A "Prototype guide" panel beside the phone lists the views, their HE fixes and what is simulated, and lets you jump to any view. The app is **light mode only**, whatever the phone's theme. Every tap target is at least 44 px.
+`index.html` is the whole prototype: one self-contained HTML file, plain JavaScript, no build step. **11 views** (the brief allows 6-14). Views 2-4 (setup) open as one popup over the Music Library rather than full screens, so adding a song feels like onboarding the user can leave at any point. The score is printed on a full-width white "paper" band (two lines on the workspace, three while recording), the one surface that isn't a card; section headings are sentence case. Colour rule: green = good, amber = check / needs work, orange = fix first, blue = actions only. A "Prototype guide" panel beside the phone lists the views, their HE fixes and what is simulated, and lets you jump to any view. The phone screen is **402 × 830 pt** (iPhone 16 Pro width) inside a 12 px bezel, so the frame is about 2:1 like a real iPhone body. The app is **light mode only**, whatever the phone's theme. Every tap target is at least 44 px.
 
 | # | View | Hash link | What it does | Simulated? | Low-fi source (Iter1.4) | Owner |
 |---|------|-----------|--------------|------------|------------------------|-------|
-| 1 | Music Library | `#library` | Song list, search with "No results" state, + Add song opens the setup popup. A setup closed halfway shows as a "Setup not finished · Step n of 3" row that resumes it | 2 older songs pre-loaded; only Viva La Vida opens | View 1 | Tan Qi |
+| 1 | Music Library | `#library` | Personal greeting at the top ("Evening, Clarence" style: a time-of-day phrase, then the name; "Nicely sung, Clarence" once bar 42 is mastered) with a one-line reminder about Wednesday's practice. Song list, search with "No results" state, + Add song opens the setup popup. A setup closed halfway shows as a "Setup not finished · Step n of 3" row that resumes it | 2 older songs pre-loaded; only Viva La Vida opens | View 1 | Tan Qi |
 | 2 | Import Score + Audio | `#import` | **Popup** over the library. Pick score and learning track, required song title, Step 1 of 3, Help and Close (X) top-right | File picker is a scripted list of Telegram downloads | View 3 | Tan Qi |
 | 3 | Choose Your Part | `#parts` | **Popup**, Step 2 of 3. Pick part, voice range shown, Hear preview, Back and Close (X) | Parts "detected" from the score; only Tenor continues | View 4 | Tan Qi |
 | 4 | Sync Check | `#sync` | **Popup**, Step 3 of 3, Back and Close (X). The learning track is drawn as an audio waveform (amber count-in clicks labelled "count-in, not on the score", then the sung notes). Slide the track until its first sung note sits on the "Line up here" marker; the slider has 0 in the middle (earlier left, later right) and one status badge shows the gap ("3.48 s off" / "Lined up"). Play, Set marker, Undo, with a hint explaining Set marker. Confirming while still off opens a "Track is still n s off" warning | Sync detection scripted; correct offset is -3.48 s | View 5 | Tan Qi |
@@ -151,12 +151,15 @@ Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been 
 - **Still to do before launch:** pick DVs, log them or use a testing tool (Maze, Loop11), add a participant mode that hides the guide panel, decide whether A and B follow the same scripted outcome sequence, then tag `experiment-v1` and freeze (collab.md §6).
 
 ## Decision log
+| 2026-10-26 | Headings and the library greeting in Young Serif (replaces Fraunces from the greeting PR), everything else stays Figtree | One serif across the app instead of two. A serif on page titles gives ResoNote a printed-music feel and separates headings from controls; Young Serif is less common than the usual Playfair/Fraunces choices. Only page titles (`.h1`) and the guide titles use it, so buttons, labels and numbers keep Figtree | Bodoni Moda (too thin at phone sizes), Newsreader, a single sans family | Iter2.04 Prototype (all view screenshots retaken after merge) |
 
 | Date | Decision | Why | Alternatives tried | Affects deliverable |
 |---|---|---|---|---|
 | 2026-10-20 | Three parallel designs (score-first, timeline-first, coach-first) | Avoid design fixation before committing to hi-fi | n/a | Iter2.07 Journal (alternative designs); screenshots in `docs/screenshots/alternatives/` |
 | 2026-10-21 | Drill rebuilt with HE fixes; moderator panel kept | Apply Iter1.5 fixes to the 12 Oct Claude Design drill | 12 Oct drill (playhead reset on pause, "Finish attempt") | Iter2.03; screenshot in `docs/screenshots/alternatives/` |
 | 2026-10-26 | Full hi-fi prototype, 11 views, becomes the site root | Cover the whole easy scenario from Iter2.02 in one clickable file | Separate per-view files (rejected: harder to keep consistent) | Iter2.04 all views; Iter2.01 prototype link |
+| 2026-10-26 | Library greets the singer by name with a time-of-day phrase | Makes the app feel like Clarence's own practice space; the subline keeps Wednesday's deadline in view (persona: anxious before combined practice) | Plain "ResoNote / Your songs" header (previous version) | Iter2.04 View 1 screenshot |
+| 2026-10-26 | Phone frame 402 x 830 with a 12 px bezel | Previous 390 x 844 with a thin border looked too tall and narrow next to a real iPhone | 390 x 844 (iPhone 14 screen) | All Iter2.04 screenshots |
 | 2026-10-26 | Scorecard uses 3 metrics: Pitch, Timing, Held notes | Matches what evaluators saw and the scenario's three problems at bar 42 | 4 metrics incl. rhythm and diction (Iter1.4 View 8) | Iter2.04 View 7; Iter1.5 #8 open question. **Team to confirm.** |
 | 2026-10-26 | Views 8+9 merged into Take Feedback; Views 11-14 merged into one Drill view | Fewer screens on the main path; one priority stays visible with the scores | Separate scorecard and priority screens (low-fi) | Iter2.04 navigation diagram |
 | 2026-10-26 | Help overlay kept on every view | Already built; fixes HE #5 | Removing help (Iter2.03 current text) | Iter2.03 "not fixed" list |
@@ -171,6 +174,7 @@ Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been 
 | 2026-10-26 | One main design: removed the parallel designs, design-a/b/c, shared CSS and alternatives/ | Several copies drift apart and confuse which one is current; all future work goes into `index.html` | Keeping old designs in the repo | Iter2.07 Journal uses the screenshots in `docs/screenshots/alternatives/` |
 
 ## AI assistance log
+| 2026-10-26 | Tan Qi | Claude | Shortlist of font pairings and the CSS change applying Young Serif to headings | Tan Qi chose Young Serif with the existing Figtree |
 
 | Date | Who | Tool | What was AI-drafted | What we changed or added |
 |---|---|---|---|---|
