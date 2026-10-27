@@ -2,6 +2,7 @@
 
 Newest first. One line per merged PR.
 
+- 2026-10-27 · Practice Workspace is the hub: Coach card with "Open drills" (Drills sheet) and "Last take · See feedback"; drill Back goes to the workspace. Each drill opens with a simulated coach demo video (beat-by-beat video after the adjust step). Page titles with a one-line purpose on views 2-5, 7 and 9; "Sync Check" renamed "Line up the track", button "Confirm line-up". Touches Iter2.04 views 2-5, 7, 9 screenshots and navigation diagram.
 - 2026-10-26 · Music Library greeting: removed the reminder line under it, kept to one line (24 px, two long phrases shortened), icon blue instead of orange. Touches Iter2.04 View 1 screenshot.
 - 2026-10-26 · Three-tone colour scheme: cream background, blue main, orange accent; green and red kept only as good / error indicators. Replaces the Gamified Studio trial (screenshotted in `docs/screenshots/alternatives/`).
 - 2026-10-26 · Trial "Gamified Studio" colour scheme: cream/grey ground, sky blue primary, orange/yellow secondary, coral/mint accents (contrast-safe shades for text). Old palette screenshotted in `docs/screenshots/alternatives/`.
