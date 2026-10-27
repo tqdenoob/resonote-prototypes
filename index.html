@@ -1047,7 +1047,7 @@ SCREENS.workspace = function(){
   h += hubHTML();
   // settings
   h += '<section class="card" data-tour="controls" style="padding:2px 14px">';
-  h += '<div class="set-row"><div><div class="lbl">Tempo</div><div class="hint">' + (w.editPaused ? "Paused while you edit" : "Original " + BPM + " BPM") + '</div></div><div class="stepper">';
+  h += '<div class="set-row"><div><div class="lbl">Tempo</div><div class="hint" style="text-wrap:balance">' + (w.editPaused ? "Paused while you edit" : "Original " + BPM + "&nbsp;BPM") + '</div></div><div class="stepper">';
   if (w.editingBpm) h += '<div class="bpm-edit"><input id="ws-bpm" type="number" inputmode="numeric" min="69" max="138" value="' + bpm + '" aria-label="Exact tempo in BPM" data-bpm-input="ws"><span class="hint">BPM</span><button class="done" data-act="bpm-done" data-arg="ws">Done</button></div>';
   else h += '<button class="sbtn" data-act="ws-slower" data-hold aria-label="1 BPM slower">−</button><button class="bpm-btn" data-act="bpm-edit" data-arg="ws" aria-label="Tempo ' + bpm + ' BPM, tap to type an exact value"><b>' + bpm + '</b><span> BPM ' + I.pen + '</span></button><button class="sbtn" data-act="ws-faster" data-hold aria-label="1 BPM faster">+</button>';
   h += '</div></div>';
