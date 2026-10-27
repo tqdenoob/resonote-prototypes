@@ -41,6 +41,9 @@
   --sec-a:#EEF1EC; --sec-b:#E4E9EC; --wave:#B6BCC2;
   --edge:#80838B; /* 3:1+ boundary for inputs, switch tracks and radios (WCAG 1.4.11) */
   --pw:402px; --ph:830px;
+  /* Mobile margins: 16px side gutter (iOS layout margin, Material 16dp). Every tap target and its hover/focus
+     background stays inside it. Safe areas keep content clear of the status bar, rounded corners and home indicator. */
+  --gutter:16px; --safe-t:44px; --safe-b:34px;
   --f-serif:"Young Serif",Georgia,"Times New Roman",serif; /* greeting and headings only; one weight (400) */
   --f-ui:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;
   color-scheme:light; /* the app is light-only, whatever the OS theme */
@@ -83,23 +86,27 @@ button{cursor:pointer}
 /* ---------- Phone ---------- */
 .phone{width:var(--pw);height:var(--ph);max-width:100%;border-radius:46px;overflow:hidden;position:relative;background:var(--bg);
   box-shadow:0 0 0 12px var(--ink),0 0 0 13px #3A3C42,0 22px 48px rgba(0,0,0,.22);display:flex;flex-direction:column;flex:none;
-  transform:scale(var(--s,1));transform-origin:top left;margin:13px}
+  transform:scale(var(--s,1));transform-origin:top left;margin:13px;padding-block:var(--safe-t) var(--safe-b)}
+/* simulated iOS status bar and home indicator; drawn on the frame so they sit above every view and overlay */
+.phone::before{content:"9:41";position:absolute;top:0;left:0;right:0;height:var(--safe-t);padding:0 32px;display:flex;align-items:center;font-size:15px;font-weight:700;color:var(--ink);pointer-events:none;z-index:40}
+.phone::after{content:"";position:absolute;bottom:8px;left:50%;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:var(--ink);pointer-events:none;z-index:40}
 /* screen is 402 x 830 pt: iPhone 16 Pro width; with the 12px bezel the frame is about 2:1, like a real iPhone body */
 .phone-box{flex:none;width:calc((var(--pw) + 26px) * var(--s,1));height:calc((var(--ph) + 26px) * var(--s,1))}
 @media (max-width:480px){
   .phone-box{width:100%;height:auto}
-  .phone{width:100%;height:calc(100svh - 40px);min-height:640px;border-radius:22px;box-shadow:0 0 0 1px var(--line2);transform:none;margin:0}
+  .phone{width:100%;height:calc(100svh - 40px);min-height:640px;border-radius:22px;box-shadow:0 0 0 1px var(--line2);transform:none;margin:0;--safe-t:4px;--safe-b:8px}
+  .phone::before,.phone::after{display:none} /* on a real phone the OS draws these */
   .wrap{gap:24px}
 }
 .scr{display:flex;flex-direction:column;height:100%;min-height:0}
-.hdr{height:56px;display:grid;grid-template-columns:48px 1fr 48px;align-items:center;padding:0 6px;flex:none}
+.hdr{height:56px;display:grid;grid-template-columns:48px 1fr 48px;align-items:center;padding:0 var(--gutter);flex:none}
 .hdr .ttl{text-align:center;min-width:0}
 .hdr .ttl b{display:block;font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hdr .ttl span{display:block;font-size:13px;color:var(--muted)}
 .ib{width:44px;height:44px;border:0;background:transparent;border-radius:12px;display:flex;align-items:center;justify-content:center}
 .ib:hover{background:var(--sunk)}
-.body{padding:2px 18px 14px;display:flex;flex-direction:column;gap:10px;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
-.ftr{padding:10px 18px 22px;display:flex;gap:10px;align-items:center;flex:none;border-top:1px solid var(--line);background:var(--bg)}
+.body{padding:2px var(--gutter) 14px;display:flex;flex-direction:column;gap:10px;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.ftr{padding:10px var(--gutter) 12px;display:flex;gap:10px;align-items:center;flex:none;border-top:1px solid var(--line);background:var(--bg)}
 .ftr.col{flex-direction:column;align-items:stretch}
 .ftr.col .btn{flex:none}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px}
@@ -115,8 +122,13 @@ button{cursor:pointer}
 /* flat section on the page background, used instead of a card for lists */
 .sect{display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--line);padding-top:12px}
 /* the score is printed on a full-width "paper" band, the one surface that isn't a card */
-.paper{margin:0 -18px;background:var(--card);border-block:1px solid var(--line);padding:4px 18px 10px;display:flex;flex-direction:column;gap:2px}
+.paper{margin:0 calc(-1 * var(--gutter));background:var(--card);border-block:1px solid var(--line);padding:4px var(--gutter) 10px;display:flex;flex-direction:column;gap:2px}
 .paper .scap{padding:6px 0 0}
+/* workspace score: drag (or swipe) sideways to page through the bars, 4 at a time */
+.drag-score{touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none}
+.drag-score.dragging{cursor:grabbing}
+.drag-score [data-lines]{will-change:transform}
+.scap .link{min-height:28px;padding:0;font-size:13px}
 .tbtn{min-height:44px;border:0;background:transparent;padding:0 8px;font-size:15px;font-weight:700;color:var(--ink);border-radius:10px}
 .tbtn:hover{background:var(--sunk)}
 .hdr.wide{grid-template-columns:84px 1fr 84px}
@@ -209,7 +221,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .hub .go{flex:none;color:var(--blue-ink);font-weight:700;font-size:14px;display:inline-flex;align-items:center;gap:2px}
 .hub .mini.on{pointer-events:none}
 /* drill mode bar: pinned under the header while the workspace is drilling, with the Leave drill exit */
-.modebar{flex:none;display:flex;align-items:center;gap:10px;padding:8px 18px;background:var(--blue-soft);border-bottom:1px solid var(--line)}
+.modebar{flex:none;display:flex;align-items:center;gap:10px;padding:8px var(--gutter);background:var(--blue-soft);border-bottom:1px solid var(--line)}
 .modebar .mic2{width:32px;height:32px;border-radius:10px;background:var(--card);color:var(--blue-ink);display:flex;align-items:center;justify-content:center;flex:none}
 .modebar .mtx{flex:1;min-width:0;display:flex;flex-direction:column;color:var(--blue-ink);font-size:14px;line-height:1.3}
 .modebar .mtx span{font-size:12px;color:var(--ink);opacity:.8}
@@ -274,7 +286,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 @keyframes blink{to{visibility:hidden}}
 
 /* loop timeline (Change 3, HE #4) */
-.tl{position:relative;height:74px;margin:4px 6px 0;touch-action:none;user-select:none}
+.tl{position:relative;height:74px;margin:4px 8px 0;touch-action:none;user-select:none}
 .tl .secs{position:absolute;left:0;right:0;top:0;height:20px}
 .tl .sec{position:absolute;top:0;height:20px;font-size:11px;font-weight:700;color:var(--muted);padding:3px 0 0 4px;white-space:nowrap;overflow:hidden;border-left:1px solid var(--line2)}
 .tl .wv{position:absolute;left:0;right:0;top:22px;height:40px;border-radius:6px;background:var(--sunk);overflow:hidden}
@@ -327,7 +339,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .lib-h{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:6px 2px -2px}
 .search{display:flex;align-items:center;gap:8px;height:46px;border:1px solid var(--edge);border-radius:14px;padding:0 12px;background:var(--card)}
 .search input{border:0;background:transparent;flex:1;min-width:0;height:100%;font-size:15px;outline:none}
-.fab{position:absolute;right:20px;bottom:28px;height:56px;border-radius:18px;padding:0 20px;border:0;background:var(--blue);color:var(--on-accent);font-weight:700;font-size:16px;display:flex;align-items:center;gap:8px;box-shadow:0 6px 18px rgba(52,152,219,.35)}
+.fab{position:absolute;right:var(--gutter);bottom:calc(var(--safe-b) + 12px);height:56px;border-radius:18px;padding:0 20px;border:0;background:var(--blue);color:var(--on-accent);font-weight:700;font-size:16px;display:flex;align-items:center;gap:8px;box-shadow:0 6px 18px rgba(52,152,219,.35)}
 .file{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;border:1.5px dashed var(--line2);background:var(--card)}
 .file.ok{border-style:solid;border-color:var(--line)}
 .file.bad{border-color:var(--red);border-style:solid}
@@ -465,7 +477,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .big-ic{width:56px;height:56px;border-radius:50%;background:var(--green);color:var(--on-accent);display:flex;align-items:center;justify-content:center}
 
 /* sync */
-.sync{position:relative;padding:12px 0 8px;overflow:hidden}
+.sync{position:relative;padding:12px 0 8px;overflow:hidden;flex:none}
 .sync .lane{position:relative;height:46px;margin:0 12px}
 .sync .lane+.lane{margin-top:12px}
 .sync .lt{font-size:12px;font-weight:700;color:var(--muted);margin:0 12px 4px;text-align:right}
@@ -484,24 +496,26 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 
 /* overlays */
 .scrim{position:absolute;inset:0;background:var(--scrim);display:flex;flex-direction:column;justify-content:flex-end;z-index:20}
-.sheet{background:var(--card);border-radius:24px 24px 0 0;padding:22px 22px 28px;display:flex;flex-direction:column;gap:12px;max-height:88%;overflow-y:auto}
+.sheet{background:var(--card);border-radius:24px 24px 0 0;padding:22px 20px calc(var(--safe-b) + 8px);display:flex;flex-direction:column;gap:12px;max-height:88%;overflow-y:auto}
 .sheet h3{margin:0;font-size:19px;text-wrap:balance}
 .sheet p{margin:0;font-size:14px;color:var(--muted)}
 .tour{position:absolute;inset:0;z-index:30}
 .spot{position:absolute;border:3px solid var(--orange);border-radius:14px;box-shadow:0 0 0 2000px rgba(13,14,17,.62);pointer-events:none;transition:all .2s}
-.tip{position:absolute;left:14px;right:14px;background:var(--card);border-radius:16px;padding:14px 16px;box-shadow:0 8px 24px rgba(0,0,0,.3);display:flex;flex-direction:column;gap:8px}
+.tip{position:absolute;left:var(--gutter);right:var(--gutter);background:var(--card);border-radius:16px;padding:14px 16px;box-shadow:0 8px 24px rgba(0,0,0,.3);display:flex;flex-direction:column;gap:8px}
 .tip .tt{font-size:16px;font-weight:700}
 .tip .tx{font-size:14px;line-height:1.45}
 .tip .tn{display:flex;justify-content:space-between;align-items:center}
-.toast{position:absolute;left:14px;right:14px;bottom:100px;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 14px;font-size:14px;display:flex;gap:12px;align-items:center;justify-content:space-between;z-index:25}
+.toast{position:absolute;left:var(--gutter);right:var(--gutter);bottom:calc(var(--safe-b) + 84px);background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 14px;font-size:14px;display:flex;gap:12px;align-items:center;justify-content:space-between;z-index:25}
 .toast button{background:transparent;border:1px solid color-mix(in srgb,var(--bg) 45%,transparent);color:var(--bg);border-radius:10px;height:44px;padding:0 12px;font-weight:700;flex:none}
 /* setup popup (views 2-4): opens over the library like onboarding, Close keeps progress */
 .setup-scrim{z-index:15}
-.setup{background:var(--bg);border-radius:24px 24px 0 0;height:calc(100% - 44px);display:flex;flex-direction:column;min-height:0;box-shadow:0 -8px 30px rgba(0,0,0,.18)}
+.setup{background:var(--bg);border-radius:24px 24px 0 0;height:calc(100% - var(--safe-t) - 8px);display:flex;flex-direction:column;min-height:0;box-shadow:0 -8px 30px rgba(0,0,0,.18)}
 .setup.enter{animation:rise .28s ease-out}
 @keyframes rise{from{transform:translateY(48px)}}
 .setup .grab{width:40px;height:5px;border-radius:3px;background:var(--line2);margin:8px auto 0;flex:none}
 .setup .hdr{grid-template-columns:96px 1fr 96px;height:52px}
+/* overlays cover the whole frame, so their footers clear the home indicator themselves */
+.scrim .ftr{padding-bottom:calc(var(--safe-b) + 12px)}
 .setup .hdr .rt{display:flex;justify-content:flex-end}
 .empty{padding:22px 14px;text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -629,11 +643,11 @@ var VIEWS = [
    he:[["#15","'Step 2 of 3'"],["#16","Voice range labelled and explained, not an unlabelled dropdown"],["#3","Back and Close (X) in the same place on every setup step"]],
    sim:"Parts are 'detected' from the score. Only Tenor continues the scenario."},
   {id:"sync",name:"Line Up the Track",lofi:"View 5 Manual Synchronization (was 'Sync Check')",
-   does:"Popup step 3 of 3. Auto-sync finds a 2-bar count-in on the learning track. The user slides the track (0 in the middle, earlier to the left) until the first sung note lands on the 'Line up here' marker. One status shows how far off it is.",
-   he:[["#3","Back to Choose Your Part, Close (X) to leave setup"],["#10","The track moves against a fixed bar 1 marker as you drag"],["#20","Play, Set marker and Undo all work"],["#15","'Step 3 of 3'"]],
-   sim:"Sync detection is scripted. The correct offset is −3.48 s (2 bars at 138 BPM)."},
+   does:"Popup step 3 of 3. ResoNote lines the track up first: it finds the 2-bar count-in and slides the track so the first sung note sits on bar 1, then says what it did. The singer can Play to check, or tap 'Adjust it yourself' to fine-tune with the slider, − / +, Set marker, Undo or Reset to automatic, before confirming.",
+   he:[["#3","Back to Choose Your Part, Close (X) to leave setup"],["#10","The track moves against a fixed bar 1 marker, during auto line-up and as you drag"],["#20","Play, Set marker, Undo and Reset all work"],["#15","'Step 3 of 3'"]],
+   sim:"Auto line-up is scripted: a 1.8 s animation that always lands on −3.48 s (2 bars at 138 BPM), which is correct."},
   {id:"workspace",name:"Practice Workspace",lofi:"View 6 Practice Workspace",
-   does:"The hub of the practice loop: the score with a moving playhead, the loop timeline, a Coach card (Drills, Last take, End session), then tempo, metronome, part volumes and keyboard. 'Practise bar 42' on the Drills page brings you back here in drill mode: the coach sets the loop to bar 42, the tempo and the guidance on these same controls, Record take records just bar 42, and the result shows in the Coach card. After 2 clean takes in a row, the coach asks you to sing the whole bridge again to check.",
+   does:"The hub of the practice loop: the score with a moving playhead (drag the score sideways, or use the arrow keys, to page through the bars 4 at a time; 'Back to playhead' returns), the loop timeline, a Coach card (Drills, Last take, End session), then tempo, metronome, part volumes and keyboard. 'Practise bar 42' on the Drills page brings you back here in drill mode: the coach sets the loop to bar 42, the tempo and the guidance on these same controls, Record take records just bar 42, and the result shows in the Coach card. After 2 clean takes in a row, the coach asks you to sing the whole bridge again to check.",
    he:[["#2","One Play/Pause toggle that keeps your place (Change 2)"],["#4","Drag handles on a labelled timeline (Change 3)"],["#1","Drill takes autosaved, with play back and discard"],["#9","Level meter while recording a drill take"],["#17","Tempo in whole BPM: − / + (hold to repeat), a 1-BPM slider, or tap to type"],["#18","Keyboard switch shows On / Off"]],
    sim:"Reference audio is a synth of the tenor line. Other parts are a soft chord on each beat. Drill results are scripted: the first 2 bar 42 takes at full speed with guidance off are missed (pitch, then timing); every other take is clean."},
   {id:"record",name:"Sing Along + Recording",lofi:"View 7 Sing Along + Recording",
@@ -668,8 +682,8 @@ var TOURS = {
           {t:"title",title:"Song title",text:"Name it so you can find it later."},
           {t:"close",title:"Close",text:"Leave any time. Your progress is kept."}],
   parts:[{t:"parts",title:"Your part",text:"Pick the part you sing. Tap Hear to check."}],
-  sync:[{t:"lanes",title:"Line up",text:"Slide the track until the first note sits on bar 1."},
-        {t:"tools",title:"Set marker",text:"Or play the track and tap Set marker on the first note."}],
+  sync:[{t:"lanes",title:"Lined up for you",text:"ResoNote moves the track so its first sung note sits on bar 1."},
+        {t:"tools",title:"Check or adjust",text:"Play to check. If it sounds off, tap Adjust it yourself."}],
   workspace:[{t:"mode",title:"Drill mode",text:"The coach is running a drill. Leave drill to practise freely; your progress is kept."},
              {t:"loop",title:"Loop",text:"Drag the handles to pick the bars to repeat."},
              {t:"hub",title:"Coach",text:"Drills, your drill progress and your last take."},
@@ -725,8 +739,8 @@ function fresh(){
     query:"", song:null, setupAt:null,
     imp:{score:null, audio:null, title:"", titleTouched:false, error:""},
     part:null,
-    sync:{offset:0, hist:[], playing:false, t:0, marker:null},
-    ws:{pos:0, playing:false, loopA:1, loopB:56, loop:true, bpm:BPM, metro:false, kb:false,
+    sync:{offset:0, hist:[], playing:false, t:0, marker:null, auto:"idle", autoT:0, manual:false},
+    ws:{pos:0, playing:false, browse:null, loopA:1, loopB:56, loop:true, bpm:BPM, metro:false, kb:false,
         tenorVol:100, othersVol:40, tenorMute:false, othersMute:false, editingBpm:false, bpmError:"", started:false,
         focus:null},   // focus = the bar being drilled while the workspace is in drill mode
     drillSel:42, drillsFrom:"workspace", drills:{},
@@ -1011,6 +1025,8 @@ SCREENS.parts = function(){
 
 var SYNC_TRUE = -2 * 240 / BPM;   // -3.478 s
 var SYNC_PX = 22;                 // pixels per second in the sync view
+var SYNC_AUTO = Math.round(SYNC_TRUE * 100) / 100;   // where auto line-up lands (-3.48 s)
+var SYNC_AUTO_LEN = 1.8;          // seconds the scripted auto line-up animation takes
 // Learning-track waveform: count-in clicks (orange spikes) then the sung tenor notes (attack, sustain with a little
 // wobble, release). Same shape every run.
 function syncWave(){
@@ -1037,10 +1053,13 @@ function syncStatus(off){
   return err <= .12 ? I.tick(12) + "Lined up" : err.toFixed(2) + " s off";
 }
 SCREENS.sync = function(){
-  var y = S.sync, off = y.offset, err = Math.abs(off - SYNC_TRUE), ok = err <= .12;
+  var y = S.sync;
+  if (y.auto === "idle"){ y.auto = "running"; y.autoT = 0; y.offset = 0; y.hist = []; y.marker = null; y.manual = false; }
+  var run = y.auto === "running", off = y.offset, err = Math.abs(off - SYNC_TRUE), ok = err <= .12;
   var h = setupHdr(backBtn("to-parts", "Back to Choose your part"), "Viva La Vida", "Tenor");
-  h += '<div class="body">' + steps3(3, "Last step") + pageTitle("Line up the track", "Make the learning track start on bar 1 of the score, so the playhead follows the music.");
-  h += '<div class="card pad" style="background:var(--orange-soft);border-color:transparent"><div class="lbl" style="color:var(--orange-ink)">The track starts 2 bars early</div><div class="sub">It begins with count-in clicks that aren\'t on the score. Slide it until the first sung note sits on bar 1.</div></div>';
+  h += '<div class="body">' + steps3(3, "Last step") + pageTitle("Line up the track", "ResoNote makes the learning track start on bar 1 of the score, so the playhead follows the music.");
+  if (run) h += '<div class="card pad" role="status" style="background:var(--blue-soft);border-color:transparent"><div class="lbl" style="color:var(--blue-ink)">Lining up the track for you…</div><div class="sub">Finding where the singing starts on the track.</div></div>';
+  else h += '<div class="card pad" style="background:var(--green-soft);border-color:transparent"><div class="lbl" style="color:var(--green)">' + I.tick(14) + ' Lined up for you</div><div class="sub">The track starts with a 2-bar count-in that isn\'t on the score, so ResoNote skipped it (' + fmtOff(SYNC_AUTO).replace("−", "") + '). Play to check, or adjust it yourself.</div></div>';
   h += '<section class="card sync" data-tour="lanes" aria-label="Score and learning track"><div class="lt">Score</div><div class="lane" data-score-lane>';
   for (var b = 0; b < 4; b++){
     h += '<div class="bx" style="left:' + (40 + b * 4 * 240 / BPM / 4 * SYNC_PX * 4 / 4) + 'px;width:' + (240 / BPM * SYNC_PX) + 'px">Bar ' + (b + 1) + '</div>';
@@ -1050,21 +1069,31 @@ SCREENS.sync = function(){
   if (y.marker !== null) h += '<i class="sn" style="left:' + (y.marker * SYNC_PX) + 'px;width:2px;background:var(--green);top:0;height:46px"></i>';
   h += '<i class="sn" data-aph style="left:0;width:2px;background:var(--ink);top:0;height:46px;display:none"></i>';
   h += '</div></div><div class="mk" style="left:52px"><span>Line up here</span></div></section>';
-  h += '<section class="card pad" data-tour="offset" style="display:flex;flex-direction:column;gap:8px"><div class="row"><span class="lbl">Move track</span>' +
-    '<span class="badge ' + (ok ? "g" : "a") + '" data-sync-status>' + syncStatus(off) + '</span></div>' +
-    '<div class="row"><button class="sbtn" data-act="nudge" data-arg="-0.05" aria-label="Move track earlier by 0.05 seconds">−</button><b class="tnum" style="font-size:18px" data-off>' + fmtOff(off) + '</b><button class="sbtn" data-act="nudge" data-arg="0.05" aria-label="Move track later by 0.05 seconds">+</button></div>' +
-    '<input id="sync-off" type="range" min="-5" max="5" step="0.01" value="' + off + '" aria-label="Audio offset in seconds, left is earlier" data-input="sync-off"><div class="ends"><span>← Earlier</span><span>0</span><span>Later →</span></div></section>';
-  h += '<div class="acts" data-tour="tools"><button class="mini' + (y.playing ? " on" : "") + '" data-act="sync-play">' + (y.playing ? I.pause + "Pause" : I.play + "Play") + '</button>' +
-    '<button class="mini" data-act="sync-mark"' + (y.playing ? "" : " disabled") + '>' + I.flag + 'Set marker</button>' +
-    '<button class="mini" data-act="sync-undo"' + (y.hist.length ? "" : " disabled") + '>' + I.undo + 'Undo</button></div>' +
-    '<p class="hint" style="margin:0">' + (y.playing ? "Tap Set marker when you hear the first sung note." : "Or tap Play, then Set marker on the first sung note.") + '</p>';
+  if (!run){
+    h += '<div class="acts" data-tour="tools"><button class="mini' + (y.playing ? " on" : "") + '" data-act="sync-play">' + (y.playing ? I.pause + "Pause" : I.play + "Play to check") + '</button>' +
+      '<button class="mini' + (y.manual ? " on" : "") + '" data-act="sync-manual" aria-expanded="' + y.manual + '">' + (y.manual ? "Done adjusting" : "Adjust it yourself") + '</button></div>';
+    if (y.manual){
+      h += '<section class="card pad" data-tour="offset" style="display:flex;flex-direction:column;gap:8px"><div class="row"><span class="lbl">Move track</span>' +
+        '<span class="badge ' + (ok ? "g" : "a") + '" data-sync-status>' + syncStatus(off) + '</span></div>' +
+        '<div class="row"><button class="sbtn" data-act="nudge" data-arg="-0.05" aria-label="Move track earlier by 0.05 seconds">−</button><b class="tnum" style="font-size:18px" data-off>' + fmtOff(off) + '</b><button class="sbtn" data-act="nudge" data-arg="0.05" aria-label="Move track later by 0.05 seconds">+</button></div>' +
+        '<input id="sync-off" type="range" min="-5" max="5" step="0.01" value="' + off + '" aria-label="Audio offset in seconds, left is earlier" data-input="sync-off"><div class="ends"><span>← Earlier</span><span>0</span><span>Later →</span></div>' +
+        '<div class="acts"><button class="mini" data-act="sync-mark"' + (y.playing ? "" : " disabled") + '>' + I.flag + 'Set marker</button>' +
+        '<button class="mini" data-act="sync-undo"' + (y.hist.length ? "" : " disabled") + '>' + I.undo + 'Undo</button>' +
+        '<button class="mini" data-act="sync-reset"' + (off === SYNC_AUTO ? " disabled" : "") + '>Reset to automatic</button></div>' +
+        '<p class="hint" style="margin:0">' + (y.playing ? "Tap Set marker when you hear the first sung note." : "Slide the track until the first sung note sits on bar 1, or tap Play, then Set marker on it.") + '</p></section>';
+    } else {
+      h += '<p class="hint" style="margin:0">Sounds off? Tap Adjust it yourself to move the track.</p>';
+    }
+  }
   h += '</div>';
-  h += '<footer class="ftr"><button class="btn pri" data-act="sync-done">Confirm line-up</button></footer>';
+  h += '<footer class="ftr"><button class="btn pri" data-act="sync-done"' + (run ? " disabled" : "") + '>' + (run ? "Lining up…" : "Confirm line-up") + '</button></footer>';
   return h;
 };
 
 function wsSystem(){
-  var w = S.ws, p = (w.playing || w.started) ? w.pos : w.loopA - 1;
+  var w = S.ws;
+  if (w.browse) return barsFrom(w.browse);   // the singer dragged the score to other bars
+  var p = (w.playing || w.started) ? w.pos : w.loopA - 1;
   var first = Math.floor(Math.floor(p) / 4) * 4 + 1;
   var bars = []; for (var i = first; i < first + 4 && i <= NBARS; i++) bars.push(i);
   return bars;
@@ -1089,6 +1118,18 @@ function wsCaption(bars){
   var last = Math.min(NBARS, bars[0] + 7);
   return 'Bars ' + bars[0] + '–' + last + ' · ' + loopLabel(bars[0], last);
 }
+// Right side of the score caption: the time, or a way back once the singer has dragged away from the playhead.
+function wsScapRight(){
+  var w = S.ws;
+  return w.browse ? '<button class="link" data-act="score-follow">Back to ' + ((w.playing || w.started) ? "playhead" : "loop start") + '</button>'
+    : '<span class="sub tnum" data-time>' + fmt(barTime(w.pos, BPM)) + ' / ' + fmt(barTime(NBARS, BPM)) + '</span>';
+}
+var BROWSE_MAX = Math.floor((NBARS - 5) / 4) * 4 + 1;   // last first-bar that still fills two lines (49)
+function scorePage(dir){
+  var w = S.ws, first = wsSystem()[0], next = Math.max(1, Math.min(BROWSE_MAX, first + dir * 4));
+  if (next === first) return false;
+  w.browse = next; return true;
+}
 SCREENS.workspace = function(){
   var w = S.ws, bars = wsSystem(), bpm = wsBpm();
   var h = hdr(backBtn("to-library", "Back to library"), "Viva La Vida", "Tenor");
@@ -1099,8 +1140,8 @@ SCREENS.workspace = function(){
       '<button class="mini" data-act="leave-drill"' + (drillBusy() ? " disabled" : "") + '>' + I.exit + 'Leave drill</button></div>';
   }
   h += '<div class="body">' + pageTitle("Practise your part", inDrill() ? "Drill bar " + S.drill.bar + ": sing it until you get 2 clean takes in a row." : "Loop a passage, slow it down, then record a take for the coach.");
-  h += '<section class="paper" data-tour="score" aria-label="Score"><div class="scap"><span class="sub" data-sys>' + wsCaption(bars) + '</span><span class="sub tnum" data-time>' + fmt(barTime(w.pos, BPM)) + ' / ' + fmt(barTime(NBARS, BPM)) + '</span></div>' +
-    '<div data-lines>' + wsLines(bars) + '</div></section>';
+  h += '<section class="paper drag-score" data-tour="score" data-drag-score tabindex="0" aria-label="Score. Drag sideways or use the arrow keys to see other bars."><div class="scap"><span class="sub" data-sys>' + wsCaption(bars) + '</span><span data-scap-r>' + wsScapRight() + '</span></div>' +
+    '<div data-lines>' + wsLines(bars) + '</div><span class="hint">Drag the score sideways to see other bars.</span></section>';
   // Drill mode: the coach's result goes right under the score, where the singer is looking.
   if (inDrill()) h += hubHTML();
   // loop timeline
@@ -1608,8 +1649,8 @@ function placeTour(){
   var pr = phone.getBoundingClientRect(), tr = target.getBoundingClientRect(), k = pr.width / phone.offsetWidth || 1;
   var top = (tr.top - pr.top) / k - 4, left = (tr.left - pr.left) / k - 4, w = tr.width / k + 8, ht = tr.height / k + 8;
   spot.style.cssText = "top:" + top + "px;left:" + left + "px;width:" + w + "px;height:" + ht + "px";
-  var tipH = tip.offsetHeight;
-  tip.style.top = (top + ht + 12 + tipH < phone.offsetHeight - 8 ? top + ht + 12 : Math.max(8, top - tipH - 12)) + "px";
+  var tipH = tip.offsetHeight, ps = getComputedStyle(phone), safeT = parseFloat(ps.paddingTop), safeB = parseFloat(ps.paddingBottom);
+  tip.style.top = (top + ht + 12 + tipH < phone.offsetHeight - safeB - 8 ? top + ht + 12 : Math.max(safeT + 8, top - tipH - 12)) + "px";
 }
 
 function renderGuide(){
@@ -1629,6 +1670,7 @@ function go(view){
   if (SETUP[view] && !SETUP[S.view]) S._setupEnter = true;
   S.view = view; S.sheet = null; S.toast = "";
   if (view === "drills" && !S.drill) S.drill = drillFor(S.drillSel || 42);
+  if (view === "workspace") S.ws.browse = null;
   render();
   var sc = bodyEl(); if (sc) sc.scrollTop = 0;
   try { history.replaceState(null, "", "#" + view); } catch(e){}
@@ -1808,6 +1850,14 @@ function tick(ts){
     if (v.t >= V.len){ v.t = V.len; v.playing = false; v.cue = -1; render(); }
     else vidDom();
   }
+  // scripted auto line-up: the track slides from 0 to the count-in offset, then the screen shows the result
+  if (S.view === "sync" && S.sync.auto === "running"){
+    var ya = S.sync, pa;
+    ya.autoT += dt; pa = Math.min(1, ya.autoT / SYNC_AUTO_LEN);
+    ya.offset = SYNC_AUTO * (1 - Math.pow(1 - pa, 3));
+    var auda = phone.querySelector("[data-aud]"); if (auda) auda.style.transform = "translateX(" + (40 + ya.offset * SYNC_PX) + "px)";
+    if (pa >= 1){ ya.offset = SYNC_AUTO; ya.auto = "done"; render(); }
+  }
   // sync playback
   if (S.view === "sync" && S.sync.playing){
     var y = S.sync, prevT = y.t; y.t += dt;
@@ -1825,6 +1875,7 @@ function refreshScore(){
   var bars = wsSystem(); S._sysKey = bars[0];
   el.innerHTML = wsLines(bars);
   var sys = phone.querySelector("[data-sys]"); if (sys) sys.textContent = wsCaption(bars);
+  var sr = phone.querySelector("[data-scap-r]"); if (sr) sr.innerHTML = wsScapRight();
 }
 function refreshRecScore(){
   var el = phone.querySelector("[data-lines]"); if (!el) return;
@@ -1936,6 +1987,8 @@ function act(a, arg, el){
       S.sync.hist.push(S.sync.offset); S.sync.marker = S.sync.t;
       S.sync.offset = -Math.round(S.sync.t * 100) / 100; render(); break;
     case "sync-undo": if (S.sync.hist.length){ S.sync.offset = S.sync.hist.pop(); S.sync.marker = null; } render(); break;
+    case "sync-manual": S.sync.manual = !S.sync.manual; render(); break;
+    case "sync-reset": S.sync.hist.push(S.sync.offset); S.sync.offset = SYNC_AUTO; S.sync.marker = null; render(); break;
     case "sync-done":
       if (Math.abs(S.sync.offset - SYNC_TRUE) > .12){ S.sync.playing = false; S.sheet = "sync-warn"; render(); break; }
       S.song = true; S.setupAt = null; go("workspace"); break;
@@ -1944,9 +1997,11 @@ function act(a, arg, el){
     // workspace
     case "to-library": go("library"); break;
     case "ws-play":
+      w.browse = null;   // playing jumps the score back to the playhead
       if (!w.started){ w.pos = w.loopA - 1; w.started = true; }
       w.playing = !w.playing; render(); break;
-    case "ws-restart": w.pos = w.loopA - 1; render(); break;
+    case "ws-restart": w.pos = w.loopA - 1; w.browse = null; render(); break;
+    case "score-follow": w.browse = null; refreshScore(); drawDynamic(); break;
     case "loop-toggle": w.loop = !w.loop; render(); break;
     case "ws-slower": w.bpm = Math.max(69, w.bpm - 1); w.bpmError = ""; userTempo(); render(); break;
     case "ws-faster": w.bpm = Math.min(BPM, w.bpm + 1); w.bpmError = ""; userTempo(); render(); break;
@@ -2047,7 +2102,7 @@ function act(a, arg, el){
       // Every bar: the workspace goes into drill mode for it, with the coach's loop, tempo and guidance.
       var pb = +arg, dz = drillFor(pb); S.drill = dz; dz.sheet = null; dz.phase = "idle";
       if (isFixed(pb) && dz.chunk === null){ dz.streak = 0; dz.last = null; dz.msg = "Bar " + pb + " again: 2 clean takes in a row."; }
-      w.focus = pb; w.playing = false; w.pos = pb - 1; w.started = false; applyCoach();
+      w.focus = pb; w.playing = false; w.pos = pb - 1; w.started = false; w.browse = null; applyCoach();
       go("workspace");
       S.toast = "Coach set the loop to bar " + pb + " at " + drillBpm() + " BPM" + (dz.guidance ? ", guidance on." : "."); render(); break;
     case "leave-drill":
@@ -2145,11 +2200,38 @@ phone.addEventListener("pointerdown", function(e){
     if (w.pos < w.loopA - 1 || w.pos > w.loopB){ w.pos = w.loopA - 1; }
     updateLoopUI();
   }
-  function up(){ hd.removeEventListener("pointermove", move); hd.removeEventListener("pointerup", up); hd.removeEventListener("pointercancel", up); loopLeftDrill(); render(); }
+  function up(){ hd.removeEventListener("pointermove", move); hd.removeEventListener("pointerup", up); hd.removeEventListener("pointercancel", up); S.ws.browse = null; loopLeftDrill(); render(); }
   hd.addEventListener("pointermove", move); hd.addEventListener("pointerup", up); hd.addEventListener("pointercancel", up);
+});
+// Drag the workspace score sideways to page through the bars. The lines follow the pointer, then
+// turn 4 bars on release (or spring back if the drag was short or there are no more bars that way).
+phone.addEventListener("pointerdown", function(e){
+  var box = e.target.closest && e.target.closest("[data-drag-score]");
+  if (!box || e.button > 0 || e.target.closest("button")) return;
+  var lines = box.querySelector("[data-lines]"), x0 = e.clientX, y0 = e.clientY, dx = 0, on = false;
+  var k = box.getBoundingClientRect().width / box.offsetWidth || 1;
+  function move(ev){
+    dx = (ev.clientX - x0) / k;
+    if (!on){ if (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(ev.clientY - y0)) return; on = true; box.classList.add("dragging"); try { box.setPointerCapture(e.pointerId); } catch(_){} }
+    var first = wsSystem()[0], edge = (dx > 0 && first <= 1) || (dx < 0 && first >= BROWSE_MAX);
+    lines.style.transition = "none"; lines.style.transform = "translateX(" + (edge ? dx / 4 : dx) + "px)";
+  }
+  function up(){
+    box.removeEventListener("pointermove", move); box.removeEventListener("pointerup", up); box.removeEventListener("pointercancel", up);
+    box.classList.remove("dragging"); if (!on) return;
+    var dir = dx < -48 ? 1 : dx > 48 ? -1 : 0, turned = dir && scorePage(dir);
+    if (turned){ refreshScore(); drawDynamic(); lines.style.transform = "translateX(" + (dir * 40) + "px)"; }
+    lines.getBoundingClientRect();
+    lines.style.transition = "transform .18s ease-out"; lines.style.transform = "";
+  }
+  box.addEventListener("pointermove", move); box.addEventListener("pointerup", up); box.addEventListener("pointercancel", up);
 });
 phone.addEventListener("keydown", function(e){
   var t = e.target;
+  if (t.matches("[data-drag-score]") && (e.key === "ArrowLeft" || e.key === "ArrowRight")){
+    e.preventDefault(); if (scorePage(e.key === "ArrowRight" ? 1 : -1)){ refreshScore(); drawDynamic(); }
+    return;
+  }
   if (e.key === "Escape" && SETUP[S.view] && !S.sheet && !t.matches("input")){ act("close-setup"); return; }
   if (t.matches("[data-bpm-input]")){
     if (e.key === "Enter") commitBpm(t.getAttribute("data-bpm-input"), t.value);
@@ -2158,6 +2240,7 @@ phone.addEventListener("keydown", function(e){
   if (t.matches("[data-hd]") && (e.key === "ArrowLeft" || e.key === "ArrowRight")){
     var w = S.ws, dlt = e.key === "ArrowLeft" ? -1 : 1;
     if (t.dataset.hd === "a") w.loopA = Math.max(1, Math.min(w.loopB, w.loopA + dlt)); else w.loopB = Math.max(w.loopA, Math.min(NBARS, w.loopB + dlt));
+    w.browse = null;
     e.preventDefault(); loopLeftDrill(); render(); var nh = phone.querySelector('[data-hd="' + t.dataset.hd + '"]'); if (nh) nh.focus();
   }
 });
