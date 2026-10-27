@@ -414,7 +414,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 
 /* drill */
 .coach-head{display:flex;justify-content:space-between;align-items:center;padding-top:12px}
-.coach-tag{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--blue-ink);background:var(--blue-soft);padding:3px 8px;border-radius:999px}
+.coach-tag{white-space:nowrap;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--blue-ink);background:var(--blue-soft);padding:3px 8px;border-radius:999px}
 .dsteps{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:8px 0 4px}
 .dsteps .bar{height:6px;border-radius:3px;background:var(--line)}
 .dsteps .bar.on{background:var(--blue)}
@@ -1076,12 +1076,19 @@ SCREENS.workspace = function(){
   if (!inDrill()) h += hubHTML();
   // settings
   h += '<section class="card" data-tour="controls" style="padding:2px 14px">';
-  h += '<div class="set-row"><div><div class="lbl">Tempo</div><div class="hint" style="text-wrap:balance">' + (w.editPaused ? "Paused while you edit" : inDrill() ? '<span class="coach-tag">' + I.lock + 'Set by coach</span>' : "Original " + BPM + "&nbsp;BPM") + '</div></div><div class="stepper">';
-  if (w.editingBpm) h += '<div class="bpm-edit"><input id="ws-bpm" type="number" inputmode="numeric" min="69" max="138" value="' + bpm + '" aria-label="Exact tempo in BPM" data-bpm-input="ws"><span class="hint">BPM</span><button class="done" data-act="bpm-done" data-arg="ws">Done</button></div>';
-  else h += '<button class="sbtn" data-act="ws-slower" data-hold aria-label="1 BPM slower">−</button><button class="bpm-btn" data-act="bpm-edit" data-arg="ws" aria-label="Tempo ' + bpm + ' BPM, tap to type an exact value"><b>' + bpm + '</b><span> BPM ' + I.pen + '</span></button><button class="sbtn" data-act="ws-faster" data-hold aria-label="1 BPM faster">+</button>';
-  h += '</div></div>';
-  if (w.bpmError) h += '<div class="err" role="alert" style="padding-bottom:8px">' + esc(w.bpmError) + '</div>';
-  if (!w.editingBpm) h += '<div style="margin-top:-6px"><input id="ws-tempo" type="range" min="69" max="' + BPM + '" step="1" value="' + bpm + '" aria-label="Tempo in BPM" data-input="ws-tempo"></div>';
+  if (inDrill()){
+    // Drill mode: the coach owns the tempo. A read-only value, not a slider, so nothing invites dragging it.
+    // To set it yourself, Leave drill; to make it easier, the coach offers Slow down after 2 misses.
+    h += '<div class="set-row" aria-label="Tempo ' + bpm + ' BPM, set by the coach for this drill"><div><div class="lbl">Tempo</div><div class="hint">Leave the drill to change it</div></div>' +
+      '<div style="display:flex;align-items:center;gap:8px"><span class="coach-tag">' + I.lock + 'Set by coach</span><b class="tnum" style="font-size:17px">' + bpm + '</b><span class="hint">BPM</span></div></div>';
+  } else {
+    h += '<div class="set-row"><div><div class="lbl">Tempo</div><div class="hint" style="text-wrap:balance">' + (w.editPaused ? "Paused while you edit" : "Original " + BPM + "&nbsp;BPM") + '</div></div><div class="stepper">';
+    if (w.editingBpm) h += '<div class="bpm-edit"><input id="ws-bpm" type="number" inputmode="numeric" min="69" max="138" value="' + bpm + '" aria-label="Exact tempo in BPM" data-bpm-input="ws"><span class="hint">BPM</span><button class="done" data-act="bpm-done" data-arg="ws">Done</button></div>';
+    else h += '<button class="sbtn" data-act="ws-slower" data-hold aria-label="1 BPM slower">−</button><button class="bpm-btn" data-act="bpm-edit" data-arg="ws" aria-label="Tempo ' + bpm + ' BPM, tap to type an exact value"><b>' + bpm + '</b><span> BPM ' + I.pen + '</span></button><button class="sbtn" data-act="ws-faster" data-hold aria-label="1 BPM faster">+</button>';
+    h += '</div></div>';
+    if (w.bpmError) h += '<div class="err" role="alert" style="padding-bottom:8px">' + esc(w.bpmError) + '</div>';
+    if (!w.editingBpm) h += '<div style="margin-top:-6px"><input id="ws-tempo" type="range" min="69" max="' + BPM + '" step="1" value="' + bpm + '" aria-label="Tempo in BPM" data-input="ws-tempo"></div>';
+  }
   h += '<div class="set-row"><div class="lbl">Metronome</div>' + sw("ws-metro", w.metro, "Metronome") + '</div>';
   h += '<div class="set-row"><div><div class="lbl">Part volumes</div><div class="hint">Tenor ' + (w.tenorMute ? "muted" : w.tenorVol + "%") + ' · Others ' + (w.othersMute ? "muted" : w.othersVol + "%") + '</div></div><button class="mini" data-act="parts-sheet">Adjust</button></div>';
   h += '<div class="set-row"><div class="lbl">Keyboard</div>' + sw("ws-kb", w.kb, "Keyboard") + '</div>';
@@ -1636,7 +1643,7 @@ function markDrill(){
 }
 // The coach's tempo shows on the workspace's own tempo control while drilling (and the user's changes go back to the drill).
 function applyCoach(){ if (S.ws.focus === 42 && S.drill){ S.ws.bpm = drillBpm(); S.ws.loopA = 42; S.ws.loopB = 42; } }
-function userTempo(){ if (S.ws.focus === 42 && S.drill) S.drill.tempo = Math.max(50, Math.min(100, Math.round(S.ws.bpm / BPM * 100))); }
+function userTempo(){ /* tempo controls are hidden in drill mode, so the user's tempo never changes the drill */ }
 function startDrillRecording(){
   S.ws.playing = false;
   if (S.drill){ S.drill.refStarted = false; if (S.drill.vid.playing){ S.drill.vid.playing = false; stopTones(); } }
