@@ -2,6 +2,7 @@
 
 Newest first. One line per merged PR.
 
+- 2026-10-27 · Take Feedback: Pitch / Timing / Held notes (i) explanation now opens inline under the score bar (scrolls with the page, never covers the button) with a × to close; bar-by-bar strip scrolls sideways with readable fixed-width cells so longer loops fit, opening on the fix-first bar. Touches Iter2.04 View 7 screenshot.
 - 2026-10-27 · Practice Workspace is the hub: Coach card with "Open drills" (Drills sheet) and "Last take · See feedback"; drill Back goes to the workspace. Each drill opens with a simulated coach demo video (beat-by-beat video after the adjust step). Page titles with a one-line purpose on views 2-5, 7 and 9; "Sync Check" renamed "Line up the track", button "Confirm line-up". Touches Iter2.04 views 2-5, 7, 9 screenshots and navigation diagram.
 - 2026-10-26 · Music Library greeting: removed the reminder line under it, kept to one line (24 px, two long phrases shortened), icon blue instead of orange. Touches Iter2.04 View 1 screenshot.
 - 2026-10-26 · Three-tone colour scheme: cream background, blue main, orange accent; green and red kept only as good / error indicators. Replaces the Gamified Studio trial (screenshotted in `docs/screenshots/alternatives/`).

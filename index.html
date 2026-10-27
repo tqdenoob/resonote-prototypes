@@ -345,11 +345,19 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .metric .bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
 .metric .bar i{display:block;height:100%;border-radius:3px}
 .metric .tip{font-size:13px;background:var(--sunk);border-radius:10px;padding:8px 10px}
+/* .mtip, not .tip: .tip is the Help tour bubble (position:absolute), which made this float over the (i) button and ignore scrolling */
+.mtip{display:flex;align-items:center;gap:8px;font-size:13px;line-height:1.4;background:var(--sunk);border-radius:10px;padding:4px 4px 4px 10px}
+.mtip span{flex:1}
+.mtip .x{width:44px;height:44px;flex:none;border:0;background:transparent;color:var(--muted);font-size:18px;display:flex;align-items:center;justify-content:center;padding:0}
 /* 44px hit area around a 28px circle; negative margin keeps the metric row compact */
 .info{width:44px;height:44px;margin:-8px -6px;border:0;background:transparent;display:flex;align-items:center;justify-content:center;padding:0}
 .info span{width:28px;height:28px;border-radius:50%;border:1px solid var(--edge);background:var(--card);font-size:13px;font-weight:800;color:var(--muted);display:flex;align-items:center;justify-content:center}
 .info[aria-expanded="true"] span{background:var(--blue);color:var(--on-accent);border-color:var(--blue)}
-.bstrip{display:grid;grid-template-columns:repeat(16,1fr);gap:3px}
+/* fixed-width cells that scroll sideways, so a loop of any length (e.g. bars 31-60) keeps readable cells */
+.bstrip{display:grid;grid-auto-flow:column;grid-auto-columns:30px;gap:3px;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:8px;scrollbar-width:thin;scrollbar-color:var(--edge) transparent}
+.bstrip::-webkit-scrollbar{height:6px}
+.bstrip::-webkit-scrollbar-thumb{background:var(--edge);border-radius:3px}
+.bstrip span{scroll-snap-align:start}
 /* each cell carries a symbol as well as a colour, so status never relies on colour alone */
 .bstrip span{height:38px;border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:11px;font-weight:700;line-height:1}
 .bstrip span i{font-style:normal;font-size:11px}
@@ -1133,10 +1141,10 @@ SCREENS.feedback = function(){
   M.forEach(function(m){
     var v = t[m.k], L = label(v), open = S.openInfo === m.k, col = L[1] === "g" ? "var(--green)" : "var(--orange)";
     h += '<div class="metric"><div class="top"><span class="nm">' + m.n + '</span><button class="info" aria-expanded="' + open + '" aria-label="What ' + m.n + ' means" data-act="info" data-arg="' + m.k + '"><span>i</span></button><span class="badge ' + L[1] + '">' + L[0] + '</span><span class="sc">' + v + '</span></div>' +
-      '<div class="bar"><i style="width:' + v + '%;background:' + col + '"></i></div>' + (open ? '<div class="tip">' + m.tip + '</div>' : '') + '</div>';
+      '<div class="bar"><i style="width:' + v + '%;background:' + col + '"></i></div>' + (open ? '<div class="mtip" role="note"><span>' + m.tip + '</span><button class="x" aria-label="Close" data-act="info" data-arg="' + m.k + '">×</button></div>' : '') + '</div>';
   });
   h += '</section>';
-  h += '<section class="card pad" style="display:flex;flex-direction:column;gap:8px"><div class="eyebrow">Bar by bar</div><div class="bstrip">';
+  h += '<section class="card pad" style="display:flex;flex-direction:column;gap:8px"><div class="row"><span class="eyebrow">Bar by bar</span><span class="hint">Bars 33–' + (32 + BAR_STRIP.length) + ' · swipe for more</span></div><div class="bstrip" data-bstrip>';
   var SYM = {g:["✓","good"], a:["?","check"], r:["!","fix first"]};
   BAR_STRIP.forEach(function(c, i){ h += '<span class="' + c + '" role="img" aria-label="Bar ' + (33 + i) + ', ' + SYM[c][1] + '"><b>' + (33 + i) + '</b><i aria-hidden="true">' + SYM[c][0] + '</i></span>'; });
   h += '</div><div class="legend"><span><i class="lg g">✓</i>Good</span><span><i class="lg a">?</i>Check</span><span><i class="lg r">!</i>Fix first</span></div></section>';
@@ -1471,6 +1479,8 @@ function render(){
   var bi = phone.querySelector("[data-bpm-input]"); if (bi){ bi.focus(); bi.select(); }
   var ks = phone.querySelector("[data-kbscroll]");
   if (ks){ ks.scrollLeft = S._kbScroll !== undefined ? S._kbScroll : 2 * 44; ks.addEventListener("scroll", function(){ S._kbScroll = ks.scrollLeft; }); }
+  var bs = phone.querySelector("[data-bstrip]");
+  if (bs){ var fx = bs.querySelector(".r"); bs.scrollLeft = S._bsScroll !== undefined ? S._bsScroll : fx ? Math.max(0, fx.offsetLeft - bs.offsetLeft - (bs.clientWidth - fx.offsetWidth) / 2) : 0; bs.addEventListener("scroll", function(){ S._bsScroll = bs.scrollLeft; }); }
   drawDynamic();
   renderGuide();
 }
@@ -1640,7 +1650,7 @@ function tick(ts){
     var jb = phone.querySelector("[data-judge]"); if (jb) jb.style.width = Math.min(100, S.judgeT / 1.4 * 100) + "%";
     if (S.judgeT >= 1.4){
       S.judgeT = 0;
-      if (S.sheet === "judging"){ S.sheet = null; S.rec.phase = "idle"; addTake(Math.round(S._len)); S.openInfo = null; S.view = "feedback"; render(); var b = bodyEl(); if (b) b.scrollTop = 0; try { history.replaceState(null, "", "#feedback"); } catch(e){} }
+      if (S.sheet === "judging"){ S.sheet = null; S.rec.phase = "idle"; addTake(Math.round(S._len)); S.openInfo = null; S._bsScroll = undefined; S.view = "feedback"; render(); var b = bodyEl(); if (b) b.scrollTop = 0; try { history.replaceState(null, "", "#feedback"); } catch(e){} }
       else markDrill();
     }
   }
@@ -1906,7 +1916,7 @@ function act(a, arg, el){
     // workspace coach card
     case "drills": w.playing = false; S.sheet = "drills"; render(); break;
     case "drills-record": S.sheet = null; w.loopA = 33; w.loopB = 48; act("ws-record"); break;
-    case "ws-feedback": S.cur = S.takes[S.takes.length - 1]; S.openInfo = null; go("feedback"); break;
+    case "ws-feedback": S.cur = S.takes[S.takes.length - 1]; S.openInfo = null; S._bsScroll = undefined; go("feedback"); break;
     // complete / summary
     case "to-complete": if (S.session.mastered.indexOf(42) < 0) S.session.mastered.push(42); go("complete"); break;
     case "next-problem": arg = "38"; /* falls through */
