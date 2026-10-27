@@ -208,6 +208,19 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .hub .htx .sub{font-size:13px}
 .hub .go{flex:none;color:var(--blue-ink);font-weight:700;font-size:14px;display:inline-flex;align-items:center;gap:2px}
 .hub .mini.on{pointer-events:none}
+/* drill in progress, shown inside the Coach card on the workspace */
+.hub .fpanel{border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.link:disabled{opacity:.42;cursor:not-allowed}
+/* "Bar 42 fixed" banner on the take that checks the drill */
+.fixed{border:2px solid var(--green);display:flex;flex-direction:column;gap:8px}
+/* Drills page: bars to fix */
+.drow{display:flex;align-items:center;gap:10px;width:100%;min-height:56px;padding:8px 0;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);text-align:left}
+.drow:first-of-type{border-top:0}
+.drow .tn{flex:none;width:24px;height:24px;border-radius:50%;background:var(--sunk);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.drow[aria-current="true"] .tn{background:var(--blue);color:var(--on-accent)}
+.drow .tb{flex:1;min-width:0;display:flex;flex-direction:column;font-size:15px}
+.drow .tb>span{font-size:13px;color:var(--muted)}
+.drow .chev{color:var(--muted);display:flex}
 /* coach demo video (simulated): dark frame, notes of bar 42, captions */
 .vid{flex:none;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
 .vid .frame{position:relative;display:block;width:100%;aspect-ratio:2/1;background:#1B1F24;color:#fff;border:0;padding:0;cursor:pointer}
@@ -539,6 +552,8 @@ var TAKE_SCRIPT = [
   {overall:76, pitch:69, timing:74, held:80},
   {overall:79, pitch:73, timing:77, held:82}
 ];
+// The bridge take that checks bar 42 after its drill: bar 42 now passes, bar 38 is next.
+var TAKE_AFTER = {overall:86, pitch:84, timing:85, held:90};
 // Per-bar result strip for bars 33-48: g = good, a = check, r = fix first
 var BAR_STRIP = ["g","g","a","g","g","a","g","a","g","r","g","g","g","a","g","g"];
 var MISS = {
@@ -584,9 +599,9 @@ var VIEWS = [
    he:[["#3","Back to Choose Your Part, Close (X) to leave setup"],["#10","The track moves against a fixed bar 1 marker as you drag"],["#20","Play, Set marker and Undo all work"],["#15","'Step 3 of 3'"]],
    sim:"Sync detection is scripted. The correct offset is −3.48 s (2 bars at 138 BPM)."},
   {id:"workspace",name:"Practice Workspace",lofi:"View 6 Practice Workspace",
-   does:"The hub for practising: a 'Practise your part' title, two lines of the score with a moving playhead, the loop timeline, a Coach card (Open drills, Last take feedback), then tempo, metronome, part volumes and keyboard. Start recording from here.",
-   he:[["#2","One Play/Pause toggle that keeps your place (Change 2)"],["#4","Drag handles on a labelled timeline (Change 3)"],["#17","Tempo in whole BPM: − / + (hold to repeat), a 1-BPM slider, or tap to type"],["#18","Keyboard switch shows On / Off"]],
-   sim:"Reference audio is a synth of the tenor line. Other parts are a soft chord on each beat."},
+   does:"The hub of the practice loop: the score with a moving playhead, the loop timeline, a Coach card (Drills, Last take, End session), then tempo, metronome, part volumes and keyboard. 'Practise bar 42' on the Drills page brings you back here in drill mode: the coach sets the loop to bar 42, the tempo and the guidance on these same controls, Record take records just bar 42, and the result shows in the Coach card. After 2 clean takes in a row, the coach asks you to sing the whole bridge again to check.",
+   he:[["#2","One Play/Pause toggle that keeps your place (Change 2)"],["#4","Drag handles on a labelled timeline (Change 3)"],["#1","Drill takes autosaved, with play back and discard"],["#9","Level meter while recording a drill take"],["#17","Tempo in whole BPM: − / + (hold to repeat), a 1-BPM slider, or tap to type"],["#18","Keyboard switch shows On / Off"]],
+   sim:"Reference audio is a synth of the tenor line. Other parts are a soft chord on each beat. Drill results are scripted: the first 2 bar 42 takes at full speed with guidance off are missed (pitch, then timing); every other take is clean."},
   {id:"record",name:"Sing Along + Recording",lofi:"View 7 Sing Along + Recording",
    does:"Count-in, then the passage plays while the user sings, with three lines of the score on screen to read ahead. Ends automatically at the loop end or with End take. Cancel (top-left) asks before deleting the take.",
    he:[["#2","'End take' replaces the ambiguous Stop (Change 2)"],["#1","Cancel is a labelled button with a confirmation, not a back arrow"],["#9","Live input-level meter with 'Voice picked up'"]],
@@ -599,14 +614,10 @@ var VIEWS = [
    does:"A three-way player (Your take / Reference / Both) for bar 42, overlays your pitch on the right notes, and explains three numbered problems in plain words. Tap a problem to hear just that part.",
    he:[["#8","Each problem is named in plain language and leads with what to do; note names and cents sit behind 'Show music details'"]],
    sim:"'Your take' is synthesised: the run is 25 to 40 cents flat (the top G most), finishes a quarter beat early, and the held E stops after about 1 beat."},
-  {id:"drill",name:"Targeted Drill",lofi:"Views 11–14 Targeted Drill, Guided Retry, Independent Retry, Adjust Drill",
-   does:"Opens from Open drills on the workspace or Start drill on Take Feedback. A coach demo video shows how to sing bar 42, then the singer drills it until 2 clean takes in a row at full speed with guidance off. The coach sets tempo and guidance and takes support away as takes come out clean; after 2 misses a beat-by-beat demo replaces it. Back returns to the workspace.",
-   he:[["#1","Every take autosaved, play back or discard the latest"],["#2","Play/Pause keeps place; End take"],["#9","Level meter while recording"],["#8","Missed takes say why"]],
-   sim:"Results are scripted: the first 2 takes at full speed with guidance off are missed (pitch, then timing); every other take is clean. The coach video is Wizard-of-Oz: timed captions, highlighted notes and the synth singing bar 42 stand in for a recorded coach."},
-  {id:"complete",name:"Passage Complete",lofi:"View 15 Passage Complete",
-   does:"Confirms bar 42 is mastered, lets you hear it before and after, lists the other bars still to fix (tap one to loop it), and offers three labelled paths: practise bar 38, repeat the drill, end the session.",
-   he:[["#20","Every button leads somewhere"],["#14","Before / after playback compares your first take with your last clean one"]],
-   sim:"Bar 42's before and after scores (58 and 92) and the bars still to fix are scripted. Playback is synthesised."},
+  {id:"drills",name:"Drills",lofi:"Views 11–14 Targeted Drill (the watching part; the practising now happens on the workspace)",
+   does:"Opens from 'Drills · bar 42' on Take Feedback, Understand the Issue or the workspace Coach card. Lists the bars to fix in the coach's order, each with its problem, and plays the coach video for the selected bar. One button, 'Practise bar 42', returns to the workspace set up for that bar. Watching only: no recording here.",
+   he:[["#8","Each bar's problem is named in plain words"],["#5","Help (?) on this screen too"]],
+   sim:"The coach video is Wizard-of-Oz: timed captions, highlighted notes and the synth singing bar 42 stand in for a recorded coach. Only bar 42 has a video and a scripted drill; the other bars loop at half speed."},
   {id:"summary",name:"Session Summary",lofi:"View 16 Session Summary",
    does:"Confirms the session is saved, shows what was practised and mastered, every take with its breakdown, and everything still to fix before Wednesday with where to start.",
    he:[["#14","Passage and drill takes in one list; tap a take for pitch, timing and held notes"],["#8","Scores shown out of 100 with a Needs work / Good / Excellent label"]],
@@ -626,7 +637,7 @@ var TOURS = {
   sync:[{t:"lanes",title:"Line up",text:"Slide the track until the first note sits on bar 1."},
         {t:"tools",title:"Set marker",text:"Or play the track and tap Set marker on the first note."}],
   workspace:[{t:"loop",title:"Loop",text:"Drag the handles to pick the bars to repeat."},
-             {t:"hub",title:"Drills",text:"Open drills for the bars the coach flagged."},
+             {t:"hub",title:"Coach",text:"Drills, your drill progress and your last take."},
              {t:"controls",title:"Settings",text:"Change speed, click, volume or keyboard."},
              {t:"play",title:"Play / Pause",text:"Pause keeps your place."},
              {t:"rec",title:"Record take",text:"Sing the loop. The coach gives feedback."}],
@@ -635,18 +646,14 @@ var TOURS = {
   feedback:[{t:"prio",title:"Fix this first",text:"Start with this one bar."},
             {t:"metrics",title:"Scores",text:"Tap (i) to see what a score means."},
             {t:"takeacts",title:"Your take",text:"Saved for you. Keep it or discard it."},
-            {t:"rerec",title:"Re-record take",text:"Sing the whole passage again."}],
+            {t:"rerec",title:"Re-record take",text:"Sing the whole passage again."},
+            {t:"drills",title:"Drills",text:"Watch the coach show how to fix this bar."}],
   issue:[{t:"cmp",title:"Listen",text:"Hear yourself, the right version, or both."},
          {t:"chart",title:"Chart",text:"Blue is right. Orange is you."},
          {t:"probs",title:"Problems",text:"Tap one to hear it."}],
-  drill:[{t:"video",title:"Coach demo",text:"Watch the coach sing this bar first."},
-         {t:"play",title:"Hear reference",text:"Listen before you sing."},
-         {t:"set",title:"Support",text:"The coach removes help as you improve."},
-         {t:"takes",title:"Goal",text:"2 clean takes in a row."},
-         {t:"record",title:"Record take",text:"Sing bar 42."}],
-  complete:[{t:"stats",title:"Before / after",text:"Hear how you improved."},
-            {t:"todo",title:"Still to fix",text:"Tap a bar to practise it."},
-            {t:"next",title:"What next",text:"Pick one. Everything is saved."}],
+  drills:[{t:"video",title:"Coach video",text:"Watch how to sing the bar first."},
+          {t:"list",title:"Bars to fix",text:"In the coach's order. Tap one to see it."},
+          {t:"practise",title:"Practise",text:"Back to your workspace, set up for this bar."}],
   summary:[{t:"takes",title:"Takes",text:"Tap a take for details."},
            {t:"next",title:"Before Wednesday",text:"Start with bar 38, or set a reminder."}]
 };
@@ -684,7 +691,9 @@ function fresh(){
     part:null,
     sync:{offset:0, hist:[], playing:false, t:0, marker:null},
     ws:{pos:0, playing:false, loopA:1, loopB:56, loop:true, bpm:BPM, metro:false, kb:false,
-        tenorVol:100, othersVol:40, tenorMute:false, othersMute:false, editingBpm:false, bpmError:"", started:false},
+        tenorVol:100, othersVol:40, tenorMute:false, othersMute:false, editingBpm:false, bpmError:"", started:false,
+        focus:null},   // focus = 42 while the workspace is in drill mode for that bar
+    drillSel:42, drillsFrom:"workspace",
     rec:{phase:"idle", pos:0, countBeat:0},
     takes:[], cur:null, openInfo:null,
     issue:{playing:null, t:0, focus:null, details:false, passes:null},
@@ -1026,9 +1035,19 @@ function wsSystem(){
 var SCORE_W = 352;
 // Workspace shows two printed lines: the one the playhead is on, and the next one.
 function wsLines(bars){
-  var o = {loop:[S.ws.loopA, S.ws.loopB], gap:SCORE_GAP}, next = bars[bars.length - 1] < NBARS ? barsFrom(bars[0] + 4) : null;
-  return scoreLine(bars, o, true) + (next ? scoreLine(next, o, false) : '');
+  var o = {loop:[S.ws.loopA, S.ws.loopB], gap:SCORE_GAP}, next = bars[bars.length - 1] < NBARS ? barsFrom(bars[0] + 4) : null, extra = '';
+  if (inDrill()){
+    // Drill mode: the coach's guidance (note names, beat numbers, the beat being practised) is drawn on the same score.
+    var d = S.drill, chunk = d.chunk !== null ? CHUNKS[d.chunk] : null;
+    o.focus = 42; o.guide = d.guidance ? 42 : null; o.names = d.guidance; o.chunk = chunk; o.chunkBar = 42;
+    if (d.phase === "countin") extra = '<div class="countin"><b data-count>' + (d.countBeat + 1) + '</b><span>of 4</span></div>';
+  }
+  return scoreLine(bars, o, true, extra) + (next ? scoreLine(next, {loop:o.loop, gap:SCORE_GAP}, false) : '');
 }
+// True while the workspace is running a drill for bar 42 (set by "Practise bar 42" on the Drills page).
+function loopBarsLabel(w){ return w.loopA === w.loopB ? "Loop: bar " + w.loopA : "Loop: bars " + w.loopA + "–" + w.loopB; }
+function inDrill(){ return S.view === "workspace" && S.ws.focus === 42 && !!S.drill; }
+function drillBusy(){ return inDrill() && (S.drill.phase === "countin" || S.drill.phase === "recording" || S.drill.phase === "judging"); }
 function wsCaption(bars){
   var last = Math.min(NBARS, bars[0] + 7);
   return 'Bars ' + bars[0] + '–' + last + ' · ' + loopLabel(bars[0], last);
@@ -1036,11 +1055,13 @@ function wsCaption(bars){
 SCREENS.workspace = function(){
   var w = S.ws, bars = wsSystem(), bpm = wsBpm();
   var h = hdr(backBtn("to-library", "Back to library"), "Viva La Vida", "Tenor");
-  h += '<div class="body">' + pageTitle("Practise your part", "Loop a passage, slow it down, then record a take for the coach.");
+  h += '<div class="body">' + pageTitle("Practise your part", inDrill() ? "Drill bar 42: sing it until you get 2 clean takes in a row." : "Loop a passage, slow it down, then record a take for the coach.");
   h += '<section class="paper" data-tour="score" aria-label="Score"><div class="scap"><span class="sub" data-sys>' + wsCaption(bars) + '</span><span class="sub tnum" data-time>' + fmt(barTime(w.pos, BPM)) + ' / ' + fmt(barTime(NBARS, BPM)) + '</span></div>' +
     '<div data-lines>' + wsLines(bars) + '</div></section>';
+  // Drill mode: the coach's result goes right under the score, where the singer is looking.
+  if (inDrill()) h += hubHTML();
   // loop timeline
-  h += '<section class="card pad" data-tour="loop" style="display:flex;flex-direction:column;gap:6px;padding-bottom:8px"><div class="row"><div><div class="eyebrow tnum" data-loop-bars>Loop: bars ' + w.loopA + '–' + w.loopB + '</div><div class="sub tnum" data-loop-info>' + loopLabel(w.loopA, w.loopB) + ' · <span style="white-space:nowrap">' + fmt(barTime(w.loopA - 1, bpm)) + '–' + fmt(barTime(w.loopB, bpm)) + '</span></div></div>' + sw("loop-toggle", w.loop, "Repeat loop") + '</div>';
+  h += '<section class="card pad" data-tour="loop" style="display:flex;flex-direction:column;gap:6px;padding-bottom:8px"><div class="row"><div><div class="eyebrow tnum" data-loop-bars>' + loopBarsLabel(w) + '</div><div class="sub tnum" data-loop-info>' + loopLabel(w.loopA, w.loopB) + ' · <span style="white-space:nowrap">' + fmt(barTime(w.loopA - 1, bpm)) + '–' + fmt(barTime(w.loopB, bpm)) + '</span></div></div>' + sw("loop-toggle", w.loop, "Repeat loop") + '</div>';
   h += '<div class="tl" data-tl><div class="secs">';
   SECTIONS.forEach(function(s){ h += '<span class="sec" style="left:' + ((s.a - 1) / NBARS * 100) + '%;width:' + ((s.b - s.a + 1) / NBARS * 100) + '%;background:' + (SECTIONS.indexOf(s) % 2 ? "var(--sec-b)" : "var(--sec-a)") + '">' + (s.short || s.name) + '</span>'; });
   h += '</div><div class="wv"><svg viewBox="0 0 224 40" preserveAspectRatio="none" aria-hidden="true">';
@@ -1052,10 +1073,10 @@ SCREENS.workspace = function(){
   h += '<div class="ax">';
   [1, 9, 17, 25, 33, 41, 49, 56].forEach(function(b){ h += '<span style="left:' + ((b - .5) / NBARS * 100) + '%">' + b + '</span>'; });
   h += '</div></div><span class="hint">Drag the handles to choose bars.</span></section>';
-  h += hubHTML();
+  if (!inDrill()) h += hubHTML();
   // settings
   h += '<section class="card" data-tour="controls" style="padding:2px 14px">';
-  h += '<div class="set-row"><div><div class="lbl">Tempo</div><div class="hint" style="text-wrap:balance">' + (w.editPaused ? "Paused while you edit" : "Original " + BPM + "&nbsp;BPM") + '</div></div><div class="stepper">';
+  h += '<div class="set-row"><div><div class="lbl">Tempo</div><div class="hint" style="text-wrap:balance">' + (w.editPaused ? "Paused while you edit" : inDrill() ? '<span class="coach-tag">' + I.lock + 'Set by coach</span>' : "Original " + BPM + "&nbsp;BPM") + '</div></div><div class="stepper">';
   if (w.editingBpm) h += '<div class="bpm-edit"><input id="ws-bpm" type="number" inputmode="numeric" min="69" max="138" value="' + bpm + '" aria-label="Exact tempo in BPM" data-bpm-input="ws"><span class="hint">BPM</span><button class="done" data-act="bpm-done" data-arg="ws">Done</button></div>';
   else h += '<button class="sbtn" data-act="ws-slower" data-hold aria-label="1 BPM slower">−</button><button class="bpm-btn" data-act="bpm-edit" data-arg="ws" aria-label="Tempo ' + bpm + ' BPM, tap to type an exact value"><b>' + bpm + '</b><span> BPM ' + I.pen + '</span></button><button class="sbtn" data-act="ws-faster" data-hold aria-label="1 BPM faster">+</button>';
   h += '</div></div>';
@@ -1068,19 +1089,52 @@ SCREENS.workspace = function(){
   if (w.kb) h += keyboardHTML();
   h += '</div>';
   var playText = w.playing ? "Pause" : (w.started ? "Resume" : "Play");
+  if (inDrill()){
+    // Drill mode: same footer, but Record take records just bar 42 (or the beat being practised).
+    var dd = S.drill, recOn = dd.phase === "countin" || dd.phase === "recording";
+    var what = dd.chunk !== null ? CHUNKS[dd.chunk].name.split(" ·")[0].toLowerCase() : "bar 42";
+    h += '<footer class="ftr"><button class="btn sec" data-act="ws-play" data-tour="play"' + (drillBusy() ? " disabled" : "") + '>' + (w.playing ? I.pause : I.play) + playText + '</button>' +
+      (recOn ? '<button class="btn stop" data-act="dr-end" data-tour="rec"><span class="sq"></span>End take</button>' :
+               '<button class="btn rec" data-act="ws-record" data-tour="rec"' + (dd.phase === "judging" ? " disabled" : "") + '><span class="dot"></span>Record ' + esc(what) + '</button>') + '</footer>';
+    return h;
+  }
   h += '<footer class="ftr"><button class="btn sec" data-act="ws-play" data-tour="play" aria-label="' + (w.playing ? "Pause" : playText + " the loop") + '">' + (w.playing ? I.pause : I.play) + playText + '</button>' +
     (w.started && !w.playing ? '<button class="ib lab" data-act="ws-restart" title="Back to loop start">' + I.restart + 'Restart</button>' : '') +
     '<button class="btn rec" data-act="ws-record" data-tour="rec"><span class="dot"></span>Record take</button></footer>';
   return h;
 };
-// Coach card: the way into drills, and back to the last take's feedback, from the workspace.
+// The bar the coach wants drilled next: 42 until it is fixed, then 38.
+function nextBar(){ return S.session.mastered.indexOf(42) >= 0 ? 38 : 42; }
+// Coach card: the Drills button (to the video page), the drill in progress, the last take, and End session.
 function hubHTML(){
-  var t = S.takes[S.takes.length - 1], m42 = S.session.mastered.indexOf(42) >= 0;
+  var t = S.takes[S.takes.length - 1], m42 = S.session.mastered.indexOf(42) >= 0, d = S.drill, foc = inDrill();
   var h = '<section class="card hub" data-tour="hub" aria-label="Coach">';
-  h += '<button class="hrow" data-act="drills"><span class="hic">' + I.coach + '</span><span class="htx"><span class="lbl">Drills</span><span class="sub">' +
-    (!t ? "After your first take, the coach picks a bar to drill." : m42 ? "Bar 42 mastered · next: bar 38" : "Bar 42 to fix first · coach video") +
-    '</span></span><span class="mini on">Open drills</span></button>';
-  if (t) h += '<button class="hrow" data-act="ws-feedback"><span class="hic tnum">' + t.overall + '</span><span class="htx"><span class="lbl">Last take</span><span class="sub">Take ' + t.n + ' · ' + label(t.overall)[0] + ' overall</span></span><span class="go">See feedback' + I.chev + '</span></button>';
+  var sub = !t ? "After your first take, the coach picks a bar to drill." :
+    foc ? (d.chunk !== null ? "Beat-by-beat coach video" : "Coach video · how to sing bar 42") :
+    m42 ? "Bar 42 fixed · next: bar 38" : "Bar 42 to fix first · coach video";
+  h += '<button class="hrow" data-act="open-drills"><span class="hic">' + I.coach + '</span><span class="htx"><span class="lbl">' + (t ? "Drills · bar " + nextBar() : "Drills") + '</span><span class="sub">' + sub +
+    '</span></span><span class="go">' + (t ? "Watch" : "Open") + I.chev + '</span></button>';
+  if (foc){
+    // The drill runs here, on the workspace: the coach's step, the goal, and the result of the last bar 42 take.
+    var stage = d.guidance ? (d.tempo < 100 ? 0 : 1) : 2, names = ["Guided, slower", "Guided, full speed", "On your own"];
+    var stepTxt = d.chunk !== null ? "One beat at a time · " + (d.chunk + 1) + " of 3" : "Step " + (stage + 1) + " of 3 · " + names[stage];
+    h += '<div class="fpanel" aria-label="Drill bar 42"><div class="coach-head" style="padding-top:10px"><span class="lbl" style="font-size:14px">' + stepTxt + '</span><span class="coach-tag">' + I.lock + 'Set by coach</span></div><div class="dsteps">';
+    for (var i = 0; i < 3; i++) h += '<div><div class="bar' + (i <= stage ? " on" : "") + '"></div><div class="t' + (i === stage ? " on" : "") + '">' + names[i] + '</div></div>';
+    h += '</div><div class="row"><span class="lbl" style="font-size:14px">Clean in a row: ' + d.streak + ' of 2</span><span class="hint tnum">' + drillBpm() + ' BPM</span></div><div class="slots">';
+    for (var j = 0; j < 2; j++){ var done = j < d.streak; h += '<div class="slot' + (done ? " done" : j === d.streak ? " next" : "") + '">' + (done ? I.tick(14) + "Clean" : String(j + 1)) + '</div>'; }
+    h += '</div>';
+    if (d.phase === "countin" || d.phase === "recording") h += meterHTML(d.phase === "recording");
+    else {
+      var cls = d.last ? (d.last.clean ? "clean" : "miss") : "";
+      h += '<div class="msg ' + cls + '" aria-live="polite"><span style="flex:none;display:flex">' + (d.last ? (d.last.clean ? I.tick(18) : I.cross(18)) : I.coach) + '</span><span>' + (d.last && !/^(Clean|Not )/.test(d.msg) ? (d.last.clean ? "Clean. " : "Missed. ") : "") + esc(d.msg) + '</span></div>';
+      if (d.last && d.phase === "idle") h += '<div class="acts"><button class="mini" data-act="dr-playback" aria-pressed="' + d.playingBack + '">' + (d.playingBack ? I.pause + "Pause take #" : I.play + "Play back take #") + d.last.n + '</button>' + (d.undo ? '<button class="mini danger" data-act="dr-ask-discard">Discard take</button>' : '') + '</div>';
+    }
+    h += '<div class="row" style="padding-bottom:10px">' + (d.takes.length ? '<span class="saved">' + I.tick(12) + 'Autosaved · ' + d.takes.length + (d.takes.length === 1 ? " take" : " takes") + '</span>' : '<span class="hint">Goal: right notes, on the beat, long note held 2 beats.</span>') +
+      '<button class="link" style="padding:0" data-act="leave-drill"' + (drillBusy() ? " disabled" : "") + '>Leave drill</button></div></div>';
+  } else if (t) {
+    h += '<button class="hrow" data-act="ws-feedback"><span class="hic tnum">' + t.overall + '</span><span class="htx"><span class="lbl">Last take</span><span class="sub">Take ' + t.n + ' · ' + label(t.overall)[0] + ' overall</span></span><span class="go">See feedback' + I.chev + '</span></button>';
+    h += '<button class="hrow" data-act="end-session"><span class="hic">' + I.tick(18) + '</span><span class="htx"><span class="lbl">Done for today?</span><span class="sub">Save the session and see what\'s left</span></span><span class="go">End session' + I.chev + '</span></button>';
+  }
   return h + '</section>';
 }
 function keyboardHTML(){
@@ -1123,15 +1177,24 @@ SCREENS.feedback = function(){
   var h = hdr(backBtn("to-workspace", "Back to practice workspace"), "Viva La Vida", "Bars 33–48 · Bridge");
   h += '<div class="body">' + pageTitle("Take " + t.n + " feedback", "Your score, and the one bar to fix first.");
   h += '<div class="row"><span class="saved">' + I.tick(12) + (t.saved ? "Saved to history" : "Autosaved") + '</span><span class="hint">' + fmt(t.len) + '</span></div>';
-  var C = 2 * Math.PI * 30, frac = t.overall / 100, nCheck = BAR_STRIP.filter(function(c){ return c === "a"; }).length;
+  // A take sung after bar 42's drill is the check: bar 42 now passes and bar 38 becomes the bar to fix.
+  var fixed = !!t.after42, strip = fixed ? BAR_STRIP.map(function(c, i){ return i === 9 ? "g" : i === 5 ? "r" : c; }) : BAR_STRIP;
+  var C = 2 * Math.PI * 30, frac = t.overall / 100, nCheck = strip.filter(function(c){ return c === "a"; }).length, nb = fixed ? 38 : 42;
   h += '<section class="card pad overall"><svg class="ring" viewBox="0 0 72 72" aria-hidden="true"><circle class="bg" cx="36" cy="36" r="30"/><circle class="fg ' + L0[1] + '" cx="36" cy="36" r="30" stroke-dasharray="' + (C * frac) + ' ' + C + '" transform="rotate(-90 36 36)"/><text x="36" y="40" text-anchor="middle">' + t.overall + '</text><text class="of" x="36" y="52" text-anchor="middle">of 100</text></svg>' +
-    '<div><div class="lbl" style="font-size:17px">' + L0[0] + ' overall</div><div class="sub">' + (prev ? (t.overall - prev.overall >= 0 ? "+" : "") + (t.overall - prev.overall) + " since take " + prev.n + ". " : "") + "Fix bar 42 first, then check " + nCheck + " more bars." + '</div></div></section>';
-  h += '<section class="card pad prio" data-tour="prio" style="display:flex;flex-direction:column;gap:10px"><div class="row"><span class="badge o">' + I.flag + 'Fix this first</span><span class="hint tnum">Bar score ' + BAR42.before + ' / 100</span></div>' +
-    '<div class="lbl" style="font-size:17px">Bar 42</div>' +
-    '<div class="issue"><span class="tag">1 Flat</span><span>Top notes a bit low.</span></div>' +
-    '<div class="issue"><span class="tag">2 Rushed</span><span>Quick notes too fast.</span></div>' +
-    '<div class="issue"><span class="tag">3 Cut short</span><span>Long note too short.</span></div>' +
-    '<button class="btn sec full" style="height:48px" data-act="to-issue">' + I.play + 'Hear what went wrong</button></section>';
+    '<div><div class="lbl" style="font-size:17px">' + L0[0] + ' overall</div><div class="sub">' + (prev ? (t.overall - prev.overall >= 0 ? "+" : "") + (t.overall - prev.overall) + " since take " + prev.n + ". " : "") + "Fix bar " + nb + " " + (fixed ? "next" : "first") + ", then check " + nCheck + " more bars." + '</div></div></section>';
+  if (fixed){
+    h += '<section class="card pad fixed" aria-live="polite"><div class="row"><span class="badge g">' + I.tick(12) + 'Bar 42 fixed</span><span class="hint tnum">Bar score ' + BAR42.before + ' → ' + BAR42.after + '</span></div>' +
+      '<div class="sub" style="color:var(--ink)">The drill worked in the whole bridge too: the high run is in tune, even, and the long note is held.</div>' + baBtn() + '</section>';
+    h += '<section class="card pad prio" data-tour="prio" style="display:flex;flex-direction:column;gap:10px"><div class="row"><span class="badge o">' + I.flag + 'Fix this next</span><span class="hint">Bar 38</span></div>' +
+      '<div class="lbl" style="font-size:17px">Bar 38</div><div class="issue"><span class="tag">Early</span><span>Came in a little before the beat.</span></div></section>';
+  } else {
+    h += '<section class="card pad prio" data-tour="prio" style="display:flex;flex-direction:column;gap:10px"><div class="row"><span class="badge o">' + I.flag + 'Fix this first</span><span class="hint tnum">Bar score ' + BAR42.before + ' / 100</span></div>' +
+      '<div class="lbl" style="font-size:17px">Bar 42</div>' +
+      '<div class="issue"><span class="tag">1 Flat</span><span>Top notes a bit low.</span></div>' +
+      '<div class="issue"><span class="tag">2 Rushed</span><span>Quick notes too fast.</span></div>' +
+      '<div class="issue"><span class="tag">3 Cut short</span><span>Long note too short.</span></div>' +
+      '<button class="btn sec full" style="height:48px" data-act="to-issue">' + I.play + 'Hear what went wrong</button></section>';
+  }
   var M = [
     {k:"pitch", n:"Pitch", tip:"Did you sing the right notes?"},
     {k:"timing", n:"Timing", tip:"Did each note start on the beat?"},
@@ -1146,13 +1209,13 @@ SCREENS.feedback = function(){
   h += '</section>';
   h += '<section class="card pad" style="display:flex;flex-direction:column;gap:8px"><div class="row"><span class="eyebrow">Bar by bar</span><span class="hint">Bars 33–' + (32 + BAR_STRIP.length) + ' · swipe for more</span></div><div class="bstrip" data-bstrip>';
   var SYM = {g:["✓","good"], a:["?","check"], r:["!","fix first"]};
-  BAR_STRIP.forEach(function(c, i){ h += '<span class="' + c + '" role="img" aria-label="Bar ' + (33 + i) + ', ' + SYM[c][1] + '"><b>' + (33 + i) + '</b><i aria-hidden="true">' + SYM[c][0] + '</i></span>'; });
+  strip.forEach(function(c, i){ h += '<span class="' + c + '" role="img" aria-label="Bar ' + (33 + i) + ', ' + SYM[c][1] + '"><b>' + (33 + i) + '</b><i aria-hidden="true">' + SYM[c][0] + '</i></span>'; });
   h += '</div><div class="legend"><span><i class="lg g">✓</i>Good</span><span><i class="lg a">?</i>Check</span><span><i class="lg r">!</i>Fix first</span></div></section>';
   h += '<section class="card pad" data-tour="takeacts" style="display:flex;flex-direction:column;gap:8px"><div class="row"><span class="eyebrow">This take</span>' +
     '<button class="mini' + (t.saved ? " on" : "") + '" data-act="save-take" aria-pressed="' + !!t.saved + '">' + (t.saved ? I.tick(14) + "Saved" : "Save to history") + '</button></div>' +
     '<p class="hint" style="margin:0">' + (t.saved ? "Kept in your history for good." : "Autosaved takes are kept for 7 days. Save to history to keep this one.") + '</p>' +
     '<div class="row" style="border-top:1px solid var(--line);padding-top:8px;margin-top:4px"><span class="hint">Don\'t want this take?</span><button class="mini danger" data-act="ask-discard-take">Discard take</button></div></section>';
-  h += '</div><footer class="ftr"><button class="btn sec" data-act="rerecord" data-tour="rerec">' + I.restart + 'Re-record take</button><button class="btn pri" data-act="start-drill">Start drill</button></footer>';
+  h += '</div><footer class="ftr"><button class="btn sec" data-act="rerecord" data-tour="rerec">' + I.restart + 'Re-record take</button><button class="btn pri" data-act="open-drills" data-tour="drills">' + I.play + 'Drills · bar ' + nb + '</button></footer>';
   return h;
 };
 
@@ -1213,7 +1276,7 @@ SCREENS.issue = function(){
   });
   h += '<button class="link" style="align-self:flex-start" data-act="issue-details" aria-pressed="' + det + '">' + (det ? "Hide music details" : "Show music details") + '</button>';
   h += '</section>';
-  h += '</div><footer class="ftr"><button class="btn sec" data-act="to-feedback">Back</button><button class="btn pri" data-act="start-drill">Start drill</button></footer>';
+  h += '</div><footer class="ftr"><button class="btn sec" data-act="to-feedback">Back</button><button class="btn pri" data-act="open-drills" data-arg="42">' + I.play + 'Drills · bar 42</button></footer>';
   return h;
 };
 function marker(x, y, n, txt, bg){
@@ -1277,42 +1340,36 @@ function vidSing(pl){
   NOTES[42].forEach(function(n){ if (n[1] >= pl.a && n[1] < pl.b) tone(n[0], n[2] * beat * .95, .26, 0, (n[1] - pl.a) * beat); });
 }
 
-/* ---------- Drill ---------- */
-SCREENS.drill = function(){
-  var d = S.drill, rec = d.phase === "recording" || d.phase === "countin", busy = rec || d.phase === "judging";
-  var h = hdr(backBtn("to-workspace", "Back to practice workspace"), "Viva La Vida", "Tenor");
-  h += '<div class="body">' + pageTitle("Drill bar 42", "Watch the coach, then sing it until you get 2 clean takes in a row.");
-  h += vidHTML(d);
-  var chunk = d.chunk !== null ? CHUNKS[d.chunk] : null;
-  var dopt = {focus:42, guide:d.guidance ? 42 : null, names:d.guidance, chunk:chunk, chunkBar:42, gap:SCORE_GAP};
-  h += '<section class="paper" aria-label="Passage"><div class="scap"><span class="sub">' + (chunk ? "Looping bar 42 · " + chunk.name : "Looping bar 42") + '</span>' + (rec ? '<span class="recl"><span class="recdot"></span>' + (d.phase === "countin" ? "Count-in" : 'Recording <span class="tnum" data-rtime>0.0</span> of ' + barSecs().toFixed(1) + ' s') + '</span>' : '') + '</div>' +
-    scoreLine([41, 42, 43], dopt, true, d.phase === "countin" ? '<div class="countin"><b data-count>' + (d.countBeat + 1) + '</b><span>of 4</span></div>' : '');
-  h += '<div style="padding-top:4px">' + (rec ? meterHTML(d.phase === "recording") : '<span class="hint">' + (d.guidance ? "Guidance on: count-in, note names and beats" : "Guidance off") + ' · ' + drillBpm() + ' BPM</span>') + '</div></section>';
-  var stage = d.guidance ? (d.tempo < 100 ? 0 : 1) : 2, names = ["Guided, slower", "Guided, full speed", "On your own"];
-  h += '<section class="card" data-tour="set" style="padding:0 14px" aria-label="Coach-controlled settings"><div class="coach-head"><span class="lbl" style="font-size:14px">' + (chunk ? "One beat at a time · " + (d.chunk + 1) + " of 3" : "Step " + (stage + 1) + " of 3 · " + names[stage]) + '</span><span class="coach-tag">' + I.lock + 'Set by coach</span></div><div class="dsteps">';
-  for (var i = 0; i < 3; i++) h += '<div><div class="bar' + (i <= stage ? " on" : "") + '"></div><div class="t' + (i === stage ? " on" : "") + '">' + names[i] + '</div></div>';
-  h += '</div></section>';
-  h += '<section class="card pad" data-tour="takes" style="display:flex;flex-direction:column;gap:8px"><div class="row"><span style="font-size:14px"><b>Goal:</b> 2 clean takes in a row</span><button class="link" style="padding:0" data-act="dr-clean-info" aria-expanded="' + !!d.cleanInfo + '">What counts as clean?</button></div>';
-  if (d.cleanInfo) h += '<div style="font-size:13px;background:var(--sunk);border-radius:10px;padding:8px 10px">Right notes, on the beat, long note held 2 beats.</div>';
-  h += '<div class="lbl" style="font-size:14px">Clean in a row: ' + d.streak + ' of 2</div><div class="slots">';
-  for (var j = 0; j < 2; j++){ var done = j < d.streak; h += '<div class="slot' + (done ? " done" : j === d.streak ? " next" : "") + '">' + (done ? I.tick(14) + "Clean" : String(j + 1)) + '</div>'; }
-  h += '</div><div class="row"><span class="hint">Takes</span>' + (d.takes.length ? '<span class="saved">' + I.tick(12) + 'Autosaved · ' + d.takes.length + (d.takes.length === 1 ? " take" : " takes") + '</span>' : '') + '</div><div class="chips">';
-  h += d.takes.length ? d.takes.slice(-6).map(function(t){
-    var lab = "#" + t.n + " · " + t.tempo + "%" + (t.guidance ? " · guided" : "") + (t.chunk !== null ? " · " + CHUNKS[t.chunk].name.split(" ·")[0].toLowerCase() : "") + (t.clean ? "" : " · " + MISS[t.reason].short);
-    return '<span class="chip ' + (t.clean ? "clean" : "miss") + '">' + (t.clean ? I.tick(12) : I.cross(12)) + esc(lab) + '</span>';
-  }).join("") : '<span class="sub">No takes yet</span>';
-  h += '</div></section>';
-  var res = {cls: d.last ? (d.last.clean ? "clean" : "miss") : "", text: d.msg};
-  if (res){
-    h += '<section class="card pad" aria-live="polite" style="display:flex;flex-direction:column;gap:8px"><div class="msg ' + res.cls + '"><span style="color:var(--blue);flex:none">' + I.coach + '</span><span>' + esc(res.text) + '</span></div>';
-    if (d.last && d.phase === "idle") h += '<div class="acts"><button class="mini" data-act="dr-playback" aria-pressed="' + d.playingBack + '">' + (d.playingBack ? I.pause + "Pause take #" : I.play + "Play back take #") + d.last.n + '</button>' + (d.undo ? '<button class="mini danger" data-act="dr-ask-discard">Discard take</button>' : '') + '</div>';
-    h += '</section>';
+/* ---------- Drills page ---------- */
+// Watching only: the coach video for the selected bar and the list of bars to fix. Singing happens back on the workspace.
+var DRILL_FROM = {feedback:"Back to take feedback", issue:"Back to what went wrong", workspace:"Back to practice workspace"};
+SCREENS.drills = function(){
+  var d = S.drill, has = S.takes.length > 0, m42 = S.session.mastered.indexOf(42) >= 0, sel = S.drillSel || 42;
+  var h = hdr(backBtn("drills-back", DRILL_FROM[S.drillsFrom] || "Back"), "Viva La Vida", "Tenor");
+  h += '<div class="body">' + pageTitle("Drills", has ? "Watch the coach, then practise the bar on your workspace." : "Short coached lessons for the bars your take flags.");
+  if (!has){
+    h += '<section class="card pad" style="display:flex;flex-direction:column;gap:8px"><div class="lbl">No drills yet</div><p class="sub" style="margin:0">Sing bars 33–48 once. The coach picks the bar to fix first and shows you how to sing it.</p></section></div>';
+    return h + '<footer class="ftr"><button class="btn rec" style="flex:1" data-act="drills-record"><span class="dot"></span>Record bars 33–48</button></footer>';
   }
-  h += '</div>';
-  var playText = d.playing ? "Pause" : (d.refStarted && d.pos > 0 ? "Resume" : "Hear reference");
-  h += '<footer class="ftr"><button class="btn sec" data-act="dr-play" data-tour="play"' + (busy ? " disabled" : "") + '>' + (d.playing ? I.pause : I.play) + playText + '</button>';
-  h += rec ? '<button class="btn stop" data-act="dr-end" data-tour="record"><span class="sq"></span>End take</button>' : '<button class="btn rec" data-act="dr-record" data-tour="record"' + (d.phase === "judging" ? " disabled" : "") + '><span class="dot"></span>Record take</button>';
-  return h + '</footer>';
+  if (sel === 42){
+    var step = d.chunk !== null ? "One beat at a time" : d.takes.length ? "In progress · " + d.takes.length + (d.takes.length === 1 ? " take" : " takes") : "Not started";
+    h += '<section class="card pad" style="display:flex;flex-direction:column;gap:10px"><div class="row">' +
+      (m42 ? '<span class="badge g">' + I.tick(12) + 'Fixed</span><span class="hint tnum">Bar score ' + BAR42.before + ' → ' + BAR42.after + '</span>' : '<span class="badge o">' + I.flag + 'Fix this first</span><span class="hint">' + step + '</span>') +
+      '</div><div><div class="lbl" style="font-size:17px">Bar 42 · ' + BAR42.name + '</div><div class="sub">Flat on the high notes, rushed run, long note cut short.</div></div>' + vidHTML(d) + '</section>';
+  } else {
+    var tb = TODO.filter(function(x){ return x.bar === sel; })[0];
+    h += '<section class="card pad" style="display:flex;flex-direction:column;gap:10px"><div class="row"><span class="badge ' + (sel === 38 && m42 ? 'o">' + I.flag + 'Fix this next' : 'a">Check') + '</span><span class="hint">Loop bars ' + tb.loop[0] + '–' + tb.loop[1] + '</span></div>' +
+      '<div><div class="lbl" style="font-size:17px">Bar ' + sel + ' · ' + esc(tb.name) + '</div><div class="sub">The coach video for this bar isn\'t in this prototype. Practise loops it at half speed on your workspace.</div></div></section>';
+  }
+  h += '<section class="card pad" data-tour="list" style="padding-block:4px"><div class="eyebrow" style="padding-top:10px">Bars to fix, in the coach\'s order</div>';
+  [{bar:42, name:BAR42.name}].concat(TODO).forEach(function(x, i){
+    var on = x.bar === sel, done = x.bar === 42 && m42;
+    h += '<button class="drow" data-act="drill-sel" data-arg="' + x.bar + '" aria-current="' + on + '"><span class="tn">' + (done ? I.tick(12) : i + 1) + '</span><span class="tb"><b>Bar ' + x.bar + '</b><span>' + esc(x.name) + '</span></span>' +
+      (done ? '<span class="badge g">Fixed</span>' : on ? '<span class="badge b">Showing</span>' : '<span class="chev">' + I.chev + '</span>') + '</button>';
+  });
+  h += '</section></div>';
+  var lab = sel === 42 ? (d.chunk !== null ? "Practise beat " + (d.chunk + 1) : m42 ? "Practise bar 42 again" : "Practise bar 42") : "Practise bar " + sel;
+  return h + '<footer class="ftr"><button class="btn pri" data-act="practise" data-arg="' + sel + '" data-tour="practise">' + lab + I.chev + '</button></footer>';
 };
 
 // Bridge bars still to fix after bar 42, most frequent first. Same wording on Passage Complete and Session Summary.
@@ -1344,19 +1401,6 @@ function baBtn(){
   var on = S.baPlaying;
   return '<button class="mini' + (on ? " on" : "") + '" style="align-self:flex-start" data-act="hear-ba">' + (on ? I.pause + "Pause" : I.play + "Hear before / after") + '</button>';
 }
-
-SCREENS.complete = function(){
-  var st = sessionStats();
-  var h = hdr(backBtn("to-workspace", "Back to practice workspace"), "Passage complete", "Viva La Vida · Tenor");
-  h += '<div class="body" style="gap:14px"><div style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding-top:8px"><span class="big-ic">' + I.tick(30) + '</span><div class="h1">Bar 42 mastered</div>' +
-    '<button class="link" data-act="keep42" aria-pressed="' + !!S.session.keep42 + '">' + (S.session.keep42 ? I.tick(14) + " On your list" : "Keep on my list") + '</button></div>';
-  h += '<div data-tour="stats" style="display:flex;flex-direction:column;gap:10px"><p class="lead" style="color:var(--ink);font-size:17px">Bar score <b class="tnum">' + BAR42.before + ' → ' + BAR42.after + '</b> in ' + st.drill + ' drill takes, about ' + st.barMin + ' minutes.</p>' +
-    baBtn() + '</div>';
-  h += '<section class="sect" data-tour="todo"><div class="eyebrow">Still to fix in the bridge</div>' + todoRows() +
-    '</section></div>';
-  h += '<footer class="ftr col" data-tour="next"><button class="btn ghost full" data-act="next-problem">Practise bar 38 next</button><button class="btn ghost full" data-act="repeat-drill">Repeat bar 42 drill</button><button class="btn pri full" data-act="end-session">End session</button></footer>';
-  return h;
-};
 
 SCREENS.summary = function(){
   var st = sessionStats();
@@ -1400,19 +1444,6 @@ function overlays(){
     });
     h += '<button class="btn pri full" data-act="close">Done</button></div></div>';
   }
-  if (sh === "drills"){
-    var hasTake = S.takes.length > 0, m42 = S.session.mastered.indexOf(42) >= 0;
-    h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Drills"><div class="row"><h3>Drills</h3><button class="ib" data-act="close" aria-label="Close">' + I.close + '</button></div>';
-    if (!hasTake){
-      h += '<p>No drills yet. Sing bars 33–48 once and the coach picks the bar to drill first, with a short video on how to sing it.</p><button class="btn pri full" data-act="drills-record"><span class="dot"></span>Record bars 33–48</button><button class="btn ghost full" data-act="close">Not now</button>';
-    } else {
-      h += '<p>Short coached exercises for the bars your take flagged. Each starts with a coach video.</p>';
-      h += '<button class="opt' + (m42 ? "" : " on") + '" data-act="start-drill"><span class="vth" style="width:44px;height:44px;border-radius:10px;background:#1B1F24;color:#fff;display:flex;align-items:center;justify-content:center;flex:none">' + I.play + '</span><span style="flex:1"><span class="ot">Bar 42 · the high run into the held note</span><span class="od">' + (m42 ? "Mastered · bar score " + BAR42.before + " → " + BAR42.after : "Fix this first · video " + fmt(COACH_VID.bar.len) + " · about 8 min") + '</span></span>' + (m42 ? '<span class="badge g">' + I.tick(12) + 'Done</span>' : '<span class="badge o">' + I.flag + 'First</span>') + '</button>';
-      h += '<div class="lbl" style="font-size:14px;margin-top:4px">Also flagged</div>';
-      TODO.forEach(function(t){ h += '<button class="opt" data-act="go-bar" data-arg="' + t.bar + '"><span style="flex:1"><span class="ot">Bar ' + t.bar + ' · ' + esc(t.name) + '</span><span class="od">Loop bars ' + t.loop[0] + '–' + t.loop[1] + ' at half speed' + (m42 ? "" : " · drill unlocks after bar 42") + '</span></span>' + I.chev + '</button>'; });
-    }
-    h += '</div></div>';
-  }
   if (sh === "off-loop"){
     h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Loop outside the scenario"><h3>Use bars 33–48?</h3><p>This prototype only checks bars 33–48.</p><button class="btn pri full" data-act="set-bridge-record">Use bars 33–48</button><button class="btn ghost full" data-act="close">Keep my loop</button></div></div>';
   }
@@ -1429,13 +1460,13 @@ function overlays(){
   if (sh === "rec-cancel"){
     h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Cancel recording"><h3>Stop and delete this recording?</h3><p>Nothing will be saved.</p><button class="btn danger full" data-act="rec-cancel-yes">Delete recording</button><button class="btn ghost full" data-act="rec-cancel-no">Keep recording</button></div></div>';
   }
-  if (sh === "judging" || (d && d.phase === "judging" && S.view === "drill")){
+  if (sh === "judging" || (inDrill() && d.phase === "judging")){
     h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Checking your take"><h3>Checking your take…</h3><div style="height:6px;border-radius:3px;background:var(--line);overflow:hidden"><i data-judge style="display:block;height:100%;width:0;background:var(--blue)"></i></div></div></div>';
   }
   if (sh === "discard-take"){
     h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Discard take"><h3>Discard take ' + S.cur.n + '?</h3><p>This can\'t be undone.</p><button class="btn danger full" data-act="discard-take">Discard take</button><button class="btn ghost full" data-act="close">Keep take</button></div></div>';
   }
-  if (S.view === "drill" && d){
+  if (inDrill()){
     if (d.sheet === "adjust"){
       var opts = [
         {id:"beats", title:"Practise one beat at a time", detail:"Then the whole bar."},
@@ -1444,13 +1475,14 @@ function overlays(){
       ];
       h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Adjust the drill"><h3>Make it easier?</h3><p>2 misses in a row. Pick one.</p><div style="display:flex;flex-direction:column;gap:8px" role="radiogroup" aria-label="Adjustment">';
       opts.forEach(function(o){ var on = d.choice === o.id; h += '<button class="opt' + (on ? " on" : "") + '" role="radio" aria-checked="' + on + '" data-act="dr-choice" data-arg="' + o.id + '"><span class="radio"></span><span><span class="ot">' + o.title + '</span><span class="od">' + o.detail + '</span></span></button>'; });
-      h += '</div><button class="btn pri full" data-act="dr-apply">Try again</button></div></div>';
+      h += '</div><button class="btn pri full" data-act="dr-apply">' + (d.choice === "beats" ? "Watch the beat-by-beat video" : "Try again") + '</button></div></div>';
     }
     if (d.sheet === "discard"){
       h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Discard take"><h3>Discard take #' + d.takes.length + '?</h3><p>It won\'t count toward the goal.</p><button class="btn danger full" data-act="dr-discard">Discard take</button><button class="btn ghost full" data-act="dr-close">Keep take</button></div></div>';
     }
     if (d.sheet === "done"){
-      h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Bar mastered"><span class="big-ic" style="width:48px;height:48px">' + I.tick(26) + '</span><h3 style="font-size:22px">Bar 42 mastered</h3><p>2 clean takes in a row. Bar 42 now scores ' + BAR42.after + ', up from ' + BAR42.before + '. All takes saved.</p><button class="btn pri full" data-act="to-complete">Continue</button><button class="btn ghost full" data-act="dr-reset">Practise this bar again</button></div></div>';
+      // Close the loop: a clean bar on its own isn't the goal. Check it inside the whole bridge.
+      h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Bar 42 sounds right"><span class="big-ic" style="width:48px;height:48px">' + I.tick(26) + '</span><h3 style="font-size:22px">Bar 42 sounds right</h3><p>2 clean takes in a row at full speed, on your own. Now sing the whole bridge so the coach can check bar 42 in context.</p><button class="btn pri full" data-act="check-bridge"><span class="dot"></span>Sing bars 33–48</button><button class="btn ghost full" data-act="drill-later">Later</button></div></div>';
     }
   }
   if (S.toast) h += '<div class="toast" role="status"><span>' + esc(S.toast) + '</span><button data-act="toast-ok">OK</button></div>';
@@ -1512,14 +1544,15 @@ function go(view){
   stopAll();
   if (SETUP[view] && !SETUP[S.view]) S._setupEnter = true;
   S.view = view; S.sheet = null; S.toast = "";
-  if (view === "drill" && !S.drill) S.drill = freshDrill();
+  if (view === "drills" && !S.drill) S.drill = freshDrill();
   render();
   var sc = bodyEl(); if (sc) sc.scrollTop = 0;
   try { history.replaceState(null, "", "#" + view); } catch(e){}
 }
 function stopAll(){
   S.ws.playing = false; S.sync.playing = false; S.issue.playing = null; S.baPlaying = false; stopTones();
-  if (S.drill){ S.drill.playing = false; S.drill.playingBack = false; S.drill.vid.playing = false; S.drill.vid.cue = -1; }
+  if (S.drill){ S.drill.playing = false; S.drill.playingBack = false; S.drill.vid.playing = false; S.drill.vid.cue = -1;
+    if (S.drill.phase === "countin" || S.drill.phase === "recording") S.drill.phase = "idle"; }
 }
 function ensureFiles(){
   var m = S.imp;
@@ -1536,12 +1569,15 @@ function seedTo(view){
   if (view === "import" && !S.imp.score){ /* start fresh import */ }
   if (i >= viewIndex("feedback")) ensureTake();
   if (view === "record"){ ensureSong(); S.ws.loopA = 33; S.ws.loopB = 48; startRecording(); return; }
-  if (view === "complete" || view === "summary"){ if (!S.drill) S.drill = freshDrill(); if (S.session.mastered.indexOf(42) < 0) S.session.mastered.push(42); }
+  if (view === "summary"){ if (!S.drill) S.drill = freshDrill(); if (S.session.mastered.indexOf(42) < 0) S.session.mastered.push(42); }
+  if (view === "drills"){ if (!S.drill) S.drill = freshDrill(); S.drill.vid.open = true; S.drillSel = nextBar(); S.drillsFrom = "feedback"; }
+  if (view !== "workspace") S.ws.focus = null;
   go(view);
 }
 function addTake(len){
-  var n = S.takes.length + 1, sc = TAKE_SCRIPT[Math.min(n - 1, TAKE_SCRIPT.length - 1)];
-  var t = {n:n, overall:sc.overall, pitch:sc.pitch, timing:sc.timing, held:sc.held, saved:false, len:len};
+  // A bridge take sung after bar 42's drill is scored as the check (bar 42 passes); earlier takes follow TAKE_SCRIPT.
+  var n = S.takes.length + 1, after = S.session.mastered.indexOf(42) >= 0, sc = after ? TAKE_AFTER : TAKE_SCRIPT[Math.min(n - 1, TAKE_SCRIPT.length - 1)];
+  var t = {n:n, overall:sc.overall, pitch:sc.pitch, timing:sc.timing, held:sc.held, saved:false, len:len, after42:after};
   S.takes.push(t); S.cur = t; return t;
 }
 
@@ -1594,10 +1630,15 @@ function markDrill(){
     else d.msg = "Not quite: " + why + ". Try again.";
   }
   if (d.sheet === "done" && S.session.mastered.indexOf(42) < 0) S.session.mastered.push(42);
-  d.pos = 0;
+  d.pos = 0; S.ws.pos = 41; S.ws.started = false;
+  applyCoach();
   render();
 }
+// The coach's tempo shows on the workspace's own tempo control while drilling (and the user's changes go back to the drill).
+function applyCoach(){ if (S.ws.focus === 42 && S.drill){ S.ws.bpm = drillBpm(); S.ws.loopA = 42; S.ws.loopB = 42; } }
+function userTempo(){ if (S.ws.focus === 42 && S.drill) S.drill.tempo = Math.max(50, Math.min(100, Math.round(S.ws.bpm / BPM * 100))); }
 function startDrillRecording(){
+  S.ws.playing = false;
   if (S.drill){ S.drill.refStarted = false; if (S.drill.vid.playing){ S.drill.vid.playing = false; stopTones(); } }
   var d = S.drill; d.playing = false; d.playingBack = false; S.toast = "";
   var rg = drillRange(); d.pos = rg.a;
@@ -1645,7 +1686,7 @@ function tick(ts){
     }
   }
   // judging progress
-  if (S.sheet === "judging" || (S.drill && S.drill.phase === "judging" && S.view === "drill")){
+  if (S.sheet === "judging" || (inDrill() && S.drill.phase === "judging")){
     S.judgeT = (S.judgeT || 0) + dt;
     var jb = phone.querySelector("[data-judge]"); if (jb) jb.style.width = Math.min(100, S.judgeT / 1.4 * 100) + "%";
     if (S.judgeT >= 1.4){
@@ -1654,8 +1695,8 @@ function tick(ts){
       else markDrill();
     }
   }
-  // drill playback / recording
-  if (S.view === "drill" && S.drill){
+  // drill recording, on the workspace
+  if (inDrill()){
     var d = S.drill, dbpm = drillBpm(), rg = drillRange();
     if (d.phase === "countin"){
       d.countT += dt; var db = Math.floor(d.countT / (60 / dbpm));
@@ -1669,12 +1710,12 @@ function tick(ts){
         if (d.playing || d.guidance) tone(n[0], n[2] / 4 * barSec * .95, d.playing ? .24 : .08);
       }, null);
       d.pos = dtr.pos;
-      var rt = phone.querySelector("[data-rtime]"); if (rt) rt.textContent = Math.max(0, (d.pos - rg.a) * 240 / dbpm).toFixed(1);
+      w.pos = d.pos; w.started = true;   // the workspace playhead follows the drill take
       if (fin && d.phase === "recording") endDrillTake();
     }
   }
-  // coach demo video
-  if (S.view === "drill" && S.drill && S.drill.vid.playing){
+  // coach demo video (Drills page)
+  if (S.view === "drills" && S.drill && S.drill.vid.playing){
     var v = S.drill.vid, V = COACH_VID[v.kind];
     v.t += dt;
     var vc = vidCue(v);
@@ -1735,16 +1776,7 @@ function drawDynamic(){
     var pr = phone.querySelector("[data-rprog]"); if (pr) pr.style.width = Math.max(0, (r.pos - (w.loopA - 1)) / (w.loopB - w.loopA + 1) * 100) + "%";
     animMeter(r.phase === "recording", now);
   }
-  if (S.view === "drill" && S.drill){
-    var d = S.drill, moving = d.playing || d.phase === "recording", rg = drillRange();
-    if (ph){
-      var showD = moving || (d.pos > rg.a && d.phase === "idle");
-      ph.style.display = showD ? "block" : "none";
-      ph.style.left = (phX([41, 42, 43], SCORE_W, d.pos) * ((ph.parentNode.offsetWidth || SCORE_W) / SCORE_W)) + "px";
-      ph.classList.toggle("paused", !moving && d.pos > rg.a);
-    }
-    animMeter(d.phase === "recording", now);
-  }
+  if (inDrill()) animMeter(S.drill.phase === "recording", now);
   if (S.view === "sync"){
     var aph = phone.querySelector("[data-aph]");
     if (aph){ aph.style.display = S.sync.playing ? "block" : "none"; aph.style.left = (S.sync.t * SYNC_PX) + "px"; }
@@ -1831,8 +1863,8 @@ function act(a, arg, el){
       w.playing = !w.playing; render(); break;
     case "ws-restart": w.pos = w.loopA - 1; render(); break;
     case "loop-toggle": w.loop = !w.loop; render(); break;
-    case "ws-slower": w.bpm = Math.max(69, w.bpm - 1); w.bpmError = ""; render(); break;
-    case "ws-faster": w.bpm = Math.min(BPM, w.bpm + 1); w.bpmError = ""; render(); break;
+    case "ws-slower": w.bpm = Math.max(69, w.bpm - 1); w.bpmError = ""; userTempo(); render(); break;
+    case "ws-faster": w.bpm = Math.min(BPM, w.bpm + 1); w.bpmError = ""; userTempo(); render(); break;
     case "bpm-edit": if (arg === "ws"){ w.editingBpm = true; w.editPaused = w.playing; w.playing = false; } else { d.editingBpm = true; d.playing = false; } render(); break;
     case "bpm-done": commitBpm(arg, phone.querySelector("[data-bpm-input]").value); break;
     case "ws-metro": w.metro = !w.metro; render(); break;
@@ -1841,6 +1873,7 @@ function act(a, arg, el){
     case "mute": w[arg + "Mute"] = !w[arg + "Mute"]; render(); break;
     case "ws-record":
       if (needMic(a)) break;
+      if (inDrill()){ startDrillRecording(); break; }   // drill mode: record just bar 42
       if (w.loopA !== 33 || w.loopB !== 48){ w.playing = false; S.sheet = "off-loop"; render(); }
       else startRecording();
       break;
@@ -1862,7 +1895,6 @@ function act(a, arg, el){
       S.cur = S.takes[S.takes.length - 1] || null;
       go("workspace"); S.toast = "Take " + gone + " discarded."; render(); break;
     case "to-issue": go("issue"); break;
-    case "start-drill": if (!S.drill) S.drill = freshDrill(); go("drill"); break;
     case "to-feedback": ensureTake(); go("feedback"); break;
     // issue
     case "issue-play":
@@ -1874,7 +1906,6 @@ function act(a, arg, el){
       S.issue.focus = pn; startIssue("seg", PP.a, PP.b); render(); break;
     case "issue-details": S.issue.details = !S.issue.details; render(); break;
     // drill
-    case "to-drill": go("drill"); break;
     case "dr-play": if (d.vid.playing){ d.vid.playing = false; stopTones(); } d.playing = !d.playing; if (d.playing) d.refStarted = true; d.playingBack = false; render(); break;
     case "dr-record": if (needMic(a)) break; startDrillRecording(); break;
     case "mic-allow": S.micAsked = true; S.sheet = null; act(S._afterMic); break;
@@ -1884,17 +1915,21 @@ function act(a, arg, el){
     case "dr-choice": d.choice = arg; render(); break;
     case "dr-apply":
       d.sheet = null; d.misses = 0; d.streak = 0; d.pos = 0;
-      if (d.choice === "beats"){ d.chunk = 0; d.vid = freshVid("beats", true); d.msg = "Watch the beat-by-beat demo, then sing beat 1 only."; }
+      if (d.choice === "beats"){
+        // Watch first, then practise: the beat-by-beat video is on the Drills page.
+        d.chunk = 0; d.vid = freshVid("beats", true); d.msg = "Sing beat 1 only.";
+        S.drillSel = 42; S.drillsFrom = "workspace"; go("drills"); break;
+      }
       else if (d.choice === "slow"){ d.tempo = 80; d.msg = "Slowed to 80%."; }
       else { d.guidance = true; d.msg = "Guidance back on."; }
-      render(); break;
+      applyCoach(); render(); break;
     case "dr-playback":
       d.playingBack = !d.playingBack; d.playing = false;
       if (d.playingBack){
         var lt = d.takes[d.takes.length - 1], bs = 60 / drillBpm();
         var c = lt.chunk !== null ? CHUNKS[lt.chunk] : {a:0, b:4};
         NOTES[42].forEach(function(n){ if (n[1] >= c.a && n[1] < c.b) tone(n[0], n[2] * bs * (lt.clean ? .95 : .6), .24, lt.clean ? 0 : (lt.reason === "pitch" ? -40 : 0), (n[1] - c.a) * bs * (lt.clean || lt.reason !== "timing" ? 1 : .85)); });
-        clearTimeout(S._pbT); S._pbT = setTimeout(function(){ if (S.drill){ S.drill.playingBack = false; if (S.view === "drill") render(); } }, (c.b - c.a) * bs * 1000 + 200);
+        clearTimeout(S._pbT); S._pbT = setTimeout(function(){ if (S.drill){ S.drill.playingBack = false; if (inDrill()) render(); } }, (c.b - c.a) * bs * 1000 + 200);
       }
       render(); break;
     case "dr-ask-discard": d.sheet = "discard"; d.playingBack = false; render(); break;
@@ -1902,9 +1937,8 @@ function act(a, arg, el){
     case "dr-discard":
       var u = JSON.parse(d.undo), n = d.takes.length;
       for (var k in u) d[k] = u[k];
-      d.undo = null; d.sheet = null; S.session.drillTakes = Math.max(0, S.session.drillTakes - 1);
+      d.undo = null; d.sheet = null; S.session.drillTakes = Math.max(0, S.session.drillTakes - 1); applyCoach();
       S.toast = "Take #" + n + " discarded."; render(); break;
-    case "dr-reset": S.drill = freshDrill(); render(); break;
     case "vid-play":
       var vv = d.vid, VV = COACH_VID[vv.kind];
       d.playing = false; d.playingBack = false; stopTones();
@@ -1914,15 +1948,38 @@ function act(a, arg, el){
     case "vid-open": d.vid.open = true; render(); break;
     case "vid-hide": d.vid.playing = false; d.vid.open = false; stopTones(); render(); break;
     // workspace coach card
-    case "drills": w.playing = false; S.sheet = "drills"; render(); break;
-    case "drills-record": S.sheet = null; w.loopA = 33; w.loopB = 48; act("ws-record"); break;
+    // Drills page (watch) <-> workspace (practise)
+    case "open-drills":
+      if (drillBusy()) break;
+      if (!S.drill) S.drill = freshDrill();
+      S.drill.vid.open = true; S.drillSel = arg ? +arg : nextBar();
+      S.drillsFrom = S.view === "feedback" || S.view === "issue" ? S.view : "workspace";
+      go("drills"); break;
+    case "drills-back": go(S.drillsFrom || "workspace"); break;
+    case "drill-sel": stopAll(); S.drillSel = +arg; render(); var db0 = bodyEl(); if (db0) db0.scrollTop = 0; break;
+    case "drills-record": w.focus = null; w.loopA = 33; w.loopB = 48; w.bpm = BPM; go("workspace"); act("ws-record"); break;
+    case "practise":
+      if (+arg !== 42){ w.focus = null; act("go-bar", arg); break; }
+      if (!S.drill) S.drill = freshDrill();
+      var dz = S.drill; dz.sheet = null; dz.phase = "idle";
+      if (S.session.mastered.indexOf(42) >= 0 && dz.chunk === null){ dz.streak = 0; dz.last = null; dz.msg = "Bar 42 again: 2 clean takes in a row."; }
+      w.focus = 42; w.playing = false; w.pos = 41; w.started = false; applyCoach();
+      go("workspace");
+      S.toast = "Coach set the loop to bar 42 at " + drillBpm() + " BPM" + (dz.guidance ? ", guidance on." : "."); render(); break;
+    case "leave-drill":
+      w.focus = null; w.playing = false; S.toast = "Drill paused. Tap Drills to pick it up again."; render(); break;
+    case "check-bridge":
+      // Mastered: sing the whole bridge to check bar 42 in context.
+      d.sheet = null; w.focus = null; w.loopA = 33; w.loopB = 48; w.bpm = BPM; w.pos = 32; w.started = false; act("ws-record"); break;
+    case "drill-later":
+      d.sheet = null; w.focus = null; w.loopA = 33; w.loopB = 48; w.bpm = BPM; w.pos = 32; w.started = false;
+      S.toast = "Bar 42 done. Sing the bridge when you're ready to check it."; render(); break;
     case "ws-feedback": S.cur = S.takes[S.takes.length - 1]; S.openInfo = null; S._bsScroll = undefined; go("feedback"); break;
     // complete / summary
-    case "to-complete": if (S.session.mastered.indexOf(42) < 0) S.session.mastered.push(42); go("complete"); break;
     case "next-problem": arg = "38"; /* falls through */
     case "go-bar":
       var tb = TODO.filter(function(t){ return t.bar === +arg; })[0] || {bar:42, loop:[41,43]};
-      w.loopA = tb.loop[0]; w.loopB = tb.loop[1]; w.pos = tb.loop[0] - 1; w.started = false; w.bpm = Math.round(BPM / 2);
+      w.focus = null; w.loopA = tb.loop[0]; w.loopB = tb.loop[1]; w.pos = tb.loop[0] - 1; w.started = false; w.bpm = Math.round(BPM / 2);
       go("workspace"); S.toast = "Looping bars " + tb.loop[0] + "–" + tb.loop[1] + " at half speed."; render(); break;
     case "keep42": S.session.keep42 = !S.session.keep42; render(); break;
     case "hear-ba":
@@ -1933,7 +1990,6 @@ function act(a, arg, el){
     case "take-open": S.openTake = S.openTake === +arg ? null : +arg; render(); break;
     case "remind": S.session.remind = !S.session.remind; render(); break;
     case "edit-date": S.dateNote = !S.dateNote; render(); break;
-    case "repeat-drill": S.drill = freshDrill(); go("drill"); break;
     case "end-session": go("summary"); break;
     case "done": go("library"); break;
   }
@@ -1941,13 +1997,13 @@ function act(a, arg, el){
 // Before the first take, explain why the mic is needed; if it's blocked, say how to allow it.
 function needMic(next){
   if (!S.micBlocked && S.micAsked) return false;
-  stopAll(); S._afterMic = next; S.sheet = S.micBlocked ? "mic" : "mic-ask"; render();
+  stopAll(); S._afterMic = next; S.toast = ""; S.sheet = S.micBlocked ? "mic" : "mic-ask"; render();
   return true;
 }
 function commitBpm(which, raw){
   var n = Number(raw), o = which === "ws" ? S.ws : S.drill;
   if (!raw || isNaN(n) || n < 69 || n > 138){ o.bpmError = "Enter 69 to 138."; render(); return; }
-  if (which === "ws") o.bpm = Math.round(n); else o.tempo = Math.round(n / BPM * 100);
+  if (which === "ws"){ o.bpm = Math.round(n); userTempo(); } else o.tempo = Math.round(n / BPM * 100);
   o.editingBpm = false; o.editPaused = false; o.bpmError = ""; render();
 }
 
@@ -1975,7 +2031,7 @@ phone.addEventListener("input", function(e){
     if (st){ st.className = "badge " + (ok2 ? "g" : "a"); st.innerHTML = syncStatus(S.sync.offset); }
   }
   else if (k === "ws-tempo"){
-    S.ws.bpm = Number(t.value);
+    S.ws.bpm = Number(t.value); userTempo();
     var bb = phone.querySelector(".bpm-btn b"); if (bb) bb.textContent = t.value;
   }
   else if (k === "vol-tenor" || k === "vol-others"){
@@ -2010,7 +2066,7 @@ phone.addEventListener("pointerdown", function(e){
     if (w.pos < w.loopA - 1 || w.pos > w.loopB){ w.pos = w.loopA - 1; }
     updateLoopUI();
   }
-  function up(){ hd.removeEventListener("pointermove", move); hd.removeEventListener("pointerup", up); hd.removeEventListener("pointercancel", up); render(); }
+  function up(){ hd.removeEventListener("pointermove", move); hd.removeEventListener("pointerup", up); hd.removeEventListener("pointercancel", up); loopLeftDrill(); render(); }
   hd.addEventListener("pointermove", move); hd.addEventListener("pointerup", up); hd.addEventListener("pointercancel", up);
 });
 phone.addEventListener("keydown", function(e){
@@ -2023,15 +2079,20 @@ phone.addEventListener("keydown", function(e){
   if (t.matches("[data-hd]") && (e.key === "ArrowLeft" || e.key === "ArrowRight")){
     var w = S.ws, dlt = e.key === "ArrowLeft" ? -1 : 1;
     if (t.dataset.hd === "a") w.loopA = Math.max(1, Math.min(w.loopB, w.loopA + dlt)); else w.loopB = Math.max(w.loopA, Math.min(NBARS, w.loopB + dlt));
-    e.preventDefault(); render(); var nh = phone.querySelector('[data-hd="' + t.dataset.hd + '"]'); if (nh) nh.focus();
+    e.preventDefault(); loopLeftDrill(); render(); var nh = phone.querySelector('[data-hd="' + t.dataset.hd + '"]'); if (nh) nh.focus();
   }
 });
+// Moving the loop off bar 42 means the singer has left the drill: say so, keep the drill's progress.
+function loopLeftDrill(){
+  var w = S.ws;
+  if (w.focus === 42 && (w.loopA !== 42 || w.loopB !== 42)){ w.focus = null; S.toast = "Drill paused. Tap Drills to pick it up again."; }
+}
 function updateLoopUI(){
   var w = S.ws, bpm = wsBpm();
   var sel = phone.querySelector("[data-sel]"); if (sel){ sel.style.left = ((w.loopA - 1) / NBARS * 100) + "%"; sel.style.width = ((w.loopB - w.loopA + 1) / NBARS * 100) + "%"; }
   var ha = phone.querySelector('[data-hd="a"]'), hb = phone.querySelector('[data-hd="b"]');
   if (ha) ha.style.left = ((w.loopA - 1) / NBARS * 100) + "%"; if (hb) hb.style.left = (w.loopB / NBARS * 100) + "%";
-  var lb = phone.querySelector("[data-loop-bars]"); if (lb) lb.textContent = "Loop: bars " + w.loopA + "–" + w.loopB;
+  var lb = phone.querySelector("[data-loop-bars]"); if (lb) lb.textContent = loopBarsLabel(w);
   var li = phone.querySelector("[data-loop-info]"); if (li) li.innerHTML = loopLabel(w.loopA, w.loopB) + ' · <span style="white-space:nowrap">' + fmt(barTime(w.loopA - 1, bpm)) + "–" + fmt(barTime(w.loopB, bpm)) + "</span>";
 }
 guide.addEventListener("click", function(e){
