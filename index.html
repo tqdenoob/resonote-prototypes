@@ -532,6 +532,9 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 
 /* ================= Scripted data (the same on every run) ================= */
 var BPM = 138;                         // learning-track tempo of the VOIX arrangement
+// A/B tempo control: ?tempo=slider (A) shows only the slider, ?tempo=buttons (B) only − / +. Both drop
+// tap-to-type so the control is the one thing that differs. No parameter = the normal design (all three).
+var AB_TEMPO = (function(){ try { var t = new URLSearchParams(location.search).get("tempo"); return t === "slider" || t === "buttons" ? t : null; } catch(e){ return null; } })();
 var NBARS = 56;
 var SECTIONS = [
   {name:"Intro",a:1,b:8},{name:"Verse 1",a:9,b:16},{name:"Verse 2",a:17,b:24},
@@ -1167,11 +1170,13 @@ SCREENS.workspace = function(){
       '<div style="display:flex;align-items:center;gap:8px"><span class="coach-tag">' + I.lock + 'Set by coach</span><b class="tnum" style="font-size:17px">' + bpm + '</b><span class="hint">BPM</span></div></div>';
   } else {
     h += '<div class="set-row"><div><div class="lbl">Tempo</div><div class="hint" style="text-wrap:balance">' + (w.editPaused ? "Paused while you edit" : "Original " + BPM + "&nbsp;BPM") + '</div></div><div class="stepper">';
-    if (w.editingBpm) h += '<div class="bpm-edit"><input id="ws-bpm" type="number" inputmode="numeric" min="69" max="138" value="' + bpm + '" aria-label="Exact tempo in BPM" data-bpm-input="ws"><span class="hint">BPM</span><button class="done" data-act="bpm-done" data-arg="ws">Done</button></div>';
+    if (AB_TEMPO === "slider") h += '<b class="tnum" style="font-size:17px" data-bpm-val>' + bpm + '</b><span class="hint">BPM</span>';
+    else if (AB_TEMPO === "buttons") h += '<button class="sbtn" data-act="ws-slower" data-hold aria-label="1 BPM slower">−</button><span class="bpm-btn" style="display:inline-flex;align-items:center;justify-content:center;gap:4px;border-style:solid"><b>' + bpm + '</b><span>BPM</span></span><button class="sbtn" data-act="ws-faster" data-hold aria-label="1 BPM faster">+</button>';
+    else if (w.editingBpm) h += '<div class="bpm-edit"><input id="ws-bpm" type="number" inputmode="numeric" min="69" max="138" value="' + bpm + '" aria-label="Exact tempo in BPM" data-bpm-input="ws"><span class="hint">BPM</span><button class="done" data-act="bpm-done" data-arg="ws">Done</button></div>';
     else h += '<button class="sbtn" data-act="ws-slower" data-hold aria-label="1 BPM slower">−</button><button class="bpm-btn" data-act="bpm-edit" data-arg="ws" aria-label="Tempo ' + bpm + ' BPM, tap to type an exact value"><b>' + bpm + '</b><span> BPM ' + I.pen + '</span></button><button class="sbtn" data-act="ws-faster" data-hold aria-label="1 BPM faster">+</button>';
     h += '</div></div>';
     if (w.bpmError) h += '<div class="err" role="alert" style="padding-bottom:8px">' + esc(w.bpmError) + '</div>';
-    if (!w.editingBpm) h += '<div style="margin-top:-6px"><input id="ws-tempo" type="range" min="69" max="' + BPM + '" step="1" value="' + bpm + '" aria-label="Tempo in BPM" data-input="ws-tempo"></div>';
+    if (!w.editingBpm && AB_TEMPO !== "buttons") h += '<div style="margin-top:-6px"><input id="ws-tempo" type="range" min="69" max="' + BPM + '" step="1" value="' + bpm + '" aria-label="Tempo in BPM" data-input="ws-tempo"></div>';
   }
   h += '<div class="set-row"><div class="lbl">Metronome</div>' + sw("ws-metro", w.metro, "Metronome") + '</div>';
   h += '<div class="set-row"><div><div class="lbl">Part volumes</div><div class="hint">Tenor ' + (w.tenorMute ? "muted" : w.tenorVol + "%") + ' · Others ' + (w.othersMute ? "muted" : w.othersVol + "%") + '</div></div><button class="mini" data-act="parts-sheet">Adjust</button></div>';
@@ -1656,6 +1661,7 @@ function placeTour(){
 function renderGuide(){
   var v = VIEWS[viewIndex(S.view)], h = "";
   h += '<div><h1>ResoNote Prototype 2.0</h1><p class="lede">G1T2 · IS211 Iteration 2 · Easy scenario: Clarence learns the tenor part of "Viva La Vida" before Wednesday\'s combined practice.</p></div>';
+  if (AB_TEMPO) h += '<section class="gcard"><h2>A/B test: tempo control</h2><p>Version ' + (AB_TEMPO === "slider" ? "A · slider only" : "B · − / + buttons only") + '. The Practice Workspace tempo row is the only difference; tap-to-type is off in both.</p></section>';
   h += '<section class="gcard gnow" aria-live="polite"><h2>View ' + (viewIndex(S.view) + 1) + ' of ' + VIEWS.length + '</h2><div class="vn">' + v.name + '</div><p>' + v.does + '</p><dl><dt>Low-fi</dt><dd>Iter1.4 ' + v.lofi + '</dd><dt>HE fixes</dt><dd><ul>' +
     v.he.map(function(x){ return '<li><span class="he">' + x[0] + '</span>' + x[1] + '</li>'; }).join("") + '</ul></dd><dt>Simulated</dt><dd>' + v.sim + '</dd></dl></section>';
   h += '<section class="gcard"><h2>Jump to a view</h2><ol class="vlist">';
@@ -2166,7 +2172,7 @@ phone.addEventListener("input", function(e){
   }
   else if (k === "ws-tempo"){
     S.ws.bpm = Number(t.value); userTempo();
-    var bb = phone.querySelector(".bpm-btn b"); if (bb) bb.textContent = t.value;
+    var bb = phone.querySelector(".bpm-btn b, [data-bpm-val]"); if (bb) bb.textContent = t.value;
   }
   else if (k === "vol-tenor" || k === "vol-others"){
     var which = k.slice(4); S.ws[which + "Vol"] = Number(t.value);
