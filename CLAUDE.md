@@ -159,6 +159,11 @@ Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been 
 
 - **Archived 2026-10-26:** the main prototype now has only the coach-adapts drill (old Version B). The version with the A/B switch (`?v=A` / `?v=B`, Version A = user sets tempo and guidance) was removed from the repo on 26 Oct. Screenshots are in `docs/screenshots/alternatives/2026-10-26-ab-drill-version-a.png` and `-b.png`; the code is in git history before PR #4.
 - **If we run the drill A/B:** rebuild Version A and the `?v=` switch inside `index.html` (recover the old code from git history) so both variants share every other screen.
+- **Tempo control A/B (added 2026-10-29, candidate):** two links open the Practice Workspace with one tempo control each.
+  - Version A, slider only: https://tqdenoob.github.io/resonote-prototypes/?tempo=slider#workspace
+  - Version B, − / + buttons only (1 BPM per tap, hold to repeat): https://tqdenoob.github.io/resonote-prototypes/?tempo=buttons#workspace
+  - The switch is `AB_TEMPO` at the top of the script; it only changes the tempo row outside drill mode. Tap-to-type BPM is off in both versions so the control is the only difference. The current value shows as a number beside the label in A and between the buttons in B. With no `?tempo=` the normal design (all three controls) is unchanged. The guide panel shows which version is open.
+  - A possible task: "Set the tempo to exactly 92 BPM" (DVs: task time and error/overshoot count, or time and an ease rating). Not yet decided which version is the control.
 - **Still to do before launch:** pick DVs, log them or use a testing tool (Maze, Loop11), add a participant mode that hides the guide panel, decide whether A and B follow the same scripted outcome sequence, then tag `experiment-v1` and freeze (collab.md §6).
 
 ## Decision log

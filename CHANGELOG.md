@@ -2,6 +2,7 @@
 
 Newest first. One line per merged PR.
 
+- 2026-10-29 · A/B candidate: tempo control on the Practice Workspace. `?tempo=slider#workspace` (A, slider only) and `?tempo=buttons#workspace` (B, − / + only); tap-to-type off in both. No parameter = unchanged design. Touches Iter2.05 (A/B screenshots).
 - 2026-10-27 · Every flagged bar (42, 38, 40, 35, 46) drills the same way: own coach videos, coach steps, re-sing the bridge, "Bar n fixed", next bar named; all five fixed shows "Bridge clean". Drill mode bar pinned under the header with a clear Leave drill button. Summary lists every mastered bar and drill.
 - 2026-10-27 · Drill mode: tempo is read-only ("Set by coach"); slider and − / + return after Leave drill.
 - 2026-10-27 · Practice loop: removed the separate Targeted Drill and Passage Complete views (11 → 10). New Drills page for watching (coach video, bars to fix, "Practise bar n"), opened by "Drills · bar n" on Take Feedback, Understand the Issue and the workspace Coach card. The drill runs on the workspace (drill mode: coach sets loop, tempo and guidance on the workspace controls; results in the Coach card under the score). After 2 clean takes the singer re-sings the bridge; that take shows "Bar 42 fixed" and names bar 38. "End session" moved to the Coach card. Fixed a toast covering the microphone prompt. Touches Iter2.04 views 5, 7-10 screenshots and navigation diagram.
