@@ -162,7 +162,7 @@ Status: **candidate, not frozen.** The experiment design (Iter2.05) hasn't been 
 - **Tempo control A/B (added 2026-10-29, candidate):** two links open the Practice Workspace with one tempo control each.
   - Version A, slider only: https://tqdenoob.github.io/resonote-prototypes/?tempo=slider#workspace
   - Version B, − / + buttons only (1 BPM per tap, hold to repeat): https://tqdenoob.github.io/resonote-prototypes/?tempo=buttons#workspace
-  - The switch is `AB_TEMPO` at the top of the script; it only changes the tempo row outside drill mode. Tap-to-type BPM is off in both versions so the control is the only difference. The current value shows as a number beside the label in A and between the buttons in B. With no `?tempo=` the normal design (all three controls) is unchanged. The guide panel shows which version is open.
+  - The switch is `AB_TEMPO` at the top of the script; it only changes the tempo row outside drill mode. Tap-to-type BPM is off in both versions so the control is the only difference. The current value shows as a number beside the label in A and between the buttons in B. With no `?tempo=` the normal design (all three controls) is unchanged. Both A/B links show only the phone: the guide panel (view descriptions and the jump-to-view switcher) is hidden.
   - A possible task: "Set the tempo to exactly 92 BPM" (DVs: task time and error/overshoot count, or time and an ease rating). Not yet decided which version is the control.
 - **Still to do before launch:** pick DVs, log them or use a testing tool (Maze, Loop11), add a participant mode that hides the guide panel, decide whether A and B follow the same scripted outcome sequence, then tag `experiment-v1` and freeze (collab.md §6).
 
