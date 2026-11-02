@@ -1180,6 +1180,8 @@ SCREENS.workspace = function(){
     h += '</div></div>';
     if (w.bpmError) h += '<div class="err" role="alert" style="padding-bottom:8px">' + esc(w.bpmError) + '</div>';
     if (!w.editingBpm && AB_TEMPO !== "buttons") h += '<div style="margin-top:-6px"><input id="ws-tempo" type="range" min="69" max="' + BPM + '" step="1" value="' + bpm + '" aria-label="Tempo in BPM" data-input="ws-tempo"></div>';
+    // A/B only: Done ends the task and opens done.html, the end URL Loop11 watches for.
+    if (AB_TEMPO) h += '<div style="display:flex;justify-content:flex-end;padding:4px 0 12px"><button class="btn pri" style="flex:none;height:44px;min-width:120px" data-act="ab-done">Done</button></div>';
   }
   h += '<div class="set-row"><div class="lbl">Metronome</div>' + sw("ws-metro", w.metro, "Metronome") + '</div>';
   h += '<div class="set-row"><div><div class="lbl">Part volumes</div><div class="hint">Tenor ' + (w.tenorMute ? "muted" : w.tenorVol + "%") + ' · Others ' + (w.othersMute ? "muted" : w.othersVol + "%") + '</div></div><button class="mini" data-act="parts-sheet">Adjust</button></div>';
@@ -2014,6 +2016,7 @@ function act(a, arg, el){
     case "loop-toggle": w.loop = !w.loop; render(); break;
     case "ws-slower": w.bpm = Math.max(69, w.bpm - 1); w.bpmError = ""; userTempo(); render(); break;
     case "ws-faster": w.bpm = Math.min(BPM, w.bpm + 1); w.bpmError = ""; userTempo(); render(); break;
+    case "ab-done": stopAll(); location.href = "done.html?tempo=" + AB_TEMPO + "&bpm=" + w.bpm; break;
     case "bpm-edit": if (arg === "ws"){ w.editingBpm = true; w.editPaused = w.playing; w.playing = false; } else { d.editingBpm = true; d.playing = false; } render(); break;
     case "bpm-done": commitBpm(arg, phone.querySelector("[data-bpm-input]").value); break;
     case "ws-metro": w.metro = !w.metro; render(); break;
