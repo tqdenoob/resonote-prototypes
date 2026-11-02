@@ -290,7 +290,8 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 /* loop timeline (Change 3, HE #4) */
 .tl{position:relative;height:74px;margin:4px 8px 0;touch-action:none;user-select:none}
 .tl .secs{position:absolute;left:0;right:0;top:0;height:20px}
-.tl .sec{position:absolute;top:0;height:20px;font-size:11px;font-weight:700;color:var(--muted);padding:3px 0 0 4px;white-space:nowrap;overflow:hidden;border-left:1px solid var(--line2)}
+.tl .sec{position:absolute;top:0;height:20px;font:inherit;font-size:11px;font-weight:700;color:var(--muted);padding:3px 0 0 4px;text-align:left;white-space:nowrap;overflow:hidden;border:0;border-left:1px solid var(--line2);border-radius:0;cursor:pointer}
+.tl .sec.on{color:var(--blue-ink);box-shadow:inset 0 -2px 0 var(--blue)}
 .tl .wv{position:absolute;left:0;right:0;top:22px;height:40px;border-radius:6px;background:var(--sunk);overflow:hidden}
 .tl .wv svg{width:100%;height:100%;display:block}
 .tl .wv rect{fill:var(--wave)}
@@ -479,7 +480,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .big-ic{width:56px;height:56px;border-radius:50%;background:var(--green);color:var(--on-accent);display:flex;align-items:center;justify-content:center}
 
 /* sync */
-.sync{position:relative;padding:12px 0 8px;overflow:hidden;flex:none}
+.sync{position:relative;padding:12px 0 24px;overflow:hidden;flex:none}
 .sync .lane{position:relative;height:46px;margin:0 12px}
 .sync .lane+.lane{margin-top:12px}
 .sync .lt{font-size:12px;font-weight:700;color:var(--muted);margin:0 12px 4px;text-align:right}
@@ -490,7 +491,8 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .sync .aud .wf{position:absolute;left:0;top:-3px;height:40px;overflow:visible}
 .sync .aud .wf .c{fill:var(--orange)}
 .sync .aud .wf .v{fill:var(--muted)}
-.sync .aud .lab{position:absolute;top:36px;font-size:12px;font-weight:700;color:var(--orange-ink);white-space:nowrap}
+.sync .lab{position:absolute;left:0;top:40px;display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--orange-ink);white-space:nowrap}
+.sync .lab i{width:8px;height:8px;border-radius:2px;background:var(--orange)}
 .sync .mk{position:absolute;top:8px;bottom:6px;width:2px;background:var(--blue);z-index:2}
 .sync .mk span{position:absolute;top:-2px;left:5px;font-size:12px;font-weight:700;color:var(--blue-ink);white-space:nowrap}
 .sync .uph{position:absolute;top:28px;bottom:6px;width:2px;background:var(--ink);z-index:3;display:none}
@@ -691,7 +693,7 @@ var TOURS = {
   sync:[{t:"lanes",title:"Lined up for you",text:"ResoNote moves the track so its first sung note sits on bar 1."},
         {t:"tools",title:"Check or adjust",text:"Play to check. If it sounds off, tap Adjust it yourself."}],
   workspace:[{t:"mode",title:"Drill mode",text:"The coach is running a drill. Leave drill to practise freely; your progress is kept."},
-             {t:"loop",title:"Loop",text:"Drag the handles to pick the bars to repeat."},
+             {t:"loop",title:"Loop",text:"Tap a section name, or drag the handles, to pick the bars to repeat."},
              {t:"hub",title:"Coach",text:"Drills, your drill progress and your last take."},
              {t:"controls",title:"Settings",text:"Change speed, click, volume or keyboard."},
              {t:"play",title:"Play / Pause",text:"Pause keeps your place."},
@@ -1071,10 +1073,10 @@ SCREENS.sync = function(){
     h += '<div class="bx" style="left:' + (40 + b * 4 * 240 / BPM / 4 * SYNC_PX * 4 / 4) + 'px;width:' + (240 / BPM * SYNC_PX) + 'px">Bar ' + (b + 1) + '</div>';
   }
   h += '</div><div class="lt">Learning track</div><div class="lane" style="overflow:visible"><div class="aud" data-aud style="transform:translateX(' + (40 + off * SYNC_PX) + 'px)">';
-  h += syncWave() + '<span class="lab" style="left:8px">count-in, not on the score</span>';
+  h += syncWave();
   if (y.marker !== null) h += '<i class="sn" style="left:' + (y.marker * SYNC_PX) + 'px;width:2px;background:var(--green);top:0;height:46px"></i>';
   h += '<i class="sn" data-aph style="left:0;width:2px;background:var(--ink);top:0;height:46px;display:none"></i>';
-  h += '</div></div><div class="mk" style="left:52px"><span>Line up here</span></div></section>';
+  h += '</div><span class="lab"><i></i>Count-in, not on the score</span></div><div class="mk" style="left:52px"><span>Line up here</span></div></section>';
   if (!run){
     h += '<div class="acts" data-tour="tools"><button class="mini' + (y.playing ? " on" : "") + '" data-act="sync-play">' + (y.playing ? I.pause + "Pause" : I.play + "Play to check") + '</button>' +
       '<button class="mini' + (y.manual ? " on" : "") + '" data-act="sync-manual" aria-expanded="' + y.manual + '">' + (y.manual ? "Done adjusting" : "Adjust it yourself") + '</button></div>';
@@ -1153,7 +1155,7 @@ SCREENS.workspace = function(){
   // loop timeline
   h += '<section class="card pad" data-tour="loop" style="display:flex;flex-direction:column;gap:6px;padding-bottom:8px"><div class="row"><div><div class="eyebrow tnum" data-loop-bars>' + loopBarsLabel(w) + '</div><div class="sub tnum" data-loop-info>' + loopLabel(w.loopA, w.loopB) + ' · <span style="white-space:nowrap">' + fmt(barTime(w.loopA - 1, bpm)) + '–' + fmt(barTime(w.loopB, bpm)) + '</span></div></div>' + sw("loop-toggle", w.loop, "Repeat loop") + '</div>';
   h += '<div class="tl" data-tl><div class="secs">';
-  SECTIONS.forEach(function(s){ h += '<span class="sec" style="left:' + ((s.a - 1) / NBARS * 100) + '%;width:' + ((s.b - s.a + 1) / NBARS * 100) + '%;background:' + (SECTIONS.indexOf(s) % 2 ? "var(--sec-b)" : "var(--sec-a)") + '">' + (s.short || s.name) + '</span>'; });
+  SECTIONS.forEach(function(s, i){ var on = w.loopA === s.a && w.loopB === s.b; h += '<button class="sec' + (on ? " on" : "") + '" data-act="loop-sec" data-arg="' + i + '" aria-pressed="' + on + '" aria-label="Loop ' + s.name + ', bars ' + s.a + ' to ' + s.b + '" style="left:' + ((s.a - 1) / NBARS * 100) + '%;width:' + ((s.b - s.a + 1) / NBARS * 100) + '%;background:' + (SECTIONS.indexOf(s) % 2 ? "var(--sec-b)" : "var(--sec-a)") + '">' + (s.short || s.name) + '</button>'; });
   h += '</div><div class="wv"><svg viewBox="0 0 224 40" preserveAspectRatio="none" aria-hidden="true">';
   for (var i = 0; i < 224; i++){ var amp = 6 + 13 * Math.abs(Math.sin(i * .37) * Math.sin(i * .071 + 1)) + (i >= 128 && i < 192 ? 6 : 0); h += '<rect x="' + i + '" y="' + (20 - amp / 2) + '" width=".6" height="' + amp + '"/>'; }
   h += '</svg></div><div class="sel" data-sel style="left:' + ((w.loopA - 1) / NBARS * 100) + '%;width:' + ((w.loopB - w.loopA + 1) / NBARS * 100) + '%"></div>';
@@ -1162,7 +1164,7 @@ SCREENS.workspace = function(){
   h += '<button class="hd" data-hd="b" role="slider" aria-label="Loop end bar" aria-valuemin="1" aria-valuemax="' + NBARS + '" aria-valuenow="' + w.loopB + '" style="left:' + (w.loopB / NBARS * 100) + '%"><i></i></button>';
   h += '<div class="ax">';
   [1, 9, 17, 25, 33, 41, 49, 56].forEach(function(b){ h += '<span style="left:' + ((b - .5) / NBARS * 100) + '%">' + b + '</span>'; });
-  h += '</div></div><span class="hint">Drag the handles to choose bars.</span></section>';
+  h += '</div></div><span class="hint">Tap a section name or drag the handles to choose bars.</span></section>';
   if (!inDrill()) h += hubHTML();
   // settings
   h += '<section class="card" data-tour="controls" style="padding:2px 14px">';
@@ -2014,6 +2016,7 @@ function act(a, arg, el){
     case "ws-restart": w.pos = w.loopA - 1; w.browse = null; render(); break;
     case "score-follow": w.browse = null; refreshScore(); drawDynamic(); break;
     case "loop-toggle": w.loop = !w.loop; render(); break;
+    case "loop-sec": var sc = SECTIONS[Number(arg)]; w.loopA = sc.a; w.loopB = sc.b; w.loop = true; w.pos = sc.a - 1; w.browse = null; loopLeftDrill(); render(); break;
     case "ws-slower": w.bpm = Math.max(69, w.bpm - 1); w.bpmError = ""; userTempo(); render(); break;
     case "ws-faster": w.bpm = Math.min(BPM, w.bpm + 1); w.bpmError = ""; userTempo(); render(); break;
     case "ab-done": stopAll(); location.href = "done.html?tempo=" + AB_TEMPO + "&bpm=" + w.bpm; break;

@@ -2,6 +2,7 @@
 
 Newest first. One line per merged PR.
 
+- 2026-11-02 · Loop timeline: tap a section name (Intro, Verse 1, Chorus, Bridge…) to loop exactly those bars; hint text updated. Line up the track: "Count-in, not on the score" is now a fixed legend under the track, no longer cut off at the left edge. Touches Iter2.03 Change 3 wording, Iter2.04 views 4 and 5 screenshots.
 - 2026-11-02 · A/B links: a **Done** button under the tempo control opens `done.html?tempo=…&bpm=…`, the end page Loop11 uses as the task success URL. Normal link unchanged. Touches Iter2.05 (task script, success URL, screenshots).
 - 2026-11-02 · A/B links (`?tempo=slider` / `?tempo=buttons`) show only the phone: the guide panel with view descriptions and the jump-to-view switcher is hidden. Normal link unchanged. Touches Iter2.05 participant-view screenshots.
 - 2026-10-29 · A/B candidate: tempo control on the Practice Workspace. `?tempo=slider#workspace` (A, slider only) and `?tempo=buttons#workspace` (B, − / + only); tap-to-type off in both. No parameter = unchanged design. Touches Iter2.05 (A/B screenshots).
