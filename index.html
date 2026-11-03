@@ -350,6 +350,12 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .file .ft{flex:1;min-width:0}
 .file .ft b{display:block;font-size:14px}
 .file .ft span{display:block;font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file.gen .ft span{white-space:normal}
+.file .ft .prog{margin-top:6px}
+.file .ft .prog i{background:var(--blue);animation:genbar 2s ease-in-out forwards}
+@keyframes genbar{to{width:100%}}
+.genlink{min-height:44px;border:0;background:transparent;padding:0 2px;font-size:14px;font-weight:700;color:var(--blue-ink);display:inline-flex;align-items:center;gap:6px;align-self:flex-start;text-align:left}
+.genlink:disabled{color:var(--muted);font-weight:600}
 .field label{display:flex;justify-content:space-between;font-size:14px;font-weight:700;margin-bottom:6px}
 .field input{width:100%;height:46px;border:1px solid var(--edge);border-radius:12px;padding:0 12px;font-size:15px;background:var(--card)}
 .field input.bad{border:2px solid var(--red)}
@@ -641,9 +647,9 @@ var VIEWS = [
    he:[["#11","'No results' message with a link to clear the search"],["#5","Help button fixed top-right on every view"]],
    sim:"Two older songs are pre-loaded. Only Viva La Vida opens; the others show the off-path message."},
   {id:"import",name:"Import Score + Audio",lofi:"View 3 Import Score, Audio",
-   does:"Popup over the library, step 1 of 3. Pick the PDF score and the MIDI learning track the music director shared on Telegram, and name the song.",
+   does:"Popup over the library, step 1 of 3. Pick the PDF score and the MIDI learning track the music director shared on Telegram, and name the song. No MIDI or MP3? 'Make one from the score' builds a learning track from the PDF.",
    he:[["#15","'Step 1 of 3' with a progress bar"],["#3","Close (X) on every setup step; closing keeps your progress"],["#13","Song title marked Required, Next blocked until filled, inline message"]],
-   sim:"File picker is a scripted list of Telegram downloads. The .HEIC photo shows the invalid-file error."},
+   sim:"File picker is a scripted list of Telegram downloads. The .HEIC photo shows the invalid-file error. 'Make one from the score' is UI only: a 2-second progress bar, then a placeholder track; the rest of setup uses the scripted MIDI."},
   {id:"parts",name:"Choose Your Part",lofi:"View 4 Vocal Part Configuration",
    does:"Popup step 2 of 3. Pick the part you sing. Each part shows its voice range and can be previewed.",
    he:[["#15","'Step 2 of 3'"],["#16","Voice range labelled and explained, not an unlabelled dropdown"],["#3","Back and Close (X) in the same place on every setup step"]],
@@ -998,13 +1004,19 @@ SCREENS.import = function(){
   }
   h += fileCard("score", m.score, "score", "Score", I.doc, "PDF");
   if (m.score && m.score.bad) h += '<div class="err" role="alert">' + esc(m.score.name) + ' is a photo, not a score. Choose a PDF.</div>';
-  h += fileCard("audio", m.audio, "audio", "Learning track", I.note, "MIDI, MP3 or WAV");
+  // No MIDI or MP3 from the director: ResoNote can make a learning track from the PDF (UI only, simulated).
+  if (m.gen === "working") h += '<div class="file gen" data-tour="audio" aria-live="polite"><span class="fi">' + I.note + '</span><span class="ft"><b>Learning track</b><span>Making a track from the score…</span><span class="prog"><i></i></span></span></div>';
+  else {
+    h += fileCard("audio", m.audio, "audio", "Learning track", I.note, "MIDI, MP3 or WAV");
+    if (m.audio && m.audio.gen) h += '<p class="hint" style="margin-top:-4px">Made by ResoNote from the score. Notes can differ from your director\'s track, so listen once to check.</p>';
+    else if (!m.audio) h += '<button class="genlink" data-act="gen-track"' + (m.score && !m.score.bad ? '' : ' disabled') + '>' + I.note + (m.score && !m.score.bad ? 'No track? Make one from the score' : 'No track? Add the score to make one from it') + '</button>';
+  }
   var showErr = m.titleTouched && !titleOk;
   h += '<div class="field" data-tour="title"><label for="title" class="has-req">Song title <span class="req">* Required</span></label><input id="title" class="' + (showErr ? "bad" : "") + '" value="' + esc(m.title) + '" placeholder="e.g. Viva La Vida" data-input="title" autocomplete="off">' +
     (showErr ? '<div class="err" role="alert" style="margin-top:6px">Enter a song title.</div>' : '') + '</div>';
   h += '</div>';
   var ready = m.score && !m.score.bad && m.audio && titleOk;
-  h += '<footer class="ftr col">' + (!ready ? '<span class="hint" style="text-align:center">' + (!m.score || m.score.bad ? "Add the score" : !m.audio ? "Add the learning track" : "Add a song title") + '</span>' : '') +
+  h += '<footer class="ftr col">' + (!ready ? '<span class="hint" style="text-align:center">' + (!m.score || m.score.bad ? "Add the score" : m.gen === "working" ? "Making the learning track…" : !m.audio ? "Add or make the learning track" : "Add a song title") + '</span>' : '') +
     '<button class="btn pri" data-act="import-next"' + (ready ? "" : " disabled") + '>Next</button></footer>';
   return h;
 };
@@ -1566,6 +1578,10 @@ function overlays(){
       [{name:"VivaLaVida_tenor_learning.mid", size:"38 KB", meta:"MIDI · saved from Telegram, Sun 6:12 pm"},{name:"VivaLaVida_full_mix.mp3", size:"4.8 MB", meta:"MP3 · all parts, Sun 6:13 pm"}];
     h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Choose a file"><div class="row"><h3>Choose ' + (kind === "score" ? "the score" : "the learning track") + '</h3><button class="ib" data-act="close" aria-label="Close">' + I.close + '</button></div><p>Recent files</p>';
     files.forEach(function(f, i){ h += '<button class="opt" data-act="pick-file" data-arg="' + i + '"><span class="fi" style="width:36px;height:36px;border-radius:10px;background:var(--sunk);display:flex;align-items:center;justify-content:center;flex:none">' + (kind === "score" ? I.doc : I.note) + '</span><span><span class="ot">' + esc(f.name) + '</span><span class="od">' + esc(f.meta) + '</span></span></button>'; });
+    if (kind === "audio"){
+      var canGen = S.imp.score && !S.imp.score.bad;
+      h += '<p>No learning track?</p><button class="opt" data-act="gen-track"' + (canGen ? '' : ' disabled') + '><span class="fi" style="width:36px;height:36px;border-radius:10px;background:var(--blue-soft);color:var(--blue-ink);display:flex;align-items:center;justify-content:center;flex:none">' + I.note + '</span><span><span class="ot">Make one from the score</span><span class="od">' + (canGen ? 'ResoNote reads the PDF and plays every part' : 'Add the score first') + '</span></span></button>';
+    }
     h += '</div></div>';
     S._pickFiles = files;
   }
@@ -1975,6 +1991,11 @@ function act(a, arg, el){
       S.imp[S.pickKind] = {name:f.name, size:f.size, bad:!!f.bad};
       if (S.pickKind === "score" && !f.bad && !S.imp.title) S.imp.title = "Viva La Vida";
       S.sheet = null; render(); break;
+    case "gen-track":
+      // Simulated: a 2 s "reading the score" bar, then a made-up track file. Nothing is really generated.
+      S.sheet = null; S.imp.gen = "working"; render();
+      setTimeout(function(){ if (S.imp.gen !== "working") return; S.imp.gen = null; S.imp.audio = {name:"Made from the score", size:"all 4 parts", gen:true}; render(); }, 2000);
+      break;
     case "import-next": go("parts"); break;
     // parts
     case "to-import": go("import"); break;

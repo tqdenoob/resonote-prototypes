@@ -2,6 +2,7 @@
 
 Newest first. One line per merged PR.
 
+- 2026-11-03 · Add a song: "No track? Make one from the score" builds a learning track from the PDF when the singer has no MIDI or MP3 (UI only: progress bar, then a placeholder track with a "notes can differ" note). Also in the track picker. Touches Iter2.04 View 2 screenshot, Iter2.02 feature list.
 - 2026-11-02 · A/B links: a **Done** button under the tempo control opens `done.html?tempo=…&bpm=…`, the end page Loop11 uses as the task success URL. Normal link unchanged. Touches Iter2.05 (task script, success URL, screenshots).
 - 2026-11-02 · A/B links (`?tempo=slider` / `?tempo=buttons`) show only the phone: the guide panel with view descriptions and the jump-to-view switcher is hidden. Normal link unchanged. Touches Iter2.05 participant-view screenshots.
 - 2026-10-29 · A/B candidate: tempo control on the Practice Workspace. `?tempo=slider#workspace` (A, slider only) and `?tempo=buttons#workspace` (B, − / + only); tap-to-type off in both. No parameter = unchanged design. Touches Iter2.05 (A/B screenshots).
