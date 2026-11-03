@@ -267,6 +267,10 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .stf .bl{stroke:var(--ink);stroke-width:1.3}
 .stf .nh{fill:var(--ink);stroke:var(--ink);stroke-width:1.3}
 .stf .nh.o{fill:var(--card)}
+.stf .nt{cursor:pointer}
+.stf .nt .tap{fill:transparent}
+.stf .nt.hit .nh{fill:var(--blue);stroke:var(--blue)}
+.stf .nt.hit .nh.o{fill:var(--blue-soft)}
 .stf .st{stroke:var(--ink);stroke-width:1.3}
 .stf .bm{fill:var(--ink)}
 .stf .num{fill:var(--muted);font:600 11px var(--f-ui)}
@@ -653,7 +657,7 @@ var VIEWS = [
    he:[["#3","Back to Choose Your Part, Close (X) to leave setup"],["#10","The track moves against a fixed bar 1 marker, during auto line-up and as you drag"],["#20","Play, Set marker, Undo and Reset all work"],["#15","'Step 3 of 3'"]],
    sim:"Auto line-up is scripted: a 1.8 s animation that always lands on −3.48 s (2 bars at 138 BPM), which is correct."},
   {id:"workspace",name:"Practice Workspace",lofi:"View 6 Practice Workspace",
-   does:"The hub of the practice loop: the score with a moving playhead (drag the score sideways, or use the arrow keys, to page through the bars 4 at a time; 'Back to playhead' returns), the loop timeline, a Coach card (Drills, Last take, End session), then tempo, metronome, part volumes and keyboard. 'Practise bar 42' on the Drills page brings you back here in drill mode: the coach sets the loop to bar 42, the tempo and the guidance on these same controls, Record take records just bar 42, and the result shows in the Coach card. After 2 clean takes in a row, the coach asks you to sing the whole bridge again to check.",
+   does:"The hub of the practice loop: the score with a moving playhead (tap any note to hear it and see it light up on the keyboard; drag the score sideways, or use the arrow keys, to page through the bars 4 at a time; 'Back to playhead' returns), the loop timeline, a Coach card (Drills, Last take, End session), then tempo, metronome, part volumes and keyboard. 'Practise bar 42' on the Drills page brings you back here in drill mode: the coach sets the loop to bar 42, the tempo and the guidance on these same controls, Record take records just bar 42, and the result shows in the Coach card. After 2 clean takes in a row, the coach asks you to sing the whole bridge again to check.",
    he:[["#2","One Play/Pause toggle that keeps your place (Change 2)"],["#4","Drag handles on a labelled timeline (Change 3)"],["#1","Drill takes autosaved, with play back and discard"],["#9","Level meter while recording a drill take"],["#17","Tempo in whole BPM: − / + (hold to repeat), a 1-BPM slider, or tap to type"],["#18","Keyboard switch shows On / Off"]],
    sim:"Reference audio is a synth of the tenor line. Other parts are a soft chord on each beat. Drill results are scripted: the first 2 bar 42 takes at full speed with guidance off are missed (pitch, then timing); every other take is clean."},
   {id:"record",name:"Sing Along + Recording",lofi:"View 7 Sing Along + Recording",
@@ -848,11 +852,18 @@ function staff(bars, W, o){
     if (ns[0][1] > 0){ var rx = noteX(g, i, 0); s += '<path class="rest" d="M' + (rx - R(2)) + ' ' + (top + R(6)) + 'l' + R(4) + ' ' + R(5) + ' ' + R(-4) + ' ' + R(5) + ' ' + R(5) + ' ' + R(6) + '"/>'; }
     var groups = {};
     ns.forEach(function(n){ if (n[2] === .5){ var key = Math.floor(n[1]); (groups[key] = groups[key] || []).push(n); } });
-    ns.forEach(function(n){
+    ns.forEach(function(n, ni){
       var x = noteX(g, i, n[1]), y = yOf(n[0]), st = stepOf(n[0] + 12);
       for (var lst = 28; lst >= st; lst -= 2){ var ly = top + 4 * GAP - (lst - 30) * GAP / 2; s += '<line class="st" x1="' + (x - R(8)) + '" x2="' + (x + R(8)) + '" y1="' + ly + '" y2="' + ly + '"/>'; }
       for (var hst = 40; hst <= st; hst += 2){ var hy = top + 4 * GAP - (hst - 30) * GAP / 2; s += '<line class="st" x1="' + (x - R(8)) + '" x2="' + (x + R(8)) + '" y1="' + hy + '" y2="' + hy + '"/>'; }
-      s += '<ellipse class="nh' + (n[2] >= 2 ? " o" : "") + '" cx="' + x + '" cy="' + y + '" rx="' + R(4.6) + '" ry="' + R(3.4) + '" transform="rotate(-20 ' + x + ' ' + y + ')"/>';
+      var head = '<ellipse class="nh' + (n[2] >= 2 ? " o" : "") + '" cx="' + x + '" cy="' + y + '" rx="' + R(4.6) + '" ry="' + R(3.4) + '" transform="rotate(-20 ' + x + ' ' + y + ')"/>';
+      if (o.tap){
+        // Tap a note to hear it: the hit area fills the note's column (half-way to each neighbour) over the whole staff.
+        var xl = ni > 0 ? (noteX(g, i, ns[ni - 1][1]) + x) / 2 : x0 + 1, xr = ni < ns.length - 1 ? (noteX(g, i, ns[ni + 1][1]) + x) / 2 : x0 + g.bw - 1;
+        var ty = Math.min(top - R(10), y - R(10)), by = Math.max(top + 4 * GAP + R(10), y + R(10));
+        head = '<g class="nt" data-note="' + n[0] + '" data-beats="' + n[2] + '"><rect class="tap" x="' + xl + '" y="' + ty + '" width="' + (xr - xl) + '" height="' + (by - ty) + '"/>' + head + '</g>';
+      }
+      s += head;
       if (o.names) s += '<text class="nm" x="' + (x - 5) + '" y="' + (top + 4 * GAP + R(22)) + '">' + NAMES[n[0] % 12] + '</text>';
       if (n[2] < 4 && n[2] !== .5){ var up = st < 34; s += up ? '<line class="st" x1="' + (x + R(4.3)) + '" x2="' + (x + R(4.3)) + '" y1="' + y + '" y2="' + (y - R(22)) + '"/>' : '<line class="st" x1="' + (x - R(4.3)) + '" x2="' + (x - R(4.3)) + '" y1="' + y + '" y2="' + (y + R(22)) + '"/>'; }
     });
@@ -1107,14 +1118,14 @@ function wsSystem(){
 var SCORE_W = 352;
 // Workspace shows two printed lines: the one the playhead is on, and the next one.
 function wsLines(bars){
-  var o = {loop:[S.ws.loopA, S.ws.loopB], gap:SCORE_GAP}, next = bars[bars.length - 1] < NBARS ? barsFrom(bars[0] + 4) : null, extra = '';
+  var o = {loop:[S.ws.loopA, S.ws.loopB], gap:SCORE_GAP, tap:!AB_TEMPO}, next = bars[bars.length - 1] < NBARS ? barsFrom(bars[0] + 4) : null, extra = '';
   if (inDrill()){
     // Drill mode: the coach's guidance (note names, beat numbers, the beat being practised) is drawn on the same score.
     var d = S.drill, chunk = d.chunk !== null ? CHUNKS[d.chunk] : null;
     o.focus = d.bar; o.guide = d.guidance ? d.bar : null; o.names = d.guidance; o.chunk = chunk; o.chunkBar = d.bar;
     if (d.phase === "countin") extra = '<div class="countin"><b data-count>' + (d.countBeat + 1) + '</b><span>of 4</span></div>';
   }
-  return scoreLine(bars, o, true, extra) + (next ? scoreLine(next, {loop:o.loop, gap:SCORE_GAP}, false) : '');
+  return scoreLine(bars, o, true, extra) + (next ? scoreLine(next, {loop:o.loop, gap:SCORE_GAP, tap:o.tap}, false) : '');
 }
 // True while the workspace is running a drill (set by "Practise bar n" on the Drills page).
 function loopBarsLabel(w){ return w.loopA === w.loopB ? "Loop: bar " + w.loopA : "Loop: bars " + w.loopA + "–" + w.loopB; }
@@ -1147,7 +1158,7 @@ SCREENS.workspace = function(){
   }
   h += '<div class="body">' + pageTitle("Practise your part", inDrill() ? "Drill bar " + S.drill.bar + ": sing it until you get 2 clean takes in a row." : "Loop a passage, slow it down, then record a take for the coach.");
   h += '<section class="paper drag-score" data-tour="score" data-drag-score tabindex="0" aria-label="Score. Drag sideways or use the arrow keys to see other bars."><div class="scap"><span class="sub" data-sys>' + wsCaption(bars) + '</span><span data-scap-r>' + wsScapRight() + '</span></div>' +
-    '<div data-lines>' + wsLines(bars) + '</div><span class="hint">Drag the score sideways to see other bars.</span></section>';
+    '<div data-lines>' + wsLines(bars) + '</div><span class="hint">' + (AB_TEMPO ? '' : 'Tap a note to hear it. ') + 'Drag the score sideways to see other bars.</span></section>';
   // Drill mode: the coach's result goes right under the score, where the singer is looking.
   if (inDrill()) h += hubHTML();
   // loop timeline
@@ -1894,6 +1905,15 @@ function refreshRecScore(){
   el.innerHTML = recLines(bars);
   el.dataset.first = bars[0];
 }
+// A note tapped on the workspace score: play it at the current tempo, light it, and light its piano key.
+function tapNote(nt){
+  ac();
+  var m = Number(nt.dataset.note), dur = Math.max(.35, Math.min(1.2, Number(nt.dataset.beats) * 60 / wsBpm()));
+  tone(m, dur, .3); flashKey(m, dur);
+  nt.classList.add("hit"); setTimeout(function(){ nt.classList.remove("hit"); }, Math.max(180, dur * 900));
+  var k = phone.querySelector('[data-key="' + m + '"]'), sc = phone.querySelector("[data-kbscroll]");
+  if (k && sc && (k.offsetLeft < sc.scrollLeft || k.offsetLeft + k.offsetWidth > sc.scrollLeft + sc.clientWidth)) sc.scrollTo({left:k.offsetLeft - sc.clientWidth / 2 + k.offsetWidth / 2, behavior:"smooth"});
+}
 var flashTimers = {};
 function flashKey(m, dur){
   var k = phone.querySelector('[data-key="' + m + '"]'); if (!k) return;
@@ -2156,6 +2176,8 @@ function commitBpm(which, raw){
 phone.addEventListener("click", function(e){
   var k = e.target.closest("[data-key]");
   if (k){ ac(); var m = Number(k.dataset.key); tone(m, .6, .3); flashKey(m, .5); return; }
+  var nt = e.target.closest(".nt");
+  if (nt){ if (Date.now() - (S._dragEnd || 0) > 300) tapNote(nt); return; }
   var el = e.target.closest("[data-act]");
   if (!el || el.disabled) return;
   if (S._held && el.hasAttribute("data-hold")){ S._held = false; return; }
@@ -2231,6 +2253,7 @@ phone.addEventListener("pointerdown", function(e){
   function up(){
     box.removeEventListener("pointermove", move); box.removeEventListener("pointerup", up); box.removeEventListener("pointercancel", up);
     box.classList.remove("dragging"); if (!on) return;
+    S._dragEnd = Date.now();
     var dir = dx < -48 ? 1 : dx > 48 ? -1 : 0, turned = dir && scorePage(dir);
     if (turned){ refreshScore(); drawDynamic(); lines.style.transform = "translateX(" + (dir * 40) + "px)"; }
     lines.getBoundingClientRect();
