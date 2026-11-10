@@ -2,6 +2,8 @@
 
 Newest first. One line per merged PR.
 
+- 2026-11-10 · Team feedback (7 changes): tap a note on the workspace score to hear it; auto-sync on Line up the track shows its three steps and then plays bars 1-4 by itself with the score bars lighting up; tap a section name (Intro … Final chorus) to loop it; the first take of a song is the whole song (later takes: whole song or bridge, Re-record sings the same range); "Make one from the score" builds the learning track from the PDF when there's no MIDI/MP3 (already lined up, no count-in); a summary line at the top of every screen (library, recording, issue and summary added); light mode locked with `only light`. Touches Iter2.02 scenario, Iter2.03 Change 3 / HE #5, Iter2.04 views 1, 2, 4-10 screenshots and navigation diagram.
+
 - 2026-11-02 · A/B links: a **Done** button under the tempo control opens `done.html?tempo=…&bpm=…`, the end page Loop11 uses as the task success URL. Normal link unchanged. Touches Iter2.05 (task script, success URL, screenshots).
 - 2026-11-02 · A/B links (`?tempo=slider` / `?tempo=buttons`) show only the phone: the guide panel with view descriptions and the jump-to-view switcher is hidden. Normal link unchanged. Touches Iter2.05 participant-view screenshots.
 - 2026-10-29 · A/B candidate: tempo control on the Practice Workspace. `?tempo=slider#workspace` (A, slider only) and `?tempo=buttons#workspace` (B, − / + only); tap-to-type off in both. No parameter = unchanged design. Touches Iter2.05 (A/B screenshots).
