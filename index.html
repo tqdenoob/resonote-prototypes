@@ -572,8 +572,9 @@ var BPM = 138;                         // learning-track tempo of the VOIX arran
 // tap-to-type so the control is the one thing that differs. No parameter = the normal design (all three).
 var AB_TEMPO = (function(){ try { var t = new URLSearchParams(location.search).get("tempo"); return t === "slider" || t === "buttons" ? t : null; } catch(e){ return null; } })();
 if (AB_TEMPO) document.documentElement.classList.add("ab");
-// ?demo = the full app with no guide text beside the phone (for demos and the pitch video). The normal link keeps the guide.
-var DEMO = (function(){ try { return new URLSearchParams(location.search).has("demo"); } catch(e){ return false; } })();
+// ?final = the full app with no guide text beside the phone (for demos and the pitch video). The normal link keeps the guide.
+// ?demo (the first name for this link) still works.
+var DEMO = (function(){ try { var q = new URLSearchParams(location.search); return q.has("final") || q.has("demo"); } catch(e){ return false; } })();
 if (DEMO) document.documentElement.classList.add("demo");
 var NBARS = 56;
 var SECTIONS = [
