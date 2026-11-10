@@ -66,7 +66,7 @@ button{cursor:pointer}
 /* ---------- Guide rail ---------- */
 .guide{width:360px;max-width:100%;display:flex;flex-direction:column;gap:14px;min-width:0}
 /* A/B test links show the phone only: no guide text, no view switcher */
-.ab .guide{display:none}
+.ab .guide,.demo .guide{display:none}
 .guide h1{font-family:var(--f-serif);font-weight:400;font-size:22px;line-height:1.2;margin:0;text-wrap:balance}
 .guide .lede{margin:0;color:var(--muted);font-size:13px}
 .gcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
@@ -572,6 +572,9 @@ var BPM = 138;                         // learning-track tempo of the VOIX arran
 // tap-to-type so the control is the one thing that differs. No parameter = the normal design (all three).
 var AB_TEMPO = (function(){ try { var t = new URLSearchParams(location.search).get("tempo"); return t === "slider" || t === "buttons" ? t : null; } catch(e){ return null; } })();
 if (AB_TEMPO) document.documentElement.classList.add("ab");
+// ?demo = the full app with no guide text beside the phone (for demos and the pitch video). The normal link keeps the guide.
+var DEMO = (function(){ try { return new URLSearchParams(location.search).has("demo"); } catch(e){ return false; } })();
+if (DEMO) document.documentElement.classList.add("demo");
 var NBARS = 56;
 var SECTIONS = [
   {name:"Intro",a:1,b:8},{name:"Verse 1",a:9,b:16},{name:"Verse 2",a:17,b:24},
@@ -1792,7 +1795,7 @@ function placeTour(){
 }
 
 function renderGuide(){
-  if (AB_TEMPO) return;
+  if (AB_TEMPO || DEMO) return;
   var v = VIEWS[viewIndex(S.view)], h = "";
   h += '<div><h1>ResoNote Prototype 2.0</h1><p class="lede">G1T2 · IS211 Iteration 2 · Easy scenario: Clarence learns the tenor part of "Viva La Vida" before Wednesday\'s combined practice.</p></div>';
   h += '<section class="gcard gnow" aria-live="polite"><h2>View ' + (viewIndex(S.view) + 1) + ' of ' + VIEWS.length + '</h2><div class="vn">' + v.name + '</div><p>' + v.does + '</p><dl><dt>Low-fi</dt><dd>Iter1.4 ' + v.lofi + '</dd><dt>HE fixes</dt><dd><ul>' +
