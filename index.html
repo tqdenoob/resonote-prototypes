@@ -440,6 +440,8 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .pcard .pi{margin-left:auto;color:var(--orange-ink);display:flex}
 .pcard .pa{font-size:14px;font-weight:700}
 .pcard .pw{font-size:13px;color:var(--muted)}
+.nowp{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink);background:var(--blue-soft);border-radius:8px;padding:6px 8px;margin-top:2px}
+.nowp b{color:var(--blue-ink)}.nowp .d{color:var(--muted)}.nowp svg{flex:none;color:var(--blue-ink)}
 .pcard .pd{font-size:12px;color:var(--muted);background:var(--sunk);border-radius:8px;padding:6px 8px;margin-top:2px}
 .legend{display:flex;gap:14px;font-size:12px;color:var(--muted)}
 .legend i{display:inline-block;width:14px;height:8px;border-radius:2px;margin-right:5px;vertical-align:middle}
@@ -611,7 +613,7 @@ var TAKE_SCRIPT = [
   {overall:79, pitch:73, timing:77, held:82}
 ];
 // Per-bar result strip for bars 33-48: g = good, a = check, r = fix first
-var BAR_STRIP = ["g","g","a","g","g","a","g","a","g","r","g","g","g","a","g","g"];
+var BAR_STRIP = ["g","g","g","g","g","a","g","a","g","r","g","g","g","g","g","g"];
 // The first take of a song is the whole song (bars 1-56), so the coach can find where to start. Outside the bridge
 // the scripted result is good except a few bars to check; the bridge uses BAR_STRIP, so bar 42 is still "fix first".
 var SONG_CHECK = [12, 27, 53];
@@ -665,11 +667,7 @@ var VIDS = {
   38:vidSet(38, "Bar 38 starts with a rest: the first note is on beat 2.", "Count beat 1 in your head. Come in on 2.", [0], "Then step down evenly: D, C, B.", [0,1,2],
      "Beat 1 is a rest. Breathe and count.", [], "Beat 2: come in on D.", [0], "Beats 3 and 4: C, then B.", [1,2]),
   40:vidSet(40, "Bar 40: eight quick notes, up to D and back down.", "Keep every note the same length: one-and-two-and.", [0,1,2,3,4,5,6,7], "Don't speed up at the top.", [3,4,5],
-     "Beat 1: G, A.", [0,1], "Beat 2: B, C.", [2,3], "Beats 3 and 4: D, C, B, A, all even.", [4,5,6,7]),
-  35:vidSet(35, "Bar 35: two long notes, C then B.", "Hold the B right up to the note. It tends to sag.", [1], "Keep the breath going for both beats.", [1],
-     "Beat 1: start the C.", [0], "Beat 2: hold the C.", [0], "Beats 3 and 4: the B. Keep it up.", [1]),
-  46:vidSet(46, "Bar 46: a big jump from A up to E, then D.", "Hear the E in your head before you jump.", [1], "Land on the E. Don't slide up to it.", [0,1],
-     "Beat 1: A.", [0], "Beat 2: jump to E.", [1], "Beats 3 and 4: hold the E, then D.", [1,2])
+     "Beat 1: G, A.", [0,1], "Beat 2: B, C.", [2,3], "Beats 3 and 4: D, C, B, A, all even.", [4,5,6,7])
 };
 function vidScript(v){ return VIDS[v.bar][v.kind]; }
 
@@ -705,7 +703,7 @@ var VIEWS = [
    sim:"Scores are scripted per take number. The priority is always bar 42."},
   {id:"issue",name:"Understand the Issue",lofi:"View 10 Understand the Issue",
    does:"A three-way player (Your take / Reference / Both) for bar 42, overlays your pitch on the right notes, and explains three numbered problems in plain words. Tap a problem to hear just that part.",
-   he:[["#8","Each problem is named in plain language and leads with what to do; note names and cents sit behind 'Show music details'"]],
+   he:[["#8","Each problem is named in plain language and leads with what to do; the extra details behind 'Show music details' are in plain words too"]],
    sim:"'Your take' is synthesised: the run is 25 to 40 cents flat (the top G most), finishes a quarter beat early, and the held E stops after about 1 beat."},
   {id:"drills",name:"Drills",lofi:"Views 11–14 Targeted Drill (the watching part; the practising now happens on the workspace)",
    does:"Opens from 'Drills · bar 42' on Take Feedback, Understand the Issue or the workspace Coach card. Lists the bars to fix in the coach's order, each with its problem, and plays the coach video for the selected bar. One button, 'Practise bar 42', returns to the workspace set up for that bar. Watching only: no recording here.",
@@ -1022,7 +1020,7 @@ SCREENS.library = function(){
   }
   var shown = songs.filter(function(s){ return !q || s.t.toLowerCase().indexOf(q) >= 0; });
   var h = hdr('<span></span>', "ResoNote", "");
-  h += '<div class="body">' + greetHtml() + '<p class="lead intro">' + (S.song ? "Open a song to practise, or add a new one." : "Tap + Add song to bring in the score your director sent.") + '</p>';
+  h += '<div class="body">' + greetHtml() + '<p class="lead intro">' + (S.song ? "Open a song to practise, or add a new one." : "Tap + Add song to bring in a new score.") + '</p>';
   h += '<label class="search" data-tour="search">' + I.search + '<input id="q" type="search" placeholder="Search your songs" value="' + esc(S.query) + '" aria-label="Search your songs" autocomplete="off" data-input="query"></label>';
   h += '<div class="lib-h">Your songs</div>';
   if (!shown.length){
@@ -1039,7 +1037,7 @@ SCREENS.library = function(){
 SCREENS.import = function(){
   var m = S.imp, titleOk = m.title.trim().length > 0;
   var h = setupHdr("", "New song", "");
-  h += '<div class="body">' + steps3(1, "Next: choose your part") + pageTitle("Add a song", "Add the score and learning track your director sent. Only have the score? ResoNote can make the track from it.");
+  h += '<div class="body">' + steps3(1, "Next: choose your part") + pageTitle("Add a song", "Add the song's score and a learning track. Only have the score? ResoNote can make the track from it.");
   function fileCard(kind, f, tour, label, ic, hintTxt){
     var cls = f ? (f.bad ? "bad" : "ok") : "";
     return '<div class="file ' + cls + '" data-tour="' + tour + '"><span class="fi">' + ic + '</span><span class="ft"><b>' + label + ' <span class="req">* Required</span></b><span>' +
@@ -1108,6 +1106,11 @@ function genTrack(){ return !!(S.imp.audio && S.imp.audio.gen); }
 function syncLead(){ return genTrack() ? 0 : -SYNC_TRUE; }   // seconds before the first sung note on the track
 function syncTarget(){ return -syncLead(); }                 // the offset that lines it up
 function syncAutoOff(){ return genTrack() ? 0 : SYNC_AUTO; }
+// Manual line-up limits: bar 1 can sit anywhere from the start of the count-in (offset 0, the track's first sound)
+// to the end of the drawn learning track, never beyond either end.
+function syncMax(){ return 0; }
+function syncMin(){ return -Math.floor((syncLead() + 4 * 240 / BPM) * 100) / 100; }
+function clampOff(v){ return Math.max(syncMin(), Math.min(syncMax(), Math.round(v * 100) / 100)); }
 var BAR_S = 240 / BPM;
 // Learning-track waveform: count-in clicks (orange spikes) then the sung tenor notes (attack, sustain with a little
 // wobble, release). Same shape every run.
@@ -1174,8 +1177,8 @@ SCREENS.sync = function(){
     if (y.manual){
       h += '<section class="card pad" data-tour="offset" style="display:flex;flex-direction:column;gap:8px"><div class="row"><span class="lbl">Move track</span>' +
         '<span class="badge ' + (ok ? "g" : "a") + '" data-sync-status>' + syncStatus(off) + '</span></div>' +
-        '<div class="row"><button class="sbtn" data-act="nudge" data-arg="-0.05" aria-label="Move track earlier by 0.05 seconds">−</button><b class="tnum" style="font-size:18px" data-off>' + fmtOff(off) + '</b><button class="sbtn" data-act="nudge" data-arg="0.05" aria-label="Move track later by 0.05 seconds">+</button></div>' +
-        '<input id="sync-off" type="range" min="-5" max="5" step="0.01" value="' + off + '" aria-label="Audio offset in seconds, left is earlier" data-input="sync-off"><div class="ends"><span>← Earlier</span><span>0</span><span>Later →</span></div>' +
+        '<div class="row"><button class="sbtn" data-act="nudge" data-arg="-0.05"' + (off <= syncMin() ? ' disabled' : '') + ' aria-label="Move track earlier by 0.05 seconds">−</button><b class="tnum" style="font-size:18px" data-off>' + fmtOff(off) + '</b><button class="sbtn" data-act="nudge" data-arg="0.05"' + (off >= syncMax() ? ' disabled' : '') + ' aria-label="Move track later by 0.05 seconds">+</button></div>' +
+        '<input id="sync-off" type="range" min="' + syncMin() + '" max="' + syncMax() + '" step="0.01" value="' + off + '" aria-label="Audio offset in seconds, left is earlier" data-input="sync-off"><div class="ends"><span>← End of track</span><span>Start of count-in →</span></div>' +
         '<div class="acts"><button class="mini" data-act="sync-mark"' + (y.playing ? "" : " disabled") + '>' + I.flag + 'Set marker</button>' +
         '<button class="mini" data-act="sync-undo"' + (y.hist.length ? "" : " disabled") + '>' + I.undo + 'Undo</button>' +
         '<button class="mini" data-act="sync-reset"' + (off === syncAutoOff() ? " disabled" : "") + '>Reset to automatic</button></div>' +
@@ -1411,7 +1414,7 @@ SCREENS.feedback = function(){
       NB.tags.map(function(g){ return '<div class="issue"><span class="tag">' + g[0] + '</span><span>' + g[1] + '</span></div>'; }).join("") +
       (nb === 42 ? '<button class="btn sec full" style="height:48px" data-act="to-issue">' + I.play + 'Hear what went wrong</button>' : '') + '</section>';
   } else {
-    h += '<section class="card pad fixed" data-tour="prio"><div class="lbl" style="font-size:17px">Bridge clean</div><div class="sub">All five flagged bars are fixed. Sing it again before Wednesday to keep it.</div></section>';
+    h += '<section class="card pad fixed" data-tour="prio"><div class="lbl" style="font-size:17px">Bridge clean</div><div class="sub">All three flagged bars are fixed. Sing it again before Wednesday to keep it.</div></section>';
   }
   var M = [
     {k:"pitch", n:"Pitch", tip:"Did you sing the right notes?"},
@@ -1443,15 +1446,15 @@ var P42 = [
   {n:1, name:"Flat", cat:"Pitch", a:.5, b:2,
    act:"Aim higher on the way up.",
    why:"The top notes are a bit low.",
-   det:"Sung vs written: E4 −25, F4 −35, G4 −40, F4 −30 cents. Within 25 cents counts as on pitch, so the F, G and F are off. The G was close to F♯."},
+   det:"All four quick notes were a little lower than written. The top note (G) was the furthest off, almost down to the note just below it. A tiny difference would not count, but these were low enough to hear."},
   {n:2, name:"Rushed", cat:"Timing", a:0, b:2,
    act:"Count “1 and 2 and” through the quick notes.",
    why:"The quick notes end early.",
-   det:"Four eighth notes over beats 1–2. Yours finished at beat 1¾, a quarter of a beat early."},
+   det:"The four quick notes should fill the first 2 beats. You sang them a little fast and finished early, so you reached the long note too soon."},
   {n:3, name:"Cut short", cat:"Held note", a:1.75, b:4,
    act:"Breathe before the quick notes.",
    why:"The long note stops after 1 beat, not 2.",
-   det:"Half note E4 on beats 3–4, about 0.9 s at 138 BPM. Yours lasted about 1 beat."}
+   det:"The long note (E) should last 2 beats, about 1 second at full speed. Yours stopped after about 1 beat."}
 ];
 SCREENS.issue = function(){
   var I8 = S.issue, p = I8.playing, det = I8.details, f = I8.focus;
@@ -1463,12 +1466,13 @@ SCREENS.issue = function(){
     h += '<button data-act="issue-play" data-arg="' + o[0] + '" aria-pressed="' + (p === o[0]) + '">' + (p === o[0] ? I.pause : I.play) + o[1] + '</button>';
   });
   h += '</div>';
+  if (p === "cmp") h += nowPlaying();
   // chart
   var W = 340, H = 176, x0 = 34, x1 = W - 8, y0 = 26, y1 = H - 24, lo = 62, hi = 68;
   var X = function(beat){ return x0 + beat / 4 * (x1 - x0); }, Y = function(m){ return y1 - (m - lo) / (hi - lo) * (y1 - y0); };
   var c = '<svg class="chart" width="100%" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Pitch overlay for bar 42: 1, your quick notes are below the target, most on the top note; 2, the quick notes finish a quarter beat early; 3, the long note stops a beat early">';
   if (f){ var P = P42[f - 1]; c += '<rect class="fz" x="' + X(P.a) + '" y="' + (y0 - 4) + '" width="' + (X(P.b) - X(P.a)) + '" height="' + (y1 - y0 + 8) + '" rx="6"/>'; }
-  [62, 64, 65, 67].forEach(function(m){ c += '<line class="gl" x1="' + x0 + '" x2="' + x1 + '" y1="' + Y(m) + '" y2="' + Y(m) + '"/>' + (det ? '<text x="4" y="' + (Y(m) + 3) + '">' + noteName(m) + '</text>' : ''); });
+  [62, 64, 65, 67].forEach(function(m){ c += '<line class="gl" x1="' + x0 + '" x2="' + x1 + '" y1="' + Y(m) + '" y2="' + Y(m) + '"/>' + (det ? '<text x="4" y="' + (Y(m) + 3) + '">' + NAMES[m % 12] + '</text>' : ''); });
   if (!det) c += '<text x="4" y="' + (y0 + 4) + '">higher</text><text x="4" y="' + (y1) + '">lower</text>';
   for (var bt = 0; bt < 4; bt++) c += '<text x="' + (X(bt) - 3) + '" y="' + (H - 6) + '">' + (bt + 1) + '</text>';
   c += '<text x="' + x1 + '" y="' + (H - 6) + '" text-anchor="end">beats</text>';
@@ -1485,12 +1489,12 @@ SCREENS.issue = function(){
   c += '</svg>';
   h += '<section class="card pad" data-tour="chart" style="display:flex;flex-direction:column;gap:6px"><div class="eyebrow">Your pitch</div>' + c +
     '<div class="legend"><span><i style="background:var(--blue-soft);border:1px solid var(--blue)"></i>Right notes</span><span><i style="background:var(--orange)"></i>You</span></div></section>';
-  h += '<section class="card pad" data-tour="probs" style="display:flex;flex-direction:column;gap:8px"><div class="row"><span class="eyebrow">What the coach heard</span><span class="hint">Tap to hear</span></div>';
+  h += '<section class="card pad" data-tour="probs" style="display:flex;flex-direction:column;gap:8px"><div class="row"><span class="eyebrow">What the coach heard</span><span class="hint">Tap to hear yours, then the reference</span></div>';
   P42.forEach(function(P){
     var on = f === P.n, pl = on && p === "seg";
     h += '<button class="pcard' + (on ? " on" : "") + '" data-act="issue-focus" data-arg="' + P.n + '" aria-pressed="' + on + '" aria-label="' + P.name + ': ' + (pl ? "pause" : "hear this part, yours then the reference") + '">' +
       '<span class="pn">' + P.n + '</span><span class="pb2"><span class="pt"><b>' + P.name + '</b><span class="hint">' + P.cat + '</span><span class="pi">' + (pl ? I.pause : I.play) + '</span></span>' +
-      '<span class="pa">' + P.act + '</span><span class="pw">' + P.why + '</span>' + (det ? '<span class="pd">' + P.det + '</span>' : '') + '</span></button>';
+      '<span class="pa">' + P.act + '</span><span class="pw">' + P.why + '</span>' + (pl ? nowPlaying() : '') + (det ? '<span class="pd">' + P.det + '</span>' : '') + '</span></button>';
   });
   h += '<button class="link" style="align-self:flex-start" data-act="issue-details" aria-pressed="' + det + '">' + (det ? "Hide music details" : "Show music details") + '</button>';
   h += '</section>';
@@ -1500,6 +1504,11 @@ SCREENS.issue = function(){
 function marker(x, y, n, txt, bg){
   return '<g class="mkr">' + (bg ? '<rect x="' + (x - 9) + '" y="' + (y - 13) + '" width="' + (txt.length * 6.5 + 24) + '" height="18" rx="4" fill="var(--card)"/>' : '') + '<circle cx="' + x + '" cy="' + (y - 4) + '" r="7"/><text class="mn" x="' + x + '" y="' + (y - 0.5) + '" text-anchor="middle">' + n + '</text><text class="an" x="' + (x + 10) + '" y="' + y + '">' + txt + '</text></g>';
 }
+// Two-pass playback (Both, or tapping a problem) plays the singer's take first, then the reference.
+// This line says which one is sounding; tick() keeps it current.
+function issuePass(){ var I8 = S.issue, ps = I8.passes; if (!ps || ps.length < 2) return 0; return I8.t / (60 / BPM) >= ps[1].off - .4 ? 1 : 0; }
+function nowPlayingText(k){ return k ? '<span class="d">1 Your take</span> → <b>2 Reference</b> <span class="d">(how it should sound)</span>' : '<b>1 Your take</b> → <span class="d">2 Reference (how it should sound)</span>'; }
+function nowPlaying(){ return '<span class="nowp" data-now role="status" aria-live="polite">' + I.play + '<span data-now-t>' + nowPlayingText(issuePass()) + '</span></span>'; }
 // Schedule a bar's notes between beats a and b, for "you" or "ref", starting `off` beats from now.
 function play42(who, a, b, off){ playBar(42, who, a, b, off); }
 function playBar(bar, who, a, b, off){
@@ -1512,7 +1521,7 @@ function playBar(bar, who, a, b, off){
 function startIssue(mode, a, b){
   stopTones();
   var I8 = S.issue, len = b - a, gap = .75;
-  I8.playing = mode; I8.start = performance.now();
+  I8.playing = mode; I8.start = performance.now(); I8.t = 0;
   I8.passes = mode === "you" || mode === "ref" ? [{off:0, a:a, b:b}] : [{off:0, a:a, b:b}, {off:len + gap, a:a, b:b}];
   if (mode === "ref") play42("ref", a, b, 0);
   else { play42("you", a, b, 0); if (mode !== "you") play42("ref", a, b, len + gap); }
@@ -1523,8 +1532,6 @@ function youTake(bar){
   var ns = NOTES[bar].map(function(n){ return {m:n[0], s:n[1], d:n[2], det:0}; });
   if (bar === 38) ns.forEach(function(n){ n.s = Math.max(0, n.s - .4); });                            // came in early
   if (bar === 40) ns.forEach(function(n, i){ n.s = n.s * (i < 4 ? .8 : 1) + (i >= 4 ? -.2 : 0); n.d = .42; }); // uneven
-  if (bar === 35) ns[1].det = -35;                                                                       // long B low
-  if (bar === 46) ns[1].det = -40;                                                                       // high E flat
   return ns;
 }
 function youTake42(){
@@ -1601,22 +1608,18 @@ SCREENS.drills = function(){
 // The bars the coach flagged in the bridge, in the order to fix them. Every bar drills the same way:
 // coach video, guided slower -> guided full speed -> on your own, beat by beat after 2 misses, then re-sing the bridge.
 // misses = the scripted misses at the goal settings (only bar 42 has them, matching the easy scenario).
-var ORDER = [42, 38, 40, 35, 46];
+var ORDER = [42, 38, 40];   // 3 bars for the prototype, so a tester can finish a session
 var BARS = {
   42:{name:"the high run into the held note", short:"High run into the held note", probs:"Flat on the high notes, rushed run, long note cut short.",
       tags:[["1 Flat","Top notes a bit low."],["2 Rushed","Quick notes too fast."],["3 Cut short","Long note too short."]], before:58, after:92, misses:["pitch","timing"]},
   38:{name:"came in early", short:"Came in early", probs:"You came in on beat 1; the first note is on beat 2.",
       tags:[["Early","Came in a little before the beat."]], before:64, after:90, misses:[]},
   40:{name:"uneven quick notes", short:"Uneven quick notes", probs:"The eight quick notes bunch up in the middle.",
-      tags:[["Uneven","Quick notes not evenly spaced."]], before:66, after:91, misses:[]},
-  35:{name:"long note a bit low", short:"Long note a bit low", probs:"The long B sags below the note.",
-      tags:[["Low","The long B drifts flat."]], before:70, after:93, misses:[]},
-  46:{name:"jump up to the high E", short:"Jump up to the high E", probs:"The jump from A up to E lands a bit low.",
-      tags:[["Low jump","The high E lands flat."]], before:68, after:90, misses:[]}
+      tags:[["Uneven","Quick notes not evenly spaced."]], before:66, after:91, misses:[]}
 };
 var BAR42 = BARS[42];
 // The bridge take that checks a drilled bar, by how many bars are fixed so far.
-var TAKE_FIXED = [{overall:86, pitch:84, timing:85, held:90},{overall:89, pitch:87, timing:88, held:92},{overall:91, pitch:90, timing:90, held:93},{overall:93, pitch:92, timing:93, held:94},{overall:95, pitch:94, timing:95, held:96}];
+var TAKE_FIXED = [{overall:86, pitch:84, timing:85, held:90},{overall:90, pitch:88, timing:89, held:93},{overall:95, pitch:94, timing:95, held:96}];
 function isFixed(bar){ return S.session.mastered.indexOf(bar) >= 0; }
 function drillFor(bar){ S.drills = S.drills || {}; if (!S.drills[bar]) S.drills[bar] = freshDrill(bar); return S.drills[bar]; }
 // One source for session numbers so both screens always agree. If the viewer jumps straight
@@ -1681,8 +1684,6 @@ function overlays(){
       [{name:"VivaLaVida_tenor_learning.mid", size:"38 KB", meta:"MIDI · saved from Telegram, Sun 6:12 pm"},{name:"VivaLaVida_full_mix.mp3", size:"4.8 MB", meta:"MP3 · all parts, Sun 6:13 pm"}];
     h += '<div class="scrim"><div class="sheet" role="dialog" aria-label="Choose a file"><div class="row"><h3>Choose ' + (kind === "score" ? "the score" : "the learning track") + '</h3><button class="ib" data-act="close" aria-label="Close">' + I.close + '</button></div><p>Recent files</p>';
     files.forEach(function(f, i){ h += '<button class="opt" data-act="pick-file" data-arg="' + i + '"><span class="fi" style="width:36px;height:36px;border-radius:10px;background:var(--sunk);display:flex;align-items:center;justify-content:center;flex:none">' + (kind === "score" ? I.doc : I.note) + '</span><span><span class="ot">' + esc(f.name) + '</span><span class="od">' + esc(f.meta) + '</span></span></button>'; });
-    if (kind === "audio"){ var sOk = S.imp.score && !S.imp.score.bad;
-      h += '<p style="margin-top:4px">Don\'t have one?</p><button class="opt" data-act="gen-track"' + (sOk ? '' : ' disabled') + '><span class="fi" style="width:36px;height:36px;border-radius:10px;background:var(--blue-soft);color:var(--blue-ink);display:flex;align-items:center;justify-content:center;flex:none">' + I.doc + '</span><span><span class="ot">Make one from the score</span><span class="od">' + (sOk ? "Uses " + esc(S.imp.score.name) : "Choose the score first") + '</span></span></button>'; }
     h += '</div></div>';
     S._pickFiles = files;
   }
@@ -1922,18 +1923,19 @@ function tick(ts){
   // workspace playback
   if (S.view === "workspace" && w.playing){
     var prevBar = Math.floor(w.pos);
-    var tr = {pos:w.pos, a:w.loop ? w.loopA - 1 : 0, b:w.loop ? w.loopB : NBARS, loop:true, bpm:wsBpm()};
-    if (!w.loop && w.pos < tr.a) tr.a = 0;
-    var ended = advance(tr, dt, function(n, bar, barSec){
+    // Loop on: repeat between the handles. Loop off: play to the end handle once, then stop there
+    // (the next Play starts again from the start handle).
+    var tr = {pos:w.pos, a:w.loopA - 1, b:w.loopB, loop:w.loop, bpm:wsBpm()};
+    var ended = w.pos >= w.loopB && !w.loop ? true : advance(tr, dt, function(n, bar, barSec){
       if (!w.tenorMute) tone(n[0], n[2] / 4 * barSec * .95, .22 * w.tenorVol / 100);
       flashKey(n[0], n[2] / 4 * barSec);
     }, function(k, bar){
       if (w.metro) click(k === 0);
       if (k === 0 && !w.othersMute) chord(bar, .2 * w.othersVol / 100);
     });
-    w.pos = tr.pos;
-    if (!w.loop && w.pos >= w.loopB){ w.pos = w.loopB; }
-    if (wsSystemKey() !== S._sysKey) refreshScore();
+    w.pos = Math.min(tr.pos, w.loopB);
+    if (ended){ w.playing = false; w.started = false; render(); }
+    else if (wsSystemKey() !== S._sysKey) refreshScore();
   }
   // passage recording
   if (S.view === "record" && S.rec.phase !== "judging" && S.rec.phase !== "idle"){
@@ -2076,6 +2078,8 @@ function drawDynamic(){
     S.issue.t = (now - S.issue.start) / 1000;
     var cur = phone.querySelector("[data-cur]"), beats = S.issue.t / (60 / BPM), ps = S.issue.passes || [{off:0, a:0, b:4}], at = null;
     ps.forEach(function(q){ if (beats >= q.off && beats <= q.off + (q.b - q.a)) at = q.a + beats - q.off; });
+    var nowEl = phone.querySelector("[data-now-t]"), pk = issuePass();
+    if (nowEl && nowEl.dataset.k !== String(pk)){ nowEl.dataset.k = pk; nowEl.innerHTML = nowPlayingText(pk); }
     if (cur){ var xx = 34 + (at || 0) / 4 * (340 - 8 - 34); cur.setAttribute("x1", xx); cur.setAttribute("x2", xx); cur.style.display = at === null ? "none" : ""; }
     var last = ps[ps.length - 1];
     if (beats > last.off + (last.b - last.a) + .2){ S.issue.playing = null; render(); }
@@ -2137,14 +2141,14 @@ function act(a, arg, el){
       break;
     // sync
     case "to-parts": S.sync.auto = "idle"; go("parts"); break;
-    case "nudge": S.sync.hist.push(S.sync.offset); S.sync.offset = Math.max(-5, Math.min(5, Math.round((S.sync.offset + Number(arg)) * 100) / 100)); render(); break;
+    case "nudge": S.sync.hist.push(S.sync.offset); S.sync.offset = clampOff(S.sync.offset + Number(arg)); render(); break;
     case "sync-play":
       S.sync.playing = !S.sync.playing; S.sync.autoCheck = false;
       if (S.sync.playing) S.sync.t = 0;
       render(); break;
     case "sync-mark":
       S.sync.hist.push(S.sync.offset); S.sync.marker = S.sync.t;
-      S.sync.offset = -Math.round(S.sync.t * 100) / 100; render(); break;
+      S.sync.offset = clampOff(-S.sync.t); render(); break;
     case "sync-undo": if (S.sync.hist.length){ S.sync.offset = S.sync.hist.pop(); S.sync.marker = null; } render(); break;
     case "sync-manual": S.sync.manual = !S.sync.manual; render(); break;
     case "sync-reset": S.sync.hist.push(S.sync.offset); S.sync.offset = syncAutoOff(); S.sync.marker = null; render(); break;
@@ -2328,7 +2332,7 @@ phone.addEventListener("input", function(e){
     var p = t.selectionStart; render(); var ti = document.getElementById("title"); if (ti){ ti.focus(); ti.setSelectionRange(p, p); }
   }
   else if (k === "sync-off"){
-    S.sync.offset = Number(t.value);
+    S.sync.offset = clampOff(Number(t.value));
     var aud = phone.querySelector("[data-aud]"); if (aud) aud.style.transform = "translateX(" + (40 + S.sync.offset * SYNC_PX) + "px)";
     var o = phone.querySelector("[data-off]"); if (o) o.textContent = fmtOff(S.sync.offset);
     var st = phone.querySelector("[data-sync-status]"), ok2 = Math.abs(S.sync.offset - SYNC_TRUE) <= .12;
